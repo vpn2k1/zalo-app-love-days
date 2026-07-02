@@ -1,0 +1,19 @@
+{
+  "cwd": "/Users/mn13/Projects/zalo-mini-app/love-days",
+  "name": "love-days",
+  "framework": "react-typescript",
+  "cssPreProcessor": "scss",
+  "includeTailwind": true,
+  "package": "zmp-ui",
+  "stateManagement": "jotai",
+  "newProject": true,
+  "template": "single-view",
+  "theming": {
+    "customColor": false,
+    "color": "#f58ab5",
+    "darkTheme": false,
+    "iconFonts": true,
+    "fillBars": false,
+    "useUiKits": true
+  }
+}
