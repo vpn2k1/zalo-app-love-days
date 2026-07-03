@@ -2,12 +2,12 @@ import { useForm } from "react-hook-form";
 import { Button, Text } from "zmp-ui";
 import {
   AppDatePicker,
+  AppImagePicker,
   AppSelect,
   AppTextArea,
   AppTextInput,
 } from "@/components/forms";
 import type { AnniversaryDraft } from "@/types/anniversary";
-import { todayDateString } from "@/utils/date";
 
 type Props = {
   onAdd: (draft: AnniversaryDraft) => void | Promise<void>;
@@ -15,23 +15,33 @@ type Props = {
 };
 
 export function AnniversaryForm({ onAdd, loading }: Props) {
-  const { control, handleSubmit, reset } = useForm<AnniversaryDraft>({
+  const { control, handleSubmit, reset, watch } = useForm<AnniversaryDraft>({
     defaultValues: {
       title: "",
-      date: todayDateString(),
+      date: "",
       repeat_type: "yearly",
       note: "",
+      image_url: "",
     },
   });
+  const title = watch("title");
+  const date = watch("date");
+  const canAdd = Boolean(title.trim() && date);
 
   const submit = async (values: AnniversaryDraft) => {
     if (!values.title.trim() || !values.date) return;
-    await onAdd({ ...values, title: values.title.trim(), note: values.note?.trim() });
+    await onAdd({
+      ...values,
+      title: values.title.trim(),
+      note: values.note?.trim(),
+      image_url: values.image_url?.trim(),
+    });
     reset({
       title: "",
       date: values.date,
       repeat_type: values.repeat_type,
       note: "",
+      image_url: "",
     });
   };
 
@@ -45,6 +55,12 @@ export function AnniversaryForm({ onAdd, loading }: Props) {
         placeholder="Ví dụ: Lần đầu gặp nhau"
       />
       <AppDatePicker control={control} name="date" label="Ngày" required />
+      <AppImagePicker
+        control={control}
+        name="image_url"
+        label="Ảnh kỷ niệm"
+        optional
+      />
       <AppSelect
         control={control}
         name="repeat_type"
@@ -60,7 +76,13 @@ export function AnniversaryForm({ onAdd, loading }: Props) {
         label="Ghi chú"
         placeholder="Một lời nhắn nhỏ..."
       />
-      <Button fullWidth htmlType="submit" variant="secondary" loading={loading}>
+      <Button
+        fullWidth
+        disabled={!canAdd}
+        htmlType="submit"
+        variant="secondary"
+        loading={loading}
+      >
         Thêm ngày kỷ niệm
       </Button>
     </form>

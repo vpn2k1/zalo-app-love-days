@@ -20,6 +20,9 @@ export function AnniversaryList({ anniversaries }: Props) {
     <Box className="anniversary-list">
       {anniversaries.map((item, index) => (
         <Box className="anniversary-item" key={`${item.title}-${item.date}-${index}`}>
+          {item.image_url && (
+            <img className="anniversary-thumb" src={item.image_url} alt="" />
+          )}
           <div>
             <Text className="anniversary-title">{item.title}</Text>
             <Text className="subtle">

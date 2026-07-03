@@ -64,7 +64,7 @@ export const zaloService = {
     try {
       const result = await getUserInfo({
         avatarType: "large",
-        autoRequestPermission: true,
+        autoRequestPermission: false,
       });
       return toZaloUserProfile(result);
     } catch (error) {

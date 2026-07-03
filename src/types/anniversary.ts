@@ -7,6 +7,7 @@ export type Anniversary = {
   date: string;
   repeat_type: RepeatType;
   note?: string | null;
+  image_url?: string | null;
   created_by: string;
   created_at?: string;
 };
@@ -16,6 +17,7 @@ export type AnniversaryDraft = {
   date: string;
   repeat_type: RepeatType;
   note?: string;
+  image_url?: string;
 };
 
 export type UpcomingAnniversary = {
@@ -25,4 +27,5 @@ export type UpcomingAnniversary = {
   daysLeft: number;
   repeat_type: RepeatType;
   note?: string | null;
+  image_url?: string | null;
 };

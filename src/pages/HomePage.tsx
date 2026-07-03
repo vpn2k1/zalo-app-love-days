@@ -1,233 +1,181 @@
-import type { ChangeEvent } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useState } from "react";
 import { Box, Button, Icon, Page, Text } from "zmp-ui";
 import { AnniversaryForm } from "@/components/AnniversaryForm";
-import { AnniversaryList } from "@/components/AnniversaryList";
-import { LoveCounterCard } from "@/components/LoveCounterCard";
-import { NextAnniversaryCard } from "@/components/NextAnniversaryCard";
-import { UserSideCard } from "@/components/UserSideCard";
-import type { Anniversary, AnniversaryDraft } from "@/types/anniversary";
-import type { CoupleWithMembers } from "@/types/couple";
-import type { AppUser } from "@/types/user";
-import { getNextAnniversary } from "@/utils/date";
 import { isMockMode } from "@/services/supabaseClient";
+import { formatDate } from "@/utils/date";
+import { FeedbackPanel } from "./home/FeedbackPanel";
+import { HomeHeader } from "./home/HomeHeader";
+import { MemoryChips } from "./home/MemoryChips";
+import { MilestoneCard } from "./home/MilestoneCard";
+import { PersonChip } from "./home/PersonChip";
+import { QuickActionGrid } from "./home/QuickActionGrid";
+import { StatusBar } from "./home/StatusBar";
+import { TimelineSection } from "./home/TimelineSection";
+import type { HomePageProps } from "./home/types";
+import { useHomePage } from "./home/useHomePage";
+import "../css/app.css";
 
-type Props = {
-  user: AppUser;
-  coupleData: CoupleWithMembers;
-  anniversaries: Anniversary[];
-  addPartnerLoading?: boolean;
-  inviteFeedback?: string;
-  profileLoading?: boolean;
-  addAnniversaryLoading?: boolean;
-  onAddPartner: () => Promise<unknown>;
-  onSaveProfile: (payload: {
-    display_name: string;
-    custom_avatar_url: string | null;
-    start_date: string;
-  }) => Promise<unknown>;
-  onAddAnniversary: (draft: AnniversaryDraft) => Promise<unknown>;
-  onEditProfile: () => void;
-};
-
-export function HomePage({
-  user,
-  coupleData,
-  anniversaries,
-  addPartnerLoading,
-  inviteFeedback,
-  profileLoading,
-  addAnniversaryLoading,
-  onAddPartner,
-  onSaveProfile,
-  onAddAnniversary,
-  onEditProfile,
-}: Props) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const currentMember = coupleData.members.find((member) => member.user_id === user.id);
-  const otherMember = coupleData.members.find((member) => member.user_id !== user.id);
-  const currentUser: AppUser =
-    currentMember?.user_id === user.id ? { ...currentMember.user, ...user } : user;
-  const partner = otherMember?.user;
-  const [showQuickEdit, setShowQuickEdit] = useState(false);
-  const [showAnniversaryForm, setShowAnniversaryForm] = useState(false);
-  const [nameDraft, setNameDraft] = useState(currentUser.display_name || currentUser.name);
+export function HomePage(props: HomePageProps) {
+  const {
+    user,
+    coupleData,
+    anniversaries,
+    addPartnerLoading,
+    inviteFeedback,
+    profileLoading,
+    addAnniversaryLoading,
+    onAddPartner,
+    onEditProfile,
+    onUpdateStartDate,
+  } = props;
+  const home = useHomePage(props);
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [startDateDraft, setStartDateDraft] = useState(coupleData.couple.start_date);
-  const [actionFeedback, setActionFeedback] = useState("");
-  const nextAnniversary = useMemo(
-    () => getNextAnniversary(coupleData.couple, anniversaries),
-    [anniversaries, coupleData.couple],
-  );
 
-  useEffect(() => {
-    setNameDraft(currentUser.display_name || currentUser.name);
-    setStartDateDraft(coupleData.couple.start_date);
-  }, [coupleData.couple.start_date, currentUser.display_name, currentUser.name]);
-
-  const saveQuickEdit = async () => {
-    setActionFeedback("");
-    if (!startDateDraft) {
-      setActionFeedback("Vui lòng chọn ngày bắt đầu.");
-      return;
-    }
-    try {
-      await onSaveProfile({
-        display_name: nameDraft.trim() || currentUser.name,
-        custom_avatar_url: currentUser.custom_avatar_url || null,
-        start_date: startDateDraft,
-      });
-      setActionFeedback("Đã cập nhật thông tin.");
-      setShowQuickEdit(false);
-    } catch (error) {
-      console.error(error);
-      setActionFeedback("Không thể cập nhật thông tin. Vui lòng thử lại.");
-    }
-  };
-
-  const saveAvatar = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    event.target.value = "";
-    if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      setActionFeedback("Vui lòng chọn một tệp ảnh.");
-      return;
-    }
-    if (file.size > 2 * 1024 * 1024) {
-      setActionFeedback("Ảnh tối đa 2MB để lưu ổn định trong mini app.");
-      return;
-    }
-
-    const dataUrl = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result));
-      reader.onerror = () => reject(reader.error);
-      reader.readAsDataURL(file);
-    });
-
-    setActionFeedback("");
-    try {
-      await onSaveProfile({
-        display_name: nameDraft.trim() || currentUser.name,
-        custom_avatar_url: dataUrl,
-        start_date: coupleData.couple.start_date,
-      });
-      setActionFeedback("Đã cập nhật ảnh đại diện.");
-    } catch (error) {
-      console.error(error);
-      setActionFeedback("Không thể cập nhật ảnh đại diện. Vui lòng thử lại.");
-    }
-  };
-
-  const addAnniversary = async (draft: AnniversaryDraft) => {
-    setActionFeedback("");
-    try {
-      await onAddAnniversary(draft);
-      setActionFeedback("Đã thêm ngày kỷ niệm.");
-      setShowAnniversaryForm(false);
-    } catch (error) {
-      console.error(error);
-      setActionFeedback("Không thể thêm ngày kỷ niệm. Vui lòng thử lại.");
-    }
+  const saveStartDate = async () => {
+    if (!startDateDraft) return;
+    await onUpdateStartDate(startDateDraft);
+    setShowDatePicker(false);
   };
 
   return (
-    <Page className="love-page">
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        className="visually-hidden"
-        onChange={saveAvatar}
+    <Page className="app-page">
+      <StatusBar />
+      <HomeHeader
+        title="Our little universe"
+        subtitle={`Friday, ${formatDate(coupleData.couple.start_date)}`}
+        onEditProfile={onEditProfile}
       />
-      <Box className="home-hero">
-        <Box className="home-topbar">
-          <div>
-            <Text className="overline">Love Days</Text>
-            <Text.Title size="large">{coupleData.couple.title}</Text.Title>
-          </div>
-          <Button
-            size="small"
-            variant="tertiary"
-            icon={<Icon icon="zi-user" />}
-            onClick={onEditProfile}
-          />
-        </Box>
-        {isMockMode && <div className="mock-badge">Mock mode</div>}
-        <Box className="couple-row">
-          <UserSideCard
-            user={currentUser}
-            label="Mình"
-            onAvatarClick={() => fileInputRef.current?.click()}
-            onEditName={() => setShowQuickEdit(true)}
-          />
-          <div className="center-heart">♥</div>
-          <UserSideCard
-            user={partner}
-            label="Người ấy"
-            emptyLabel="Thêm đối tác"
-            onEmptyAction={onAddPartner}
-          />
-        </Box>
+
+      <Box className="app-hero">
+        <div className="app-hero-icon">
+          <Icon icon="zi-user" />
+        </div>
+        <Text className="app-hero-copy">Add your favorite couple photo</Text>
       </Box>
 
-      {showQuickEdit && (
-        <Box className="soft-card quick-edit-card">
-          <label className="native-field">
-            <span>Tên hiển thị</span>
-            <input
-              value={nameDraft}
-              onChange={(event) => setNameDraft(event.target.value)}
-            />
-          </label>
-          <label className="native-field">
-            <span>Ngày bắt đầu</span>
-            <input
-              type="date"
-              value={startDateDraft}
-              onChange={(event) => setStartDateDraft(event.target.value)}
-            />
-          </label>
-          <div className="inline-actions">
-            <Button variant="secondary" onClick={() => setShowQuickEdit(false)}>
-              Hủy
-            </Button>
-            <Button loading={profileLoading} onClick={saveQuickEdit}>
-              Lưu
-            </Button>
-          </div>
-        </Box>
-      )}
-
-      <LoveCounterCard
-        startDate={coupleData.couple.start_date}
-        onEditStartDate={() => setShowQuickEdit(true)}
-      />
-      <NextAnniversaryCard anniversary={nextAnniversary} />
-
-      <Box className="section-title-row">
-        <Text.Title size="small">Danh sách kỷ niệm</Text.Title>
-        <Button
-          size="small"
-          variant="tertiary"
-          icon={<Icon icon={showAnniversaryForm ? "zi-close" : "zi-plus"} />}
-          onClick={() => setShowAnniversaryForm((value) => !value)}
+      <Box className="app-couple-card">
+        <PersonChip
+          person={{
+            name: home.currentUser.display_name || home.currentUser.name,
+            avatar: home.currentUser.custom_avatar_url || home.currentUser.avatar_url,
+          }}
+          label="Mình"
+          onClick={home.saveAvatar}
+        />
+        <button
+          type="button"
+          className="app-heart-button"
+          aria-label="Sửa hồ sơ"
+          onClick={onEditProfile}
+        >
+          <Icon icon="zi-edit" />
+        </button>
+        <PersonChip
+          person={home.partner ? {
+            name: home.partner.display_name || home.partner.name,
+            avatar: home.partner.custom_avatar_url || home.partner.avatar_url,
+          } : undefined}
+          label="Người ấy"
+          emptyLabel="Mời người ấy"
+          onClick={home.partner ? undefined : onAddPartner}
         />
       </Box>
-      {showAnniversaryForm && (
-        <Box className="soft-card">
+
+      <button
+        type="button"
+        className="app-days-card app-days-button"
+        onClick={() => {
+          setStartDateDraft(coupleData.couple.start_date);
+          setShowDatePicker(true);
+        }}
+      >
+        <div className="app-days-number">{home.days.toLocaleString("vi-VN")}</div>
+        <Text className="app-days-label">days together</Text>
+      </button>
+
+      {showDatePicker && (
+        <div className="app-popup-backdrop" role="presentation">
+          <section className="app-popup" role="dialog" aria-modal="true">
+            <Text.Title size="small">Chọn lại ngày kỷ niệm</Text.Title>
+            <label className="native-field">
+              <span>Ngày bắt đầu</span>
+              <input
+                type="date"
+                value={startDateDraft}
+                onChange={(event) => setStartDateDraft(event.target.value)}
+              />
+            </label>
+            <div className="app-popup-actions">
+              <Button
+                variant="secondary"
+                onClick={() => setShowDatePicker(false)}
+              >
+                Huỷ
+              </Button>
+              <Button
+                disabled={!startDateDraft}
+                loading={profileLoading}
+                onClick={saveStartDate}
+              >
+                Lưu
+              </Button>
+            </div>
+          </section>
+        </div>
+      )}
+
+      <QuickActionGrid
+        onEditProfile={onEditProfile}
+        onAddPartner={onAddPartner}
+        onAddAnniversary={() => home.setShowAnniversaryForm((value) => !value)}
+        addPartnerLoading={addPartnerLoading}
+      />
+
+      {home.showAnniversaryForm && (
+        <Box className="app-panel">
           <AnniversaryForm
             loading={addAnniversaryLoading}
-            onAdd={addAnniversary}
+            onAdd={home.addAnniversary}
           />
         </Box>
       )}
-      <AnniversaryList anniversaries={anniversaries} />
 
-      {addPartnerLoading && (
-        <Text className="subtle center-text">Đang mở chia sẻ Zalo...</Text>
-      )}
-      {inviteFeedback && <Text className="subtle center-text">{inviteFeedback}</Text>}
-      {actionFeedback && <Text className="subtle center-text">{actionFeedback}</Text>}
+      <Box className="app-section-title">
+        <Text.Title size="small">Memory garden</Text.Title>
+        <button
+          type="button"
+          className="app-link-button"
+          onClick={() => home.setShowAnniversaryForm(true)}
+        >
+          View all
+        </button>
+      </Box>
+
+      <div className="app-event-grid">
+        <MilestoneCard
+          icon="zi-calendar"
+          title="Next anniversary"
+          label={home.nextAnniversary ? `Còn ${home.nextAnniversary.daysLeft} ngày` : "Chưa có lịch"}
+          value={home.nextAnniversary ? formatDate(home.nextAnniversary.date) : "Thêm ngay"}
+        />
+        <MilestoneCard
+          icon="zi-heart"
+          title="First trip"
+          label={`${anniversaries.length} memories`}
+          value={anniversaries[0]?.title ?? "Da Nang"}
+        />
+      </div>
+
+      <TimelineSection anniversaries={home.visibleAnniversaries} />
+      <MemoryChips />
+      <FeedbackPanel
+        mockMode={isMockMode}
+        inviteFeedback={inviteFeedback}
+        actionFeedback={home.actionFeedback}
+        addPartnerLoading={addPartnerLoading}
+        profileLoading={profileLoading}
+      />
     </Page>
   );
 }

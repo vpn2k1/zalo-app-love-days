@@ -1,5 +1,6 @@
 import { mockDb } from "@/services/mockDb";
 import { isMockMode, supabase } from "@/services/supabaseClient";
+import { mediaService } from "@/services/mediaService";
 import type { Anniversary } from "@/types/anniversary";
 import type { Couple, CoupleMember, CoupleWithMembers, SetupCoupleInput } from "@/types/couple";
 import type { AppUser } from "@/types/user";
@@ -53,12 +54,6 @@ export const coupleService = {
       return existingCouple;
     }
 
-    const { error: userError } = await supabase
-      .from("users")
-      .update({ display_name: input.displayName, updated_at: new Date().toISOString() })
-      .eq("id", user.id);
-    if (userError) throw userError;
-
     const { data: couple, error: coupleError } = await supabase
       .from("couples")
       .insert({
@@ -70,6 +65,24 @@ export const coupleService = {
       .select("*")
       .single();
     if (coupleError) throw coupleError;
+
+    const customAvatarUrl = await mediaService.uploadImagePath({
+      coupleId: couple.id,
+      fileName: `avatar-${user.id}`,
+      path: input.customAvatarUrl,
+      scope: "avatars",
+    });
+    const { data: updatedUser, error: userError } = await supabase
+      .from("users")
+      .update({
+        display_name: input.displayName,
+        custom_avatar_url: customAvatarUrl,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", user.id)
+      .select("*")
+      .single();
+    if (userError) throw userError;
 
     const { data: member, error: memberError } = await supabase
       .from("couple_members")
@@ -84,22 +97,29 @@ export const coupleService = {
     if (memberError) throw memberError;
 
     if (input.anniversaries.length > 0) {
+      const anniversaries = await Promise.all(
+        input.anniversaries.map(async (item, index) => ({
+          couple_id: couple.id,
+          title: item.title,
+          date: item.date,
+          repeat_type: item.repeat_type,
+          note: item.note,
+          image_url: await mediaService.uploadImagePath({
+            coupleId: couple.id,
+            fileName: `anniversary-${index + 1}-${item.title}`,
+            path: item.image_url,
+            scope: "anniversaries",
+          }),
+          created_by: user.id,
+        })),
+      );
       const { error: anniversaryError } = await supabase
         .from("anniversaries")
-        .insert(
-          input.anniversaries.map((item) => ({
-            couple_id: couple.id,
-            title: item.title,
-            date: item.date,
-            repeat_type: item.repeat_type,
-            note: item.note,
-            created_by: user.id,
-          })),
-        );
+        .insert(anniversaries);
       if (anniversaryError) throw anniversaryError;
     }
 
-    return { couple, members: [member as CoupleMember] };
+    return { couple, members: [{ ...(member as CoupleMember), user: updatedUser }] };
   },
 
   async updateCoupleStartDate(coupleId: string, startDate: string): Promise<Couple> {
@@ -116,6 +136,37 @@ export const coupleService = {
 
     if (error) throw error;
     return data as Couple;
+  },
+
+  async leaveCouple(coupleId: string): Promise<void> {
+    if (isMockMode || !supabase) {
+      mockDb.leaveCouple(coupleId);
+      return;
+    }
+
+    const { error: inviteError } = await supabase
+      .from("partner_invites")
+      .delete()
+      .eq("couple_id", coupleId);
+    if (inviteError) throw inviteError;
+
+    const { error: anniversaryError } = await supabase
+      .from("anniversaries")
+      .delete()
+      .eq("couple_id", coupleId);
+    if (anniversaryError) throw anniversaryError;
+
+    const { error: memberError } = await supabase
+      .from("couple_members")
+      .delete()
+      .eq("couple_id", coupleId);
+    if (memberError) throw memberError;
+
+    const { error: coupleError } = await supabase
+      .from("couples")
+      .delete()
+      .eq("id", coupleId);
+    if (coupleError) throw coupleError;
   },
 
   async getAnniversaries(coupleId: string): Promise<Anniversary[]> {

@@ -31,10 +31,12 @@ export type CoupleWithMembers = {
 export type SetupCoupleInput = {
   startDate: string;
   displayName: string;
+  customAvatarUrl: string | null;
   anniversaries: Array<{
     title: string;
     date: string;
     repeat_type: "yearly" | "none";
     note?: string;
+    image_url?: string;
   }>;
 };

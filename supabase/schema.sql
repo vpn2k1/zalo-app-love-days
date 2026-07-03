@@ -38,9 +38,17 @@ create table if not exists public.anniversaries (
   date date not null,
   repeat_type text not null default 'yearly' check (repeat_type in ('yearly', 'none')),
   note text,
+  image_url text,
   created_by uuid not null references public.users(id) on delete cascade,
   created_at timestamptz not null default now()
 );
+
+alter table public.anniversaries
+add column if not exists image_url text;
+
+insert into storage.buckets (id, name, public)
+values ('love-days-media', 'love-days-media', true)
+on conflict (id) do update set public = true;
 
 create table if not exists public.partner_invites (
   id uuid primary key default gen_random_uuid(),
@@ -103,3 +111,15 @@ for all using (true) with check (true);
 
 create policy "anon invites access" on public.partner_invites
 for all using (true) with check (true);
+
+drop policy if exists "anon love days media read" on storage.objects;
+create policy "anon love days media read" on storage.objects
+for select using (bucket_id = 'love-days-media');
+
+drop policy if exists "anon love days media insert" on storage.objects;
+create policy "anon love days media insert" on storage.objects
+for insert with check (bucket_id = 'love-days-media');
+
+drop policy if exists "anon love days media update" on storage.objects;
+create policy "anon love days media update" on storage.objects
+for update using (bucket_id = 'love-days-media') with check (bucket_id = 'love-days-media');

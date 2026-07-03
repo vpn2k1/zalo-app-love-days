@@ -42,6 +42,10 @@ Do not call Supabase or Zalo SDK directly from presentational components.
 - Keep props typed near the component unless shared.
 - Reuse `zmp-ui` components and existing form controls.
 - Keep Vietnamese user-facing copy concise and natural.
+- Keep changed source files under 200 lines.
+- Extract large page sections into feature-local child components before promoting them to shared components.
+- Move `useQuery`, `useMutation`, cache updates, permission flows, and other orchestration into feature-local hooks when they make a page or component bulky.
+- Keep UI components presentational when practical; custom hooks may orchestrate services, but direct Supabase/Zalo calls stay in `src/services/`.
 
 ## Step 4 - Verify
 
@@ -52,3 +56,5 @@ npm run typecheck
 ```
 
 Run `npm run build` too when touching Vite config, env handling, assets, `src/app.ts`, `src/index.html`, or ZMP packaging behavior.
+
+Before finishing, check changed source files that might approach the size limit with `wc -l`; split any non-exempt file over 200 lines.

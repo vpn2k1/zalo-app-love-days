@@ -12,14 +12,15 @@ The app requests Zalo user permission, stores or mocks user/couple data, lets a 
 
 1. **Follow the React app structure.** Put screens in `src/pages/`, reusable UI in `src/components/`, form controls in `src/components/forms/`, service integrations in `src/services/`, domain types in `src/types/`, and pure helpers in `src/utils/`.
 2. **Keep orchestration focused.** `src/love-days-app.tsx` coordinates app view state, React Query, and mutations. Extract UI into pages/components and extract service logic into `src/services/` when it grows.
-3. **Use existing data layers.** Use TanStack Query for async server/mock data, React Hook Form for forms, and the existing service modules for Supabase/Zalo access. Do not bypass services from components.
-4. **Preserve mock mode.** When Supabase env vars are missing, the app should keep working through `src/services/mockDb.ts`.
-5. **Protect secrets.** Frontend env vars must be `VITE_*`. Never put Zalo app secrets, Supabase service-role keys, or backend secrets in client code.
-6. **Imports.** Use the existing TypeScript/React style: external packages first, then `@/` aliases, then relative imports if needed. Remove unused imports.
-7. **Styling.** Prefer existing `zmp-ui` primitives, Tailwind classes, and `src/css/app.scss`. Keep mobile Mini App constraints in mind, including safe areas and small screens.
-8. **Types.** Reuse domain types from `src/types/`. Avoid duplicating service response shapes inside pages/components.
-9. **Hands-off files.** Ask before changing dependency manifests, Vite/ZMP config, TypeScript config, global CSS setup, or Supabase schema unless the task directly requires it.
-10. **Verification.** For code changes, run `npm run typecheck`. Run `npm run build` when changing bundling, env handling, assets, or ZMP deployment behavior.
+3. **Keep files small.** Keep source files under 200 lines. Split large pages into child components and move bulky query/mutation orchestration into feature-local hooks.
+4. **Use existing data layers.** Use TanStack Query for async server/mock data, React Hook Form for forms, and the existing service modules for Supabase/Zalo access. Do not bypass services from components.
+5. **Preserve mock mode.** When Supabase env vars are missing, the app should keep working through `src/services/mockDb.ts`.
+6. **Protect secrets.** Frontend env vars must be `VITE_*`. Never put Zalo app secrets, Supabase service-role keys, or backend secrets in client code.
+7. **Imports.** Use the existing TypeScript/React style: external packages first, then `@/` aliases, then relative imports if needed. Remove unused imports.
+8. **Styling.** Prefer existing `zmp-ui` primitives, Tailwind classes, and `src/css/app.scss`. Keep mobile Mini App constraints in mind, including safe areas and small screens.
+9. **Types.** Reuse domain types from `src/types/`. Avoid duplicating service response shapes inside pages/components.
+10. **Hands-off files.** Ask before changing dependency manifests, Vite/ZMP config, TypeScript config, global CSS setup, or Supabase schema unless the task directly requires it.
+11. **Verification.** For code changes, run `npm run typecheck`. Run `npm run build` when changing bundling, env handling, assets, or ZMP deployment behavior.
 
 ## Architecture Quick Map
 
@@ -47,8 +48,9 @@ When adding or changing app behavior:
 2. Keep Zalo/Supabase side effects in `src/services/`.
 3. Keep async server/mock state in TanStack Query when it affects UI freshness.
 4. Keep local-only UI state inside the owning component.
-5. Update domain types in `src/types/` when service contracts change.
-6. Verify with `npm run typecheck`.
+5. Extract child components and feature-local hooks before a source file exceeds 200 lines.
+6. Update domain types in `src/types/` when service contracts change.
+7. Verify with `npm run typecheck`.
 
 ## Sub-Agent Catalog
 
@@ -82,6 +84,7 @@ Hard constraints live in `.agents/rules/`:
 - `project-structure`
 - `state-and-routing`
 - `react-file-structure`
+- `file-size-and-modules`
 - `networking-and-data`
 - `hands-off`
 - `trailing-commas`
@@ -95,6 +98,7 @@ Reference facts live in `.agents/knowledge/`:
 
 - `project-overview`
 - `architecture`
+- `app-logic-and-flows`
 - `feature-build-guide`
 - `networking-pipeline`
 - `base-classes`
