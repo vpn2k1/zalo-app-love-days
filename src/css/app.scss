@@ -1,12 +1,58 @@
 :root {
-  --love-pink: #f58ab5;
-  --love-pink-soft: #ffe7f0;
-  --love-purple: #a78bfa;
-  --love-purple-soft: #f0eaff;
-  --love-ink: #422036;
-  --love-muted: #7f6877;
-  --love-border: rgba(191, 128, 165, 0.22);
-  --love-card: rgba(255, 255, 255, 0.88);
+  color-scheme: light;
+  --love-bg: #fff8f4;
+  --love-bg-2: #eef7f5;
+  --love-bg-3: #f6efff;
+  --love-ink: #2e2530;
+  --love-heading: #20171f;
+  --love-muted: #716773;
+  --love-soft: #fff2f0;
+  --love-soft-2: #e9f7f4;
+  --love-card: rgba(255, 255, 255, 0.86);
+  --love-card-strong: rgba(255, 255, 255, 0.96);
+  --love-card-frosted: rgba(255, 255, 255, 0.88);
+  --love-counter-tint: rgba(255, 242, 240, 0.72);
+  --love-next-tint: rgba(233, 247, 244, 0.5);
+  --love-field: rgba(255, 255, 255, 0.92);
+  --love-border: rgba(134, 97, 124, 0.18);
+  --love-border-strong: rgba(134, 97, 124, 0.28);
+  --love-primary: #e94f82;
+  --love-primary-strong: #c92f67;
+  --love-coral: #ff8a65;
+  --love-teal: #20a995;
+  --love-violet: #8b6ff2;
+  --love-danger: #c33159;
+  --love-shadow: 0 18px 44px rgba(84, 49, 72, 0.12);
+  --love-shadow-soft: 0 10px 28px rgba(84, 49, 72, 0.1);
+}
+
+[zaui-theme="dark"],
+.zaui-theme-dark {
+  color-scheme: dark;
+  --love-bg: #151018;
+  --love-bg-2: #10211f;
+  --love-bg-3: #201735;
+  --love-ink: #f5edf3;
+  --love-heading: #fff9fd;
+  --love-muted: #c8b8c5;
+  --love-soft: rgba(233, 79, 130, 0.16);
+  --love-soft-2: rgba(32, 169, 149, 0.14);
+  --love-card: rgba(34, 26, 38, 0.8);
+  --love-card-strong: rgba(39, 31, 44, 0.94);
+  --love-card-frosted: rgba(39, 31, 44, 0.88);
+  --love-counter-tint: rgba(233, 79, 130, 0.14);
+  --love-next-tint: rgba(32, 169, 149, 0.16);
+  --love-field: rgba(255, 255, 255, 0.08);
+  --love-border: rgba(255, 255, 255, 0.12);
+  --love-border-strong: rgba(255, 255, 255, 0.2);
+  --love-primary: #ff6f9d;
+  --love-primary-strong: #ff8ab0;
+  --love-coral: #ff9d7a;
+  --love-teal: #54d6c5;
+  --love-violet: #ad95ff;
+  --love-danger: #ff7d98;
+  --love-shadow: 0 20px 52px rgba(0, 0, 0, 0.36);
+  --love-shadow-soft: 0 12px 32px rgba(0, 0, 0, 0.28);
 }
 
 * {
@@ -17,16 +63,85 @@ body {
   margin: 0;
   color: var(--love-ink);
   background:
-    radial-gradient(circle at 18% 0%, rgba(255, 214, 231, 0.95), transparent 34%),
-    linear-gradient(155deg, #fff8fb 0%, #f5efff 48%, #ffffff 100%);
+    radial-gradient(circle at 18% -8%, rgba(255, 138, 101, 0.24), transparent 30%),
+    radial-gradient(circle at 96% 0%, rgba(32, 169, 149, 0.18), transparent 28%),
+    linear-gradient(155deg, var(--love-bg) 0%, var(--love-bg-2) 52%, var(--love-bg-3) 100%);
+  font-feature-settings: "kern";
 }
 
 .love-page {
+  position: relative;
   min-height: 100vh;
+  overflow: hidden;
   padding: 18px 16px 108px;
+  color: var(--love-ink);
   background:
-    radial-gradient(circle at 12% 10%, rgba(255, 221, 234, 0.75), transparent 24%),
-    linear-gradient(160deg, #fff7fb 0%, #f8f1ff 56%, #ffffff 100%);
+    radial-gradient(circle at 12% 8%, rgba(233, 79, 130, 0.18), transparent 25%),
+    radial-gradient(circle at 90% 22%, rgba(32, 169, 149, 0.14), transparent 28%),
+    linear-gradient(160deg, var(--love-bg) 0%, var(--love-bg-2) 56%, var(--love-bg-3) 100%);
+}
+
+.love-page::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.55), transparent 52%);
+}
+
+.love-page > * {
+  position: relative;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.icon-button,
+.avatar-button {
+  display: inline-grid;
+  place-items: center;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+}
+
+.icon-button {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  border: 1px solid var(--love-border);
+  border-radius: 12px;
+  color: var(--love-primary-strong);
+  background: var(--love-card-strong);
+}
+
+.mini-edit-button {
+  width: 28px;
+  height: 28px;
+  flex-basis: 28px;
+  border-radius: 10px;
+}
+
+.avatar-button {
+  padding: 0;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.avatar-button:focus-visible,
+.icon-button:focus-visible {
+  outline: 3px solid rgba(233, 79, 130, 0.2);
 }
 
 .center-page,
@@ -38,6 +153,7 @@ body {
 
 .boot-screen {
   min-height: 100vh;
+  background: var(--love-bg);
 }
 
 .permission-card,
@@ -45,15 +161,15 @@ body {
 .main-love-card,
 .user-side-card {
   border: 1px solid var(--love-border);
-  box-shadow: 0 18px 48px rgba(154, 82, 130, 0.12);
-  backdrop-filter: blur(16px);
+  box-shadow: var(--love-shadow);
+  backdrop-filter: blur(18px);
 }
 
 .permission-card {
-  width: min(100%, 360px);
-  padding: 28px 22px;
-  border-radius: 28px;
-  background: var(--love-card);
+  width: min(100%, 368px);
+  padding: 30px 22px 24px;
+  border-radius: 26px;
+  background: var(--love-card-strong);
   text-align: center;
 }
 
@@ -62,15 +178,19 @@ body {
   display: grid;
   place-items: center;
   color: #ffffff;
-  background: linear-gradient(145deg, var(--love-pink), var(--love-purple));
+  background:
+    radial-gradient(circle at 30% 26%, rgba(255, 255, 255, 0.5), transparent 20%),
+    linear-gradient(145deg, var(--love-primary), var(--love-coral) 50%, var(--love-violet));
 }
 
 .heart-mark {
   width: 72px;
   height: 72px;
   margin: 0 auto 14px;
-  border-radius: 50%;
+  border-radius: 22px;
   font-size: 42px;
+  box-shadow: 0 14px 30px rgba(233, 79, 130, 0.28);
+  transform: rotate(-8deg);
   animation: heartbeat 2.3s ease-in-out infinite;
 }
 
@@ -84,10 +204,15 @@ body {
   padding: 10px 4px 18px;
 }
 
+.page-header .zaui-text-title,
+.home-topbar .zaui-text-title {
+  color: var(--love-heading);
+}
+
 .overline {
-  color: #c45683;
+  color: var(--love-primary-strong);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0;
   text-transform: uppercase;
 }
@@ -101,7 +226,7 @@ body {
 .soft-card {
   margin-bottom: 14px;
   padding: 16px;
-  border-radius: 24px;
+  border-radius: 22px;
   background: var(--love-card);
 }
 
@@ -115,19 +240,35 @@ body {
   gap: 8px;
   color: var(--love-muted);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
+}
+
+.native-field input,
+.native-field select,
+.zaui-input,
+.zaui-textarea {
+  width: 100%;
+  border: 1px solid var(--love-border);
+  color: var(--love-ink);
+  background: var(--love-field);
+  font: inherit;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24);
 }
 
 .native-field input,
 .native-field select {
-  width: 100%;
-  min-height: 46px;
-  padding: 0 12px;
-  border: 1px solid rgba(158, 111, 148, 0.22);
-  border-radius: 14px;
-  color: var(--love-ink);
-  background: #ffffff;
-  font: inherit;
+  min-height: 48px;
+  padding: 0 13px;
+  border-radius: 16px;
+}
+
+.native-field input:focus,
+.native-field select:focus,
+.zaui-input:focus,
+.zaui-textarea:focus {
+  border-color: rgba(233, 79, 130, 0.52);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(233, 79, 130, 0.12);
 }
 
 .anniversary-form {
@@ -138,6 +279,11 @@ body {
 .form-label,
 .section-title-row {
   margin-bottom: 8px;
+}
+
+.form-label {
+  color: var(--love-heading);
+  font-weight: 800;
 }
 
 .anniversary-list {
@@ -155,48 +301,63 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 14px;
-  border: 1px solid rgba(190, 128, 166, 0.18);
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.72);
+  min-height: 78px;
+  padding: 13px 14px;
+  border: 1px solid var(--love-border);
+  border-radius: 18px;
+  background: var(--love-card-strong);
+  box-shadow: var(--love-shadow-soft);
 }
 
 .anniversary-title,
 .side-name {
-  font-weight: 700;
+  color: var(--love-heading);
+  font-weight: 800;
 }
 
 .anniversary-note {
   margin-top: 5px;
-  color: #8d5572;
+  color: var(--love-primary-strong);
 }
 
 .heart-dot {
-  flex: 0 0 auto;
-  color: var(--love-pink);
-  font-size: 20px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  border-radius: 14px;
+  color: var(--love-primary);
+  background: var(--love-soft);
+  font-size: 18px;
 }
 
 .empty-state {
-  padding: 16px;
-  border: 1px dashed rgba(183, 113, 156, 0.32);
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.54);
+  padding: 18px 16px;
+  border: 1px dashed var(--love-border-strong);
+  border-radius: 18px;
+  color: var(--love-muted);
+  background: rgba(255, 255, 255, 0.42);
   text-align: center;
+}
+
+[zaui-theme="dark"] .empty-state,
+.zaui-theme-dark .empty-state {
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .bottom-action {
   position: fixed;
   right: 16px;
-  bottom: 16px;
+  bottom: max(16px, env(safe-area-inset-bottom));
   left: 16px;
   z-index: 10;
   padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.84);
-  box-shadow: 0 12px 36px rgba(117, 63, 104, 0.16);
-  backdrop-filter: blur(18px);
+  border: 1px solid var(--love-border);
+  border-radius: 22px;
+  background: var(--love-card-frosted);
+  box-shadow: var(--love-shadow);
+  backdrop-filter: blur(20px);
 }
 
 .bottom-action.dual {
@@ -205,15 +366,48 @@ body {
   gap: 10px;
 }
 
+.quick-edit-card {
+  display: grid;
+  gap: 12px;
+}
+
+.inline-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
 .home-hero {
   position: relative;
+  overflow: hidden;
   margin: -18px -16px 16px;
   padding: 22px 16px 24px;
-  border-radius: 0 0 32px 32px;
+  border-radius: 0 0 30px 30px;
   background:
-    linear-gradient(135deg, rgba(255, 232, 241, 0.95), rgba(241, 232, 255, 0.95)),
+    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.64), transparent 18%),
+    radial-gradient(circle at 86% 4%, rgba(32, 169, 149, 0.22), transparent 26%),
+    linear-gradient(135deg, rgba(255, 239, 235, 0.95), rgba(238, 247, 245, 0.95) 48%, rgba(246, 239, 255, 0.95)),
     #ffffff;
-  box-shadow: 0 18px 46px rgba(155, 81, 132, 0.14);
+  box-shadow: var(--love-shadow);
+}
+
+[zaui-theme="dark"] .home-hero,
+.zaui-theme-dark .home-hero {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.1), transparent 18%),
+    radial-gradient(circle at 86% 4%, rgba(32, 169, 149, 0.18), transparent 26%),
+    linear-gradient(135deg, rgba(50, 32, 43, 0.96), rgba(25, 46, 43, 0.94) 52%, rgba(35, 27, 55, 0.96));
+}
+
+.home-hero::after {
+  position: absolute;
+  right: -46px;
+  bottom: -64px;
+  width: 170px;
+  height: 170px;
+  border: 1px solid rgba(255, 255, 255, 0.46);
+  border-radius: 50%;
+  content: "";
 }
 
 .home-topbar,
@@ -235,13 +429,18 @@ body {
   min-height: 30px;
   padding: 0 12px;
   border-radius: 999px;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .mock-badge {
   margin-bottom: 12px;
-  color: #7c3d5d;
-  background: rgba(255, 255, 255, 0.7);
+  color: var(--love-primary-strong);
+  background: rgba(255, 255, 255, 0.66);
+}
+
+[zaui-theme="dark"] .mock-badge,
+.zaui-theme-dark .mock-badge {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .couple-row {
@@ -250,20 +449,40 @@ body {
 }
 
 .user-side-card {
-  width: 40%;
-  min-height: 154px;
+  width: min(40%, 168px);
+  min-height: 158px;
   display: grid;
   place-items: center;
   gap: 7px;
-  padding: 12px 8px;
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.68);
+  padding: 13px 8px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.66);
   text-align: center;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+}
+
+[zaui-theme="dark"] .user-side-card,
+.zaui-theme-dark .user-side-card {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .side-name {
   max-width: 100%;
   overflow-wrap: anywhere;
+}
+
+.side-name-row {
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.side-name-row .side-name {
+  min-width: 0;
 }
 
 .side-name.muted,
@@ -273,6 +492,7 @@ body {
 
 .side-label {
   font-size: 12px;
+  font-weight: 700;
 }
 
 .avatar-placeholder {
@@ -280,61 +500,114 @@ body {
   place-items: center;
   width: 56px;
   height: 56px;
-  border-radius: 50%;
-  color: #b0608a;
-  background: var(--love-pink-soft);
-  font-weight: 800;
+  border: 1px solid var(--love-border);
+  border-radius: 20px;
+  color: var(--love-primary-strong);
+  background: var(--love-soft);
+  font-weight: 900;
 }
 
 .soft-button {
-  background: var(--love-pink-soft);
-  color: #9d3f6c;
+  color: var(--love-primary-strong);
+  background: var(--love-soft);
 }
 
 .center-heart {
   width: 48px;
   height: 48px;
   flex: 0 0 48px;
-  border-radius: 50%;
-  font-size: 30px;
-  box-shadow: 0 12px 26px rgba(219, 93, 143, 0.22);
+  border-radius: 18px;
+  font-size: 28px;
+  box-shadow: 0 14px 28px rgba(233, 79, 130, 0.24);
+  transform: rotate(-8deg);
 }
 
 .main-love-card {
+  overflow: hidden;
   margin-bottom: 14px;
-  padding: 22px 18px;
-  border-radius: 30px;
-  background: linear-gradient(160deg, #ffffff, #fff0f6);
+  padding: 22px 18px 18px;
+  border-radius: 26px;
+  background:
+    linear-gradient(160deg, var(--love-card-strong), var(--love-counter-tint)),
+    var(--love-card-strong);
   text-align: center;
 }
 
 .days-number {
   margin-top: 2px;
-  color: #d84f86;
-  font-size: clamp(56px, 20vw, 86px);
+  color: var(--love-primary-strong);
+  font-size: clamp(58px, 20vw, 88px);
   font-weight: 900;
   line-height: 0.95;
 }
 
 .days-label {
   margin-bottom: 8px;
-  color: #9d3f6c;
-  font-weight: 800;
+  color: var(--love-primary-strong);
+  font-weight: 900;
+}
+
+.counter-date-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.counter-date-row .subtle {
+  min-width: 0;
+}
+
+.love-stat-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.love-stat {
+  padding: 11px 10px;
+  border: 1px solid var(--love-border);
+  border-radius: 18px;
+  background: var(--love-card-strong);
+}
+
+.love-stat strong {
+  display: block;
+  color: var(--love-heading);
+  font-size: 18px;
+}
+
+.love-stat span {
+  color: var(--love-muted);
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .next-card {
   display: grid;
   gap: 8px;
+  background:
+    linear-gradient(135deg, var(--love-next-tint), transparent 72%),
+    var(--love-card);
 }
 
 .countdown-pill {
   width: fit-content;
-  color: #73305c;
-  background: linear-gradient(135deg, var(--love-pink-soft), var(--love-purple-soft));
+  color: var(--love-heading);
+  background: linear-gradient(135deg, var(--love-soft), var(--love-soft-2));
 }
 
 .section-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   padding: 10px 4px 0;
+}
+
+.section-title-row .zaui-text-title {
+  color: var(--love-heading);
 }
 
 .center-text {
@@ -343,32 +616,55 @@ body {
 
 .error-text {
   margin: 0 0 14px;
-  color: #c33159;
+  color: var(--love-danger);
 }
 
 .zaui-btn {
+  min-height: 44px;
   border-radius: 16px;
+  font-weight: 800;
 }
 
 .zaui-btn-primary {
-  background: linear-gradient(135deg, #ee6fa3, #9b7bf3);
+  background: linear-gradient(135deg, var(--love-primary), var(--love-coral) 58%, var(--love-violet));
+  box-shadow: 0 12px 24px rgba(233, 79, 130, 0.22);
+}
+
+.zaui-btn-secondary {
+  border: 1px solid var(--love-border);
+  color: var(--love-primary-strong);
+  background: var(--love-card-strong);
+}
+
+[zaui-theme="dark"] .zaui-btn-secondary,
+.zaui-theme-dark .zaui-btn-secondary {
+  color: var(--love-ink);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+@media (min-width: 480px) {
+  .love-page {
+    max-width: 480px;
+    margin: 0 auto;
+    box-shadow: 0 0 0 1px var(--love-border);
+  }
 }
 
 @keyframes heartbeat {
   0%,
   100% {
-    transform: scale(1);
+    transform: rotate(-8deg) scale(1);
   }
 
   14% {
-    transform: scale(1.08);
+    transform: rotate(-8deg) scale(1.07);
   }
 
   28% {
-    transform: scale(0.98);
+    transform: rotate(-8deg) scale(0.98);
   }
 
   42% {
-    transform: scale(1.05);
+    transform: rotate(-8deg) scale(1.04);
   }
 }

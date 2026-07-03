@@ -60,6 +60,8 @@ create index if not exists couple_members_user_id_idx on public.couple_members(u
 create index if not exists couple_members_couple_id_idx on public.couple_members(couple_id);
 create index if not exists anniversaries_couple_id_idx on public.anniversaries(couple_id);
 create index if not exists partner_invites_invite_code_idx on public.partner_invites(invite_code);
+create unique index if not exists couple_members_couple_side_unique_idx
+on public.couple_members(couple_id, side);
 
 create or replace function public.set_updated_at()
 returns trigger as $$

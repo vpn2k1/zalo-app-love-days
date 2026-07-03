@@ -1,4 +1,5 @@
-import { Avatar, Box, Button, Text } from "zmp-ui";
+import type { MouseEvent } from "react";
+import { Avatar, Box, Button, Icon, Text } from "zmp-ui";
 import type { AppUser } from "@/types/user";
 
 type Props = {
@@ -6,6 +7,8 @@ type Props = {
   label: string;
   emptyLabel?: string;
   onEmptyAction?: () => void;
+  onAvatarClick?: () => void;
+  onEditName?: () => void;
 };
 
 const getDisplayName = (user?: AppUser) =>
@@ -13,15 +16,62 @@ const getDisplayName = (user?: AppUser) =>
 
 const getAvatar = (user?: AppUser) => user?.custom_avatar_url || user?.avatar_url;
 
-export function UserSideCard({ user, label, emptyLabel, onEmptyAction }: Props) {
+export function UserSideCard({
+  user,
+  label,
+  emptyLabel,
+  onEmptyAction,
+  onAvatarClick,
+  onEditName,
+}: Props) {
+  const handleEmptyAction = (event?: MouseEvent) => {
+    event?.stopPropagation();
+    onEmptyAction?.();
+  };
+  const avatar = (
+    <Avatar size={56} src={getAvatar(user) || undefined}>
+      {getDisplayName(user).slice(0, 1).toUpperCase()}
+    </Avatar>
+  );
+
   return (
-    <Box className="user-side-card">
+    <Box
+      className="user-side-card"
+      onClick={() => {
+        if (!user && onEmptyAction) {
+          handleEmptyAction();
+        }
+      }}
+      role={!user && onEmptyAction ? "button" : undefined}
+      tabIndex={!user && onEmptyAction ? 0 : undefined}
+    >
       {user ? (
         <>
-          <Avatar size={56} src={getAvatar(user) || undefined}>
-            {getDisplayName(user).slice(0, 1).toUpperCase()}
-          </Avatar>
-          <Text className="side-name">{getDisplayName(user)}</Text>
+          {onAvatarClick ? (
+            <button
+              type="button"
+              className="avatar-button"
+              aria-label="Đổi ảnh đại diện"
+              onClick={onAvatarClick}
+            >
+              {avatar}
+            </button>
+          ) : (
+            avatar
+          )}
+          <div className="side-name-row">
+            <Text className="side-name">{getDisplayName(user)}</Text>
+            {onEditName && (
+              <button
+                type="button"
+                className="icon-button mini-edit-button"
+                aria-label="Sửa tên"
+                onClick={onEditName}
+              >
+                <Icon icon="zi-edit" />
+              </button>
+            )}
+          </div>
           <Text className="side-label">{label}</Text>
         </>
       ) : (
@@ -30,7 +80,11 @@ export function UserSideCard({ user, label, emptyLabel, onEmptyAction }: Props) 
           <Text className="side-name muted">Chưa kết nối</Text>
           <Text className="side-label">{label}</Text>
           {onEmptyAction && (
-            <Button size="small" className="soft-button" onClick={onEmptyAction}>
+            <Button
+              size="small"
+              className="soft-button"
+              onClick={(event) => handleEmptyAction(event)}
+            >
               {emptyLabel || "Thêm"}
             </Button>
           )}

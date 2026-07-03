@@ -4,32 +4,40 @@ import type { Anniversary } from "@/types/anniversary";
 import type { Couple, CoupleMember, CoupleWithMembers, SetupCoupleInput } from "@/types/couple";
 import type { AppUser } from "@/types/user";
 
+const getSupabaseCoupleByUser = async (
+  userId: string,
+): Promise<CoupleWithMembers | null> => {
+  if (!supabase) return null;
+
+  const { data: memberships, error } = await supabase
+    .from("couple_members")
+    .select("*, couple:couples(*), user:users(*)")
+    .eq("user_id", userId)
+    .limit(1);
+
+  if (error) throw error;
+  const first = memberships?.[0] as
+    | (CoupleMember & { couple: Couple })
+    | undefined;
+  if (!first) return null;
+
+  const { data: members, error: membersError } = await supabase
+    .from("couple_members")
+    .select("*, user:users(*)")
+    .eq("couple_id", first.couple_id)
+    .order("side", { ascending: true });
+
+  if (membersError) throw membersError;
+  return { couple: first.couple, members: (members ?? []) as CoupleMember[] };
+};
+
 export const coupleService = {
   async getCoupleByUser(userId: string): Promise<CoupleWithMembers | null> {
     if (isMockMode || !supabase) {
       return mockDb.getCoupleByUser(userId);
     }
 
-    const { data: memberships, error } = await supabase
-      .from("couple_members")
-      .select("*, couple:couples(*), user:users(*)")
-      .eq("user_id", userId)
-      .limit(1);
-
-    if (error) throw error;
-    const first = memberships?.[0] as
-      | (CoupleMember & { couple: Couple })
-      | undefined;
-    if (!first) return null;
-
-    const { data: members, error: membersError } = await supabase
-      .from("couple_members")
-      .select("*, user:users(*)")
-      .eq("couple_id", first.couple_id)
-      .order("side", { ascending: true });
-
-    if (membersError) throw membersError;
-    return { couple: first.couple, members: (members ?? []) as CoupleMember[] };
+    return getSupabaseCoupleByUser(userId);
   },
 
   async createCouple(
@@ -38,6 +46,11 @@ export const coupleService = {
   ): Promise<CoupleWithMembers> {
     if (isMockMode || !supabase) {
       return mockDb.createCouple(user, input);
+    }
+
+    const existingCouple = await getSupabaseCoupleByUser(user.id);
+    if (existingCouple) {
+      return existingCouple;
     }
 
     const { error: userError } = await supabase
@@ -87,6 +100,22 @@ export const coupleService = {
     }
 
     return { couple, members: [member as CoupleMember] };
+  },
+
+  async updateCoupleStartDate(coupleId: string, startDate: string): Promise<Couple> {
+    if (isMockMode || !supabase) {
+      return mockDb.updateCoupleStartDate(coupleId, startDate);
+    }
+
+    const { data, error } = await supabase
+      .from("couples")
+      .update({ start_date: startDate, updated_at: new Date().toISOString() })
+      .eq("id", coupleId)
+      .select("*")
+      .single();
+
+    if (error) throw error;
+    return data as Couple;
   },
 
   async getAnniversaries(coupleId: string): Promise<Anniversary[]> {

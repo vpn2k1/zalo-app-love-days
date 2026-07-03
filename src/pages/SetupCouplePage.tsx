@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { Box, Button, Input, Page, Text } from "zmp-ui";
+import { useFieldArray, useForm } from "react-hook-form";
+import { Box, Button, Page, Text } from "zmp-ui";
 import { AnniversaryForm } from "@/components/AnniversaryForm";
 import { AnniversaryList } from "@/components/AnniversaryList";
+import { AppDatePicker, AppTextInput } from "@/components/forms";
 import type { AnniversaryDraft } from "@/types/anniversary";
 import type { SetupCoupleInput } from "@/types/couple";
 import type { AppUser } from "@/types/user";
@@ -13,16 +14,30 @@ type Props = {
   onCreate: (input: SetupCoupleInput) => Promise<void>;
 };
 
-export function SetupCouplePage({ user, loading, onCreate }: Props) {
-  const [startDate, setStartDate] = useState(todayDateString());
-  const [displayName, setDisplayName] = useState(user.display_name || user.name);
-  const [anniversaries, setAnniversaries] = useState<AnniversaryDraft[]>([]);
+type SetupFormValues = {
+  startDate: string;
+  displayName: string;
+  anniversaries: AnniversaryDraft[];
+};
 
-  const submit = () =>
+export function SetupCouplePage({ user, loading, onCreate }: Props) {
+  const { control, handleSubmit } = useForm<SetupFormValues>({
+    defaultValues: {
+      startDate: todayDateString(),
+      displayName: user.display_name || user.name,
+      anniversaries: [],
+    },
+  });
+  const { append, fields } = useFieldArray({
+    control,
+    name: "anniversaries",
+  });
+
+  const submit = (values: SetupFormValues) =>
     onCreate({
-      startDate,
-      displayName: displayName.trim() || user.name,
-      anniversaries,
+      startDate: values.startDate,
+      displayName: values.displayName.trim() || user.name,
+      anniversaries: values.anniversaries,
     });
 
   return (
@@ -36,30 +51,26 @@ export function SetupCouplePage({ user, loading, onCreate }: Props) {
       </Box>
 
       <Box className="soft-card form-stack">
-        <label className="native-field">
-          <span>Ngày bắt đầu yêu</span>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(event) => setStartDate(event.target.value)}
-          />
-        </label>
-        <Input
+        <AppDatePicker
+          control={control}
+          name="startDate"
+          label="Ngày bắt đầu yêu"
+          required
+        />
+        <AppTextInput
+          control={control}
+          name="displayName"
           label="Tên hiển thị của mình"
-          value={displayName}
-          onChange={(event) => setDisplayName(event.target.value)}
         />
       </Box>
 
       <Box className="soft-card">
-        <AnniversaryForm
-          onAdd={(draft) => setAnniversaries((current) => [...current, draft])}
-        />
-        <AnniversaryList anniversaries={anniversaries} />
+        <AnniversaryForm onAdd={(draft) => append(draft)} />
+        <AnniversaryList anniversaries={fields} />
       </Box>
 
       <Box className="bottom-action">
-        <Button fullWidth loading={loading} onClick={submit}>
+        <Button fullWidth loading={loading} onClick={handleSubmit(submit)}>
           Tạo Love Days
         </Button>
       </Box>

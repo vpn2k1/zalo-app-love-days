@@ -1,6 +1,6 @@
 # Love Days
 
-Zalo Mini App đếm ngày yêu nhau cho cặp đôi, xây bằng React, TypeScript, `zmp-sdk`, `zmp-ui` và Supabase.
+Zalo Mini App đếm ngày yêu nhau cho cặp đôi, xây bằng React, TypeScript, `zmp-sdk`, `zmp-ui`, Supabase, TanStack Query và React Hook Form.
 
 ## Tính năng
 
@@ -11,6 +11,7 @@ Zalo Mini App đếm ngày yêu nhau cho cặp đôi, xây bằng React, TypeScr
 - Tạo invite code, mở `openShareSheet` để mời đối tác qua Zalo.
 - Nhận invite bằng query `?inviteCode=...`, kiểm tra hiệu lực và thêm partner.
 - Mock mode tự bật khi thiếu Supabase env, lưu dữ liệu trong `localStorage`.
+- Async state dùng TanStack Query, form state dùng React Hook Form.
 
 ## Cài đặt
 
@@ -18,7 +19,7 @@ Zalo Mini App đếm ngày yêu nhau cho cặp đôi, xây bằng React, TypeScr
 npm install
 ```
 
-Tạo file `.env` nếu dùng Supabase:
+File `.env.example` có mẫu cấu hình. Trong `.env`, điền hai biến này nếu dùng Supabase:
 
 ```bash
 VITE_SUPABASE_URL=https://your-project.supabase.co
@@ -32,6 +33,15 @@ Nếu không tạo `.env`, app chạy mock mode.
 1. Mở Supabase SQL Editor.
 2. Chạy file [supabase/schema.sql](/Users/mn13/Projects/zalo-mini-app/love-days/supabase/schema.sql).
 3. Điền `VITE_SUPABASE_URL` và `VITE_SUPABASE_ANON_KEY`.
+
+Nếu Zalo app bật yêu cầu `appsecret_proof`, deploy Edge Function lấy thông tin user:
+
+```bash
+supabase secrets set ZALO_APP_ID=your-zalo-mini-app-id ZALO_APP_SECRET=your-zalo-app-secret
+supabase functions deploy zalo-user-info
+```
+
+Không đưa `ZALO_APP_SECRET` vào `.env` frontend hoặc mã nguồn client.
 
 Ghi chú: schema hiện có policy anon rộng để chạy demo nhanh trong Mini App. Khi production, nên chuyển thao tác invite/member sang Supabase Edge Functions hoặc backend có xác thực.
 

@@ -1,0 +1,10 @@
+# Codex configuration for this Next.js landing template.
+model = "gpt-5.5"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+default_permissions = ":workspace"
+web_search = "cached"
+
+[agents]
+max_threads = 6
+max_depth = 1
