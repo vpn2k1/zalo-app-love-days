@@ -75,6 +75,7 @@ Use these roles when the host tool supports sub-agents and the user has allowed 
 Project skills live in `.agents/skills/`:
 
 - `react-feature-builder` — app feature workflow for React/Vite/Zalo Mini App changes.
+- `page-structure-builder` — workflow for building or refactoring pages using `src/pages/setup` as the folder/module blueprint.
 - `zaui-ui-builder` — UI workflow for using official ZaUI/`zmp-ui` components from Zalo Mini App docs.
 - `guard-clause-refactor` — code style workflow for replacing ternaries, else branches, and switch/case with guard clauses.
 - `shared-state-hook-builder` — workflow for reusable custom hooks that coordinate shared client UI state.
@@ -89,6 +90,7 @@ Hard constraints live in `.agents/rules/`:
 - `project-structure`
 - `state-and-routing`
 - `react-file-structure`
+- `page-module-structure`
 - `file-size-and-modules`
 - `networking-and-data`
 - `hands-off`
