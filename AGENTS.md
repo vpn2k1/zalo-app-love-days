@@ -79,6 +79,7 @@ Project skills live in `.agents/skills/`:
 - `zaui-ui-builder` — UI workflow for using official ZaUI/`zmp-ui` components from Zalo Mini App docs.
 - `guard-clause-refactor` — code style workflow for replacing ternaries, else branches, and switch/case with guard clauses.
 - `shared-state-hook-builder` — workflow for reusable custom hooks that coordinate shared client UI state.
+- `render-performance-auditor` — workflow for auditing and improving React screen/component re-render performance.
 
 ## Rules Index
 
