@@ -1,5 +1,5 @@
 import type { MouseEvent } from "react";
-import { Avatar, Box, Button, Icon, Text } from "zmp-ui";
+import { Avatar, Box, Button, Icon, Text } from "@/components/zaui";
 import type { AppUser } from "@/types/user";
 
 type Props = {
@@ -33,6 +33,12 @@ export function UserSideCard({
       {getDisplayName(user).slice(0, 1).toUpperCase()}
     </Avatar>
   );
+  let emptyActionRole;
+  let emptyActionTabIndex;
+  if (!user && onEmptyAction) {
+    emptyActionRole = "button";
+    emptyActionTabIndex = 0;
+  }
 
   return (
     <Box
@@ -42,34 +48,34 @@ export function UserSideCard({
           handleEmptyAction();
         }
       }}
-      role={!user && onEmptyAction ? "button" : undefined}
-      tabIndex={!user && onEmptyAction ? 0 : undefined}
+      role={emptyActionRole}
+      tabIndex={emptyActionTabIndex}
     >
       {user ? (
         <>
           {onAvatarClick ? (
-            <button
-              type="button"
+            <Button
+              htmlType="button"
               className="avatar-button"
               aria-label="Đổi ảnh đại diện"
               onClick={onAvatarClick}
             >
               {avatar}
-            </button>
+            </Button>
           ) : (
             avatar
           )}
           <div className="side-name-row">
             <Text className="side-name">{getDisplayName(user)}</Text>
             {onEditName && (
-              <button
-                type="button"
+              <Button
+                htmlType="button"
                 className="icon-button mini-edit-button"
                 aria-label="Sửa tên"
                 onClick={onEditName}
               >
                 <Icon icon="zi-edit" />
-              </button>
+              </Button>
             )}
           </div>
           <Text className="side-label">{label}</Text>

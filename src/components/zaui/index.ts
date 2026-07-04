@@ -1,3 +1,14 @@
+export {
+  App,
+  Avatar,
+  Box,
+  Button,
+  Icon,
+  Page,
+  SnackbarProvider,
+  Text,
+  ZMPRouter,
+} from "zmp-ui";
 export { AppActionSheet } from "@/components/zaui/AppActionSheet";
 export { AppImageViewer } from "@/components/zaui/AppImageViewer";
 export { AppModal } from "@/components/zaui/AppModal";

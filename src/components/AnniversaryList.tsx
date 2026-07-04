@@ -1,4 +1,4 @@
-import { Box, Text } from "zmp-ui";
+import { Box, Text } from "@/components/zaui";
 import type { Anniversary, AnniversaryDraft } from "@/types/anniversary";
 import { formatDate } from "@/utils/date";
 
@@ -19,21 +19,35 @@ export function AnniversaryList({ anniversaries }: Props) {
   return (
     <Box className="anniversary-list">
       {anniversaries.map((item, index) => (
-        <Box className="anniversary-item" key={`${item.title}-${item.date}-${index}`}>
-          {item.image_url && (
-            <img className="anniversary-thumb" src={item.image_url} alt="" />
-          )}
-          <div>
-            <Text className="anniversary-title">{item.title}</Text>
-            <Text className="subtle">
-              {formatDate(item.date)} ·{" "}
-              {item.repeat_type === "yearly" ? "Lặp hàng năm" : "Không lặp"}
-            </Text>
-            {item.note && <Text className="anniversary-note">{item.note}</Text>}
-          </div>
-          <span className="heart-dot">♥</span>
-        </Box>
+        <AnniversaryItem item={item} key={`${item.title}-${item.date}-${index}`} />
       ))}
+    </Box>
+  );
+}
+
+function AnniversaryItem({
+  item,
+}: {
+  item: Anniversary | AnniversaryDraft;
+}) {
+  let repeatLabel = "Không lặp";
+  if (item.repeat_type === "yearly") {
+    repeatLabel = "Lặp hàng năm";
+  }
+
+  return (
+    <Box className="anniversary-item">
+      {item.image_url && (
+        <img className="anniversary-thumb" src={item.image_url} alt="" />
+      )}
+      <div>
+        <Text className="anniversary-title">{item.title}</Text>
+        <Text className="subtle">
+          {formatDate(item.date)} · {repeatLabel}
+        </Text>
+        {item.note && <Text className="anniversary-note">{item.note}</Text>}
+      </div>
+      <Text className="heart-dot">♥</Text>
     </Box>
   );
 }

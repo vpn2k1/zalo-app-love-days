@@ -1,5 +1,4 @@
 import { useForm } from "react-hook-form";
-import { Button, Text } from "zmp-ui";
 import {
   AppDatePicker,
   AppImagePicker,
@@ -7,6 +6,7 @@ import {
   AppTextArea,
   AppTextInput,
 } from "@/components/forms";
+import { Button, Text } from "@/components/zaui";
 import type { AnniversaryDraft } from "@/types/anniversary";
 
 type Props = {

@@ -29,7 +29,8 @@ const emptyState = (): MockState => ({
 export const readState = (): MockState => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as MockState) : emptyState();
+    if (raw) return JSON.parse(raw) as MockState;
+    return emptyState();
   } catch {
     return emptyState();
   }

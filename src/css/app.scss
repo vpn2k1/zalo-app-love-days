@@ -26,35 +26,6 @@
   --love-shadow-soft: 0 10px 28px rgba(84, 49, 72, 0.1);
 }
 
-[zaui-theme="dark"],
-.zaui-theme-dark {
-  color-scheme: dark;
- --love-bg: #fff8f4;
-  --love-bg-2: #eef7f5;
-  --love-bg-3: #f6efff;
-  --love-ink: #2e2530;
-  --love-heading: #20171f;
-  --love-muted: #716773;
-  --love-soft: #fff2f0;
-  --love-soft-2: #e9f7f4;
-  --love-card: rgba(255, 255, 255, 0.86);
-  --love-card-strong: rgba(255, 255, 255, 0.96);
-  --love-card-frosted: rgba(255, 255, 255, 0.88);
-  --love-counter-tint: rgba(255, 242, 240, 0.72);
-  --love-next-tint: rgba(233, 247, 244, 0.5);
-  --love-field: rgba(255, 255, 255, 0.92);
-  --love-border: rgba(134, 97, 124, 0.18);
-  --love-border-strong: rgba(134, 97, 124, 0.28);
-  --love-primary: #e94f82;
-  --love-primary-strong: #c92f67;
-  --love-coral: #ff8a65;
-  --love-teal: #20a995;
-  --love-violet: #8b6ff2;
-  --love-danger: #c33159;
-  --love-shadow: 0 18px 44px rgba(84, 49, 72, 0.12);
-  --love-shadow-soft: 0 10px 28px rgba(84, 49, 72, 0.1);
-}
-
 * {
   box-sizing: border-box;
 }
@@ -341,11 +312,6 @@ body {
   text-align: center;
 }
 
-[zaui-theme="dark"] .empty-state,
-.zaui-theme-dark .empty-state {
-  background: rgba(255, 255, 255, 0.05);
-}
-
 .bottom-action {
   position: fixed;
   right: 16px;
@@ -391,14 +357,6 @@ body {
   box-shadow: var(--love-shadow);
 }
 
-[zaui-theme="dark"] .home-hero,
-.zaui-theme-dark .home-hero {
-  background:
-    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.1), transparent 18%),
-    radial-gradient(circle at 86% 4%, rgba(32, 169, 149, 0.18), transparent 26%),
-    linear-gradient(135deg, rgba(50, 32, 43, 0.96), rgba(25, 46, 43, 0.94) 52%, rgba(35, 27, 55, 0.96));
-}
-
 .home-hero::after {
   position: absolute;
   right: -46px;
@@ -438,11 +396,6 @@ body {
   background: rgba(255, 255, 255, 0.66);
 }
 
-[zaui-theme="dark"] .mock-badge,
-.zaui-theme-dark .mock-badge {
-  background: rgba(255, 255, 255, 0.1);
-}
-
 .couple-row {
   justify-content: space-between;
   gap: 10px;
@@ -461,11 +414,6 @@ body {
   cursor: pointer;
   position: relative;
   z-index: 1;
-}
-
-[zaui-theme="dark"] .user-side-card,
-.zaui-theme-dark .user-side-card {
-  background: rgba(255, 255, 255, 0.08);
 }
 
 .side-name {
@@ -634,12 +582,6 @@ body {
   border: 1px solid var(--love-border);
   color: var(--love-primary-strong);
   background: var(--love-card-strong);
-}
-
-[zaui-theme="dark"] .zaui-btn-secondary,
-.zaui-theme-dark .zaui-btn-secondary {
-  color: var(--love-ink);
-  background: rgba(255, 255, 255, 0.08);
 }
 
 @media (min-width: 480px) {

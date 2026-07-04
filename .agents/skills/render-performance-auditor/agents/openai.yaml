@@ -1,0 +1,4 @@
+interface:
+  display_name: "Render Performance Auditor"
+  short_description: "Audit React re-render performance"
+  default_prompt: "Use $render-performance-auditor to audit this screen for unnecessary React re-renders."

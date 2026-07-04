@@ -1,4 +1,4 @@
-import { Box, Icon, Text } from "zmp-ui";
+import { Box, Button, Icon, Text } from "@/components/zaui";
 import { diffFromNowParts, diffInDays, formatDate } from "@/utils/date";
 
 type Props = {
@@ -21,24 +21,28 @@ export function LoveCounterCard({ startDate, onEditStartDate }: Props) {
           {parts.minutes} phút
         </Text>
         {onEditStartDate && (
-          <button
-            type="button"
+          <Button
+            htmlType="button"
             className="icon-button mini-edit-button"
             aria-label="Sửa ngày bắt đầu"
             onClick={onEditStartDate}
           >
             <Icon icon="zi-edit" />
-          </button>
+          </Button>
         )}
       </div>
       <div className="love-stat-row">
         <div className="love-stat">
-          <strong>{Math.floor(days / 30).toLocaleString("vi-VN")}</strong>
-          <span>tháng bên nhau</span>
+          <Text className="love-stat-value">
+            {Math.floor(days / 30).toLocaleString("vi-VN")}
+          </Text>
+          <Text>tháng bên nhau</Text>
         </div>
         <div className="love-stat">
-          <strong>{parts.hours.toLocaleString("vi-VN")}</strong>
-          <span>giờ thương nhớ</span>
+          <Text className="love-stat-value">
+            {parts.hours.toLocaleString("vi-VN")}
+          </Text>
+          <Text>giờ thương nhớ</Text>
         </div>
       </div>
     </Box>

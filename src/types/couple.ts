@@ -32,6 +32,7 @@ export type SetupCoupleInput = {
   startDate: string;
   displayName: string;
   customAvatarUrl: string | null;
+  backgroundUrl: string | null;
   anniversaries: Array<{
     title: string;
     date: string;

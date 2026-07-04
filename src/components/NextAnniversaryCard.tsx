@@ -1,4 +1,4 @@
-import { Box, Text } from "zmp-ui";
+import { Box, Text } from "@/components/zaui";
 import type { UpcomingAnniversary } from "@/types/anniversary";
 import { formatDate } from "@/utils/date";
 

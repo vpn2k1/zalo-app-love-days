@@ -102,19 +102,21 @@ function validateInvite(invite?: PartnerInvite): asserts invite is PartnerInvite
 }
 
 function cancelPendingInvites(invites: PartnerInvite[], coupleId: string) {
-  return invites.map((invite) =>
-    invite.couple_id === coupleId && invite.status === "pending"
-      ? { ...invite, status: "cancelled" as const }
-      : invite,
-  );
+  return invites.map((invite) => {
+    if (invite.couple_id === coupleId && invite.status === "pending") {
+      return { ...invite, status: "cancelled" as const };
+    }
+    return invite;
+  });
 }
 
 function cancelOtherPendingInvites(invites: PartnerInvite[], accepted: PartnerInvite) {
-  return invites.map((invite) =>
-    invite.couple_id === accepted.couple_id &&
-    invite.id !== accepted.id &&
-    invite.status === "pending"
-      ? { ...invite, status: "cancelled" as const }
-      : invite,
-  );
+  return invites.map((invite) => {
+    const sameCouple = invite.couple_id === accepted.couple_id;
+    const isDifferentInvite = invite.id !== accepted.id;
+    if (sameCouple && isDifferentInvite && invite.status === "pending") {
+      return { ...invite, status: "cancelled" as const };
+    }
+    return invite;
+  });
 }

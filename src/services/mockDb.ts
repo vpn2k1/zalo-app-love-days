@@ -15,9 +15,10 @@ export const mockDb = {
         avatar_url: profile.avatar,
         updated_at: now(),
       };
-      state.users = state.users.map((user) =>
-        user.id === updated.id ? updated : user,
-      );
+      state.users = state.users.map((user) => {
+        if (user.id === updated.id) return updated;
+        return user;
+      });
       writeState(state);
       return updated;
     }
@@ -80,9 +81,10 @@ export const mockDb = {
       custom_avatar_url: input.customAvatarUrl,
       updated_at: now(),
     };
-    state.users = state.users.map((item) =>
-      item.id === user.id ? updatedUser : item,
-    );
+    state.users = state.users.map((item) => {
+      if (item.id === user.id) return updatedUser;
+      return item;
+    });
 
     const couple: Couple = {
       id: uid("couple"),

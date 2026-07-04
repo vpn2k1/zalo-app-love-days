@@ -1,27 +1,27 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
+import { useAppSnackbar } from "@/components/zaui";
+import { setCurrentUserCache } from "@/hooks/useCurrentUser";
 import { authService } from "@/services/authService";
 import { coupleService } from "@/services/coupleService";
 import { mediaService } from "@/services/mediaService";
 import type { CoupleWithMembers } from "@/types/couple";
 import type { AppUser } from "@/types/user";
-import type { AppView } from "./useLoveDaysController";
+import { anniversariesQueryKey, coupleQueryKey } from "@/config/queryKeys";
+import { setHomeViewState } from "./useHomeViewState";
 
 type Input = {
   coupleData: CoupleWithMembers | null;
   queryClient: QueryClient;
-  setUser: (user: AppUser) => void;
-  setView: (view: AppView) => void;
   user: AppUser | null;
 };
 
 export function useProfileMutations({
   coupleData,
   queryClient,
-  setUser,
-  setView,
   user,
 }: Input) {
+  const snackbar = useAppSnackbar();
   const saveProfileMutation = useMutation({
     mutationFn: async (payload: ProfilePayload) => {
       if (!user || !coupleData) throw new Error("Bạn cần cấp quyền Zalo trước.");
@@ -37,10 +37,40 @@ export function useProfileMutations({
         custom_avatar_url: customAvatarUrl,
       });
     },
+    onMutate: async (payload) => {
+      if (!user) throw new Error("Bạn cần cấp quyền Zalo trước.");
+      await queryClient.cancelQueries({ queryKey: coupleQueryKey(user.id) });
+      const previousUser = user;
+      const previousCouple = queryClient.getQueryData<CoupleWithMembers>(
+        coupleQueryKey(user.id),
+      );
+      const optimisticUser = {
+        ...user,
+        display_name: payload.display_name,
+        custom_avatar_url: payload.custom_avatar_url,
+      };
+      setCurrentUserCache(queryClient, optimisticUser);
+      updateCoupleUserCache(queryClient, optimisticUser);
+      return { previousCouple, previousUser };
+    },
     onSuccess: async (updated) => {
-      setUser(updated);
+      setCurrentUserCache(queryClient, updated);
+      updateCoupleUserCache(queryClient, updated);
       await queryClient.invalidateQueries({ queryKey: coupleQueryKey(updated.id) });
-      setView("home");
+      setHomeViewState("home");
+    },
+    onError: (error, _payload, context) => {
+      if (context) {
+        setCurrentUserCache(queryClient, context.previousUser);
+        queryClient.setQueryData(
+          coupleQueryKey(context.previousUser.id),
+          context.previousCouple,
+        );
+      }
+      snackbar.showError(getErrorMessage(
+        error,
+        "Không thể lưu hồ sơ. Vui lòng thử lại.",
+      ));
     },
   });
 
@@ -52,6 +82,13 @@ export function useProfileMutations({
     onSuccess: async () => {
       if (!user) return;
       await queryClient.invalidateQueries({ queryKey: coupleQueryKey(user.id) });
+    },
+    onError: (error) => {
+      console.error(error);
+      snackbar.showError(getErrorMessage(
+        error,
+        "Không thể cập nhật ngày bắt đầu. Vui lòng thử lại.",
+      ));
     },
   });
 
@@ -66,15 +103,40 @@ export function useProfileMutations({
       queryClient.removeQueries({
         queryKey: anniversariesQueryKey(coupleData?.couple.id),
       });
-      setView("setup");
+      setHomeViewState("setup");
+    },
+    onError: (error) => {
+      console.error(error);
+      snackbar.showError(getErrorMessage(
+        error,
+        "Không thể rời khỏi Love Days. Vui lòng thử lại.",
+      ));
     },
   });
 
   return { leaveCoupleMutation, saveProfileMutation, updateStartDateMutation };
 }
 
-const coupleQueryKey = (userId?: string) => ["couple", userId] as const;
-const anniversariesQueryKey = (coupleId?: string) =>
-  ["anniversaries", coupleId] as const;
-
 type ProfilePayload = { display_name: string; custom_avatar_url: string | null };
+
+function getErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof Error) return error.message;
+
+  return fallback;
+}
+
+function updateCoupleUserCache(queryClient: QueryClient, updatedUser: AppUser) {
+  queryClient.setQueryData<CoupleWithMembers | null>(
+    coupleQueryKey(updatedUser.id),
+    (current) => {
+      if (!current) return current;
+      return {
+        ...current,
+        members: current.members.map((member) => {
+          if (member.user_id !== updatedUser.id) return member;
+          return { ...member, user: updatedUser };
+        }),
+      };
+    },
+  );
+}

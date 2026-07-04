@@ -6,9 +6,10 @@ type Props = Omit<ImageViewerProps, "images"> & {
 };
 
 function normalizeImages(images: Props["images"]): ImageType[] {
-  return images.map((image) => (
-    typeof image === "string" ? { src: image } : image
-  ));
+  return images.map((image) => {
+    if (typeof image === "string") return { src: image };
+    return image;
+  });
 }
 
 export function AppImageViewer({ images, ...imageViewerProps }: Props) {

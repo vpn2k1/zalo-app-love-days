@@ -1,4 +1,4 @@
-import { Spinner, Text } from "zmp-ui";
+import { AppSpinner, Text } from "@/components/zaui";
 
 type Props = {
   show: boolean;
@@ -11,7 +11,7 @@ export function BlockingLoadingOverlay({ show, message }: Props) {
   return (
     <div className="app-blocking-overlay" role="alert" aria-live="assertive">
       <div className="app-blocking-dialog">
-        <Spinner />
+        <AppSpinner />
         <Text.Title size="small">Chờ một chút</Text.Title>
         <Text>{message}</Text>
       </div>

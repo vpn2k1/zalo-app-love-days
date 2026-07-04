@@ -1,100 +1,62 @@
-import { Spinner } from "zmp-ui";
-import { useLoveDaysController } from "@/hooks/useLoveDaysController";
-import { EditProfilePage } from "@/pages/EditProfilePage";
-import { HomePage } from "@/pages/HomePage";
-import { InviteAcceptPage } from "@/pages/InviteAcceptPage";
-import { PermissionGate } from "@/pages/PermissionGate";
-import { SetupCouplePage } from "@/pages/SetupCouplePage";
+import { useQueryClient } from "@tanstack/react-query";
+import { AppSpinner } from "@/components/zaui";
+import { useLoveDaysAuth } from "@/hooks/useLoveDaysAuth";
+import { setHomeViewState, useHomeViewState } from "@/hooks/useHomeViewState";
+import { EditProfilePage } from "@/pages/edit-profile/EditProfilePage";
+import { HomePage } from "@/pages/home/HomePage";
+import { InviteAcceptPage } from "@/pages/invite-accept/InviteAcceptPage";
+import { PermissionGate } from "@/pages/permission/PermissionGate";
+import { SetupPage } from "@/pages/setup/SetupPage";
 
 export function LoveDaysApp() {
-  const app = useLoveDaysController();
+  const queryClient = useQueryClient();
+  const auth = useLoveDaysAuth({ queryClient });
+  const state = useHomeViewState();
 
-  if (app.view === "invite") {
+  if (state === "invite") {
     return (
       <InviteAcceptPage
-        loading={app.acceptInviteMutation.isPending}
-        error={app.inviteError}
-        onAccept={async () => {
-          await app.acceptInviteMutation.mutateAsync();
-        }}
+        authorizeUser={auth.authorizeUser}
+        inviteCode={auth.inviteCode}
+        user={auth.user}
       />
     );
   }
 
-  if (app.view === "permission" || app.view === "blocked") {
+  if (state === "permission" || state === "blocked") {
     return (
       <PermissionGate
-        blocked={app.view === "blocked"}
-        error={app.permissionError}
-        loading={app.authorizeMutation.isPending}
-        onAllow={() => app.authorizeMutation.mutate()}
+        blocked={state === "blocked"}
+        loading={auth.authorizeMutation.isPending}
+        onAllow={() => auth.authorizeMutation.mutate()}
       />
     );
   }
 
-  if (app.view === "setup" && app.user) {
-    return (
-      <SetupCouplePage
-        user={app.user}
-        error={app.setupError}
-        loading={app.createCoupleMutation.isPending}
-        onCreate={async (input) => {
-          await app.createCoupleMutation.mutateAsync(input);
-        }}
-      />
-    );
+  if (state === "setup" && auth.user) {
+    return <SetupPage user={auth.user} />;
   }
 
-  if (app.view === "edit" && app.user) {
-    return (
-      <EditProfilePage
-        user={app.user}
-        leaveLoading={app.leaveCoupleMutation.isPending}
-        loading={app.saveProfileMutation.isPending}
-        onBack={() => app.setView("home")}
-        onLeave={async () => {
-          await app.leaveCoupleMutation.mutateAsync();
-        }}
-        onSave={async (payload) => {
-          await app.saveProfileMutation.mutateAsync(payload);
-        }}
-      />
-    );
+  if (state === "edit" && auth.user) {
+    return <EditProfilePage user={auth.user} />;
   }
 
-  if (app.view === "home" && app.user && app.coupleData) {
-    return (
-      <HomePage
-        user={app.user}
-        coupleData={app.coupleData}
-        anniversaries={app.anniversariesQuery.data ?? []}
-        addPartnerLoading={app.invitePartnerMutation.isPending}
-        inviteFeedback={app.inviteFeedback}
-        profileLoading={app.saveProfileMutation.isPending}
-        addAnniversaryLoading={app.addAnniversaryMutation.isPending}
-        onAddPartner={() => app.invitePartnerMutation.mutateAsync()}
-        onSaveProfile={(payload) => app.saveProfileMutation.mutateAsync(payload)}
-        onUpdateStartDate={(startDate) =>
-          app.updateStartDateMutation.mutateAsync(startDate)}
-        onAddAnniversary={(draft) => app.addAnniversaryMutation.mutateAsync(draft)}
-        onEditProfile={() => app.setView("edit")}
-      />
-    );
+  if (state === "home" && auth.user) {
+    return <HomePage user={auth.user} />;
   }
 
-  if (app.coupleQuery.isFetching || app.anniversariesQuery.isFetching) {
+  if (state === "booting") {
     return (
       <div className="boot-screen">
-        <Spinner />
+        <AppSpinner />
       </div>
     );
   }
 
   return (
     <PermissionGate
-      error={app.permissionError}
-      loading={app.authorizeMutation.isPending}
-      onAllow={() => app.authorizeMutation.mutate()}
+      loading={auth.authorizeMutation.isPending}
+      onAllow={() => auth.authorizeMutation.mutate()}
     />
   );
 }
