@@ -1,16 +1,24 @@
 import { Controller, type Control, type FieldValues, type Path } from "react-hook-form";
+import { Select } from "zmp-ui";
+import type { SelectProps } from "zmp-ui/select";
+
+import { requiredRule } from "@/components/forms/formRules";
 
 type Option<TValue extends string> = {
   label: string;
   value: TValue;
+  disabled?: boolean;
 };
 
-type Props<TFormValues extends FieldValues, TValue extends string> = {
+type Props<TFormValues extends FieldValues, TValue extends string> = Omit<
+  SelectProps,
+  "children" | "label" | "name" | "onChange" | "value"
+> & {
   control: Control<TFormValues>;
   name: Path<TFormValues>;
   label: string;
   options: Option<TValue>[];
-  required?: boolean;
+  required?: boolean | string;
 };
 
 export function AppSelect<TFormValues extends FieldValues, TValue extends string>({
@@ -19,27 +27,36 @@ export function AppSelect<TFormValues extends FieldValues, TValue extends string
   label,
   options,
   required,
+  ...selectProps
 }: Props<TFormValues, TValue>) {
   return (
     <Controller
       control={control}
       name={name}
-      rules={{ required }}
-      render={({ field }) => (
-        <label className="native-field">
-          <span>{label}</span>
-          <select
-            value={(field.value ?? "") as string}
-            onChange={field.onChange}
-            onBlur={field.onBlur}
-          >
-            {options.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
+      rules={{ required: requiredRule(required) }}
+      render={({ field, fieldState }) => (
+        <Select
+          {...selectProps}
+          label={label}
+          name={field.name}
+          value={(field.value ?? "") as string}
+          status={fieldState.error ? "error" : selectProps.status}
+          errorText={fieldState.error?.message ?? selectProps.errorText}
+          onChange={field.onChange}
+          onVisibilityChange={(visible) => {
+            selectProps.onVisibilityChange?.(visible);
+            if (!visible) field.onBlur();
+          }}
+        >
+          {options.map((option) => (
+            <Select.Option
+              key={option.value}
+              value={option.value}
+              title={option.label}
+              disabled={option.disabled}
+            />
+          ))}
+        </Select>
       )}
     />
   );

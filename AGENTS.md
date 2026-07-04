@@ -17,7 +17,7 @@ The app requests Zalo user permission, stores or mocks user/couple data, lets a 
 5. **Preserve mock mode.** When Supabase env vars are missing, the app should keep working through `src/services/mockDb.ts`.
 6. **Protect secrets.** Frontend env vars must be `VITE_*`. Never put Zalo app secrets, Supabase service-role keys, or backend secrets in client code.
 7. **Imports.** Use the existing TypeScript/React style: external packages first, then `@/` aliases, then relative imports if needed. Remove unused imports.
-8. **Styling.** Prefer existing `zmp-ui` primitives, Tailwind classes, and `src/css/app.scss`. Keep mobile Mini App constraints in mind, including safe areas and small screens.
+8. **Styling.** Prefer official ZaUI/`zmp-ui` primitives, Tailwind classes, and `src/css/app.scss`. Keep mobile Mini App constraints in mind, including safe areas and small screens.
 9. **Types.** Reuse domain types from `src/types/`. Avoid duplicating service response shapes inside pages/components.
 10. **Hands-off files.** Ask before changing dependency manifests, Vite/ZMP config, TypeScript config, global CSS setup, or Supabase schema unless the task directly requires it.
 11. **Verification.** For code changes, run `npm run typecheck`. Run `npm run build` when changing bundling, env handling, assets, or ZMP deployment behavior.
@@ -73,6 +73,7 @@ Use these roles when the host tool supports sub-agents and the user has allowed 
 Project skills live in `.agents/skills/`:
 
 - `react-feature-builder` — app feature workflow for React/Vite/Zalo Mini App changes.
+- `zaui-ui-builder` — UI workflow for using official ZaUI/`zmp-ui` components from Zalo Mini App docs.
 
 ## Rules Index
 
@@ -91,6 +92,7 @@ Hard constraints live in `.agents/rules/`:
 - `import-rules`
 - `shared-defs`
 - `localization`
+- `zaui-components`
 
 ## Knowledge Index
 

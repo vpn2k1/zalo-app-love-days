@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Controller, type Control, type FieldValues, type Path } from "react-hook-form";
 import { Button, Icon, Text } from "zmp-ui";
+import { AppImageViewer } from "@/components/zaui";
+import { requiredRule } from "@/components/forms/formRules";
 import { pickImagePath } from "@/utils/imagePicker";
 
 type Props<TFormValues extends FieldValues> = {
@@ -8,6 +10,7 @@ type Props<TFormValues extends FieldValues> = {
   name: Path<TFormValues>;
   label: string;
   optional?: boolean;
+  required?: boolean | string;
 };
 
 export function AppImagePicker<TFormValues extends FieldValues>({
@@ -15,21 +18,28 @@ export function AppImagePicker<TFormValues extends FieldValues>({
   name,
   label,
   optional,
+  required,
 }: Props<TFormValues>) {
   const [error, setError] = useState("");
+  const [viewerVisible, setViewerVisible] = useState(false);
 
   return (
     <Controller
       control={control}
       name={name}
-      render={({ field }) => {
+      rules={{ required: requiredRule(required) }}
+      render={({ field, fieldState }) => {
         const value = String(field.value ?? "");
+        const errorText = error || fieldState.error?.message;
 
         const pickImage = async () => {
           setError("");
           try {
             const image = await pickImagePath();
-            if (image) field.onChange(image);
+            if (image) {
+              field.onChange(image);
+              field.onBlur();
+            }
           } catch (pickerError) {
             console.error(pickerError);
             setError("Không thể chọn ảnh. Vui lòng thử lại.");
@@ -42,7 +52,22 @@ export function AppImagePicker<TFormValues extends FieldValues>({
               {label}{optional ? " (không bắt buộc)" : ""}
             </Text>
             {value && (
-              <img className="app-image-picker-preview" src={value} alt="" />
+              <>
+                <Button
+                  className="app-image-picker-preview"
+                  htmlType="button"
+                  variant="tertiary"
+                  prefixIcon={<Icon icon="zi-add-photo" />}
+                  onClick={() => setViewerVisible(true)}
+                >
+                  Xem ảnh đã chọn
+                </Button>
+                <AppImageViewer
+                  images={[{ src: value, alt: label }]}
+                  visible={viewerVisible}
+                  onClose={() => setViewerVisible(false)}
+                />
+              </>
             )}
             <div className="app-image-picker-actions">
               <Button
@@ -57,13 +82,16 @@ export function AppImagePicker<TFormValues extends FieldValues>({
                 <Button
                   htmlType="button"
                   variant="tertiary"
-                  onClick={() => field.onChange("")}
+                  onClick={() => {
+                    field.onChange("");
+                    field.onBlur();
+                  }}
                 >
                   Xóa ảnh
                 </Button>
               )}
             </div>
-            {error && <Text className="app-error-text">{error}</Text>}
+            {errorText && <Text className="app-error-text">{errorText}</Text>}
           </div>
         );
       }}
