@@ -10,6 +10,7 @@ import { SetupPageMemories } from "./items/SetupPageMemories";
 import { SetupPageButton } from "./items/SetupPageButton";
 import { useSetupPageController } from "./modules/useSetupPageController";
 import type { SetupFormValues } from "./types/SetupPageType";
+import { BlockingLoadingOverlay } from "@/components/BlockingLoadingOverlay";
 
 type Props = {
   user: AppUser;
@@ -41,6 +42,10 @@ export function SetupPage({ user }: Props) {
             await setup.createCoupleMutation.mutateAsync(input);
           }}
           user={user}
+        />
+        <BlockingLoadingOverlay
+          show={setup.createCoupleMutation.isPending}
+          message="Đang lưu thông tin và ảnh của hai bạn..."
         />
       </Page>
     </FormProvider>
