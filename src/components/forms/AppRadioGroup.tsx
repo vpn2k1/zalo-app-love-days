@@ -1,7 +1,8 @@
 import { Controller, type Control, type FieldValues, type Path } from "react-hook-form";
-import { Radio, Text } from "zmp-ui";
+import { Radio } from "zmp-ui";
 import type { RadioGroupProps, RadioProps } from "zmp-ui/radio";
 
+import { Text } from "@/components/zaui";
 import { requiredRule } from "@/components/forms/formRules";
 
 type Option = Pick<RadioProps, "disabled" | "label" | "value">;

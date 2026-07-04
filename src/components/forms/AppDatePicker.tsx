@@ -44,23 +44,28 @@ export function AppDatePicker<TFormValues extends FieldValues>({
       control={control}
       name={name}
       rules={{ required: requiredRule(required) }}
-      render={({ field, fieldState }) => (
-        <DatePicker
-          {...datePickerProps}
-          label={label}
-          locale="vi-VN"
-          columnsFormat="DD-MM-YYYY"
-          dateFormat="dd/mm/yyyy"
-          value={parseDateValue(field.value)}
-          status={fieldState.error ? "error" : datePickerProps.status}
-          errorText={fieldState.error?.message ?? datePickerProps.errorText}
-          onChange={(date) => field.onChange(formatDateValue(date))}
-          onVisibilityChange={(visible) => {
-            datePickerProps.onVisibilityChange?.(visible);
-            if (!visible) field.onBlur();
-          }}
-        />
-      )}
+      render={({ field, fieldState }) => {
+        let status = datePickerProps.status;
+        if (fieldState.error) status = "error";
+
+        return (
+          <DatePicker
+            {...datePickerProps}
+            label={label}
+            locale="vi-VN"
+            columnsFormat="DD-MM-YYYY"
+            dateFormat="dd/mm/yyyy"
+            value={parseDateValue(field.value)}
+            status={status}
+            errorText={fieldState.error?.message ?? datePickerProps.errorText}
+            onChange={(date) => field.onChange(formatDateValue(date))}
+            onVisibilityChange={(visible) => {
+              datePickerProps.onVisibilityChange?.(visible);
+              if (!visible) field.onBlur();
+            }}
+          />
+        );
+      }}
     />
   );
 }

@@ -34,30 +34,35 @@ export function AppSelect<TFormValues extends FieldValues, TValue extends string
       control={control}
       name={name}
       rules={{ required: requiredRule(required) }}
-      render={({ field, fieldState }) => (
-        <Select
-          {...selectProps}
-          label={label}
-          name={field.name}
-          value={(field.value ?? "") as string}
-          status={fieldState.error ? "error" : selectProps.status}
-          errorText={fieldState.error?.message ?? selectProps.errorText}
-          onChange={field.onChange}
-          onVisibilityChange={(visible) => {
-            selectProps.onVisibilityChange?.(visible);
-            if (!visible) field.onBlur();
-          }}
-        >
-          {options.map((option) => (
-            <Select.Option
-              key={option.value}
-              value={option.value}
-              title={option.label}
-              disabled={option.disabled}
-            />
-          ))}
-        </Select>
-      )}
+      render={({ field, fieldState }) => {
+        let status = selectProps.status;
+        if (fieldState.error) status = "error";
+
+        return (
+          <Select
+            {...selectProps}
+            label={label}
+            name={field.name}
+            value={(field.value ?? "") as string}
+            status={status}
+            errorText={fieldState.error?.message ?? selectProps.errorText}
+            onChange={field.onChange}
+            onVisibilityChange={(visible) => {
+              selectProps.onVisibilityChange?.(visible);
+              if (!visible) field.onBlur();
+            }}
+          >
+            {options.map((option) => (
+              <Select.Option
+                key={option.value}
+                value={option.value}
+                title={option.label}
+                disabled={option.disabled}
+              />
+            ))}
+          </Select>
+        );
+      }}
     />
   );
 }

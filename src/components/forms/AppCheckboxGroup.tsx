@@ -1,7 +1,8 @@
 import { Controller, type Control, type FieldValues, type Path } from "react-hook-form";
-import { Checkbox, Text } from "zmp-ui";
+import { Checkbox } from "zmp-ui";
 import type { CheckboxGroupProps, CheckboxProps } from "zmp-ui/checkbox";
 
+import { Text } from "@/components/zaui";
 import { requiredRule } from "@/components/forms/formRules";
 
 type Option = Pick<CheckboxProps, "disabled" | "label" | "value">;
@@ -30,21 +31,28 @@ export function AppCheckboxGroup<TFormValues extends FieldValues>({
       control={control}
       name={name}
       rules={{ required: requiredRule(required) }}
-      render={({ field, fieldState }) => (
-        <div>
-          {label && <Text className="form-label">{label}</Text>}
+      render={({ field, fieldState }) => {
+        let value: string[] = [];
+        if (Array.isArray(field.value)) {
+          value = field.value;
+        }
+
+        return (
+          <div>
+            {label && <Text className="form-label">{label}</Text>}
           <Checkbox.Group
             {...groupProps}
             name={field.name}
-            value={Array.isArray(field.value) ? field.value : []}
+            value={value}
             options={options as CheckboxProps[]}
             onChange={field.onChange}
           />
           {fieldState.error && (
             <Text className="app-error-text">{fieldState.error.message}</Text>
           )}
-        </div>
-      )}
+          </div>
+        );
+      }}
     />
   );
 }

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Controller, type Control, type FieldValues, type Path } from "react-hook-form";
-import { Button, Icon, Text } from "zmp-ui";
-import { AppImageViewer } from "@/components/zaui";
+import { AppImageViewer, Button, Icon, Text } from "@/components/zaui";
 import { requiredRule } from "@/components/forms/formRules";
 import { pickImagePath } from "@/utils/imagePicker";
 
@@ -31,6 +30,14 @@ export function AppImagePicker<TFormValues extends FieldValues>({
       render={({ field, fieldState }) => {
         const value = String(field.value ?? "");
         const errorText = error || fieldState.error?.message;
+        let labelText = label;
+        if (optional) {
+          labelText = `${label} (không bắt buộc)`;
+        }
+        let pickButtonLabel = "Chọn hoặc chụp ảnh";
+        if (value) {
+          pickButtonLabel = "Chọn ảnh khác";
+        }
 
         const pickImage = async () => {
           setError("");
@@ -48,9 +55,7 @@ export function AppImagePicker<TFormValues extends FieldValues>({
 
         return (
           <div className="app-image-picker">
-            <Text className="form-label">
-              {label}{optional ? " (không bắt buộc)" : ""}
-            </Text>
+            <Text className="form-label">{labelText}</Text>
             {value && (
               <>
                 <Button
@@ -76,7 +81,7 @@ export function AppImagePicker<TFormValues extends FieldValues>({
                 prefixIcon={<Icon icon="zi-camera" />}
                 onClick={pickImage}
               >
-                {value ? "Chọn ảnh khác" : "Chọn hoặc chụp ảnh"}
+                {pickButtonLabel}
               </Button>
               {value && (
                 <Button

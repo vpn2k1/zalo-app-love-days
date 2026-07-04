@@ -24,17 +24,22 @@ export function AppTextInput<TFormValues extends FieldValues>({
       control={control}
       name={name}
       rules={{ required: requiredRule(required) }}
-      render={({ field, fieldState }) => (
-        <Input
-          {...inputProps}
-          name={field.name}
-          value={(field.value ?? "") as string}
-          onChange={field.onChange}
-          onBlur={field.onBlur}
-          status={fieldState.error ? "error" : inputProps.status}
-          errorText={fieldState.error?.message ?? inputProps.errorText}
-        />
-      )}
+      render={({ field, fieldState }) => {
+        let status = inputProps.status;
+        if (fieldState.error) status = "error";
+
+        return (
+          <Input
+            {...inputProps}
+            name={field.name}
+            value={(field.value ?? "") as string}
+            onChange={field.onChange}
+            onBlur={field.onBlur}
+            status={status}
+            errorText={fieldState.error?.message ?? inputProps.errorText}
+          />
+        );
+      }}
     />
   );
 }

@@ -24,17 +24,22 @@ export function AppTextArea<TFormValues extends FieldValues>({
       control={control}
       name={name}
       rules={{ required: requiredRule(required) }}
-      render={({ field, fieldState }) => (
-        <Input.TextArea
-          {...textAreaProps}
-          name={field.name}
-          value={(field.value ?? "") as string}
-          onChange={field.onChange}
-          onBlur={field.onBlur}
-          status={fieldState.error ? "error" : textAreaProps.status}
-          errorText={fieldState.error?.message ?? textAreaProps.errorText}
-        />
-      )}
+      render={({ field, fieldState }) => {
+        let status = textAreaProps.status;
+        if (fieldState.error) status = "error";
+
+        return (
+          <Input.TextArea
+            {...textAreaProps}
+            name={field.name}
+            value={(field.value ?? "") as string}
+            onChange={field.onChange}
+            onBlur={field.onBlur}
+            status={status}
+            errorText={fieldState.error?.message ?? textAreaProps.errorText}
+          />
+        );
+      }}
     />
   );
 }

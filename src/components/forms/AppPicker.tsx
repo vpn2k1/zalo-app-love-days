@@ -16,7 +16,10 @@ type Props<TFormValues extends FieldValues> = Omit<
 };
 
 function toPickerValue(value: unknown): PickerValue {
-  return typeof value === "object" && value !== null ? value as PickerValue : {};
+  if (typeof value === "object" && value !== null) {
+    return value as PickerValue;
+  }
+  return {};
 }
 
 function toFormValue(value: Record<string, PickerColumnOption>): PickerValue {
@@ -37,20 +40,25 @@ export function AppPicker<TFormValues extends FieldValues>({
       control={control}
       name={name}
       rules={{ required: requiredRule(required) }}
-      render={({ field, fieldState }) => (
-        <Picker
-          {...pickerProps}
-          name={field.name}
-          value={toPickerValue(field.value)}
-          status={fieldState.error ? "error" : pickerProps.status}
-          errorText={fieldState.error?.message ?? pickerProps.errorText}
-          onChange={(value) => field.onChange(toFormValue(value))}
-          onVisibilityChange={(visible) => {
-            pickerProps.onVisibilityChange?.(visible);
-            if (!visible) field.onBlur();
-          }}
-        />
-      )}
+      render={({ field, fieldState }) => {
+        let status = pickerProps.status;
+        if (fieldState.error) status = "error";
+
+        return (
+          <Picker
+            {...pickerProps}
+            name={field.name}
+            value={toPickerValue(field.value)}
+            status={status}
+            errorText={fieldState.error?.message ?? pickerProps.errorText}
+            onChange={(value) => field.onChange(toFormValue(value))}
+            onVisibilityChange={(visible) => {
+              pickerProps.onVisibilityChange?.(visible);
+              if (!visible) field.onBlur();
+            }}
+          />
+        );
+      }}
     />
   );
 }
