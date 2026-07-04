@@ -21,6 +21,8 @@ The app requests Zalo user permission, stores or mocks user/couple data, lets a 
 9. **Types.** Reuse domain types from `src/types/`. Avoid duplicating service response shapes inside pages/components.
 10. **Hands-off files.** Ask before changing dependency manifests, Vite/ZMP config, TypeScript config, global CSS setup, or Supabase schema unless the task directly requires it.
 11. **Verification.** For code changes, run `npm run typecheck`. Run `npm run build` when changing bundling, env handling, assets, or ZMP deployment behavior.
+12. **Control flow.** Do not add ternary operators, `else`/`else if`, or `switch`/`case`. Use guard clauses, early returns, and false-case-first checks.
+13. **Shared UI state.** When UI state is used across unrelated components, create a typed custom hook in `src/hooks/` with module-local listeners, show/hide helpers, `useEffect` subscription, and cleanup.
 
 ## Architecture Quick Map
 
@@ -74,6 +76,8 @@ Project skills live in `.agents/skills/`:
 
 - `react-feature-builder` — app feature workflow for React/Vite/Zalo Mini App changes.
 - `zaui-ui-builder` — UI workflow for using official ZaUI/`zmp-ui` components from Zalo Mini App docs.
+- `guard-clause-refactor` — code style workflow for replacing ternaries, else branches, and switch/case with guard clauses.
+- `shared-state-hook-builder` — workflow for reusable custom hooks that coordinate shared client UI state.
 
 ## Rules Index
 
@@ -93,6 +97,8 @@ Hard constraints live in `.agents/rules/`:
 - `shared-defs`
 - `localization`
 - `zaui-components`
+- `guard-clause-control-flow`
+- `shared-state-hooks`
 
 ## Knowledge Index
 
