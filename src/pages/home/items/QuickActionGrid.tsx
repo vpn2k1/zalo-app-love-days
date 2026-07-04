@@ -1,4 +1,4 @@
-import { Box, Button, Icon, Text } from "@/components/zaui";
+import { Box, Icon, Text } from "@/components/zaui";
 import type { ZmpIconName } from "../types/HomePageType";
 
 type Props = {
@@ -36,9 +36,10 @@ export function QuickActionGrid({
   return (
     <Box className="mb-4 grid grid-cols-4 gap-1.5">
       {actions.map((action, index) => (
-        <Button
-          htmlType="button"
+        <Box
           key={action.label}
+          role="button"
+          tabIndex={0}
           onClick={() => void action.onClick()}
           className={getActionClassName(index)}
         >
@@ -46,7 +47,7 @@ export function QuickActionGrid({
           <Text className="mt-1 block overflow-hidden text-ellipsis whitespace-nowrap text-[11px] font-extrabold text-[#684e5f]">
             {action.label}
           </Text>
-        </Button>
+        </Box>
       ))}
     </Box>
   );

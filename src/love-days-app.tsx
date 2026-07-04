@@ -1,4 +1,4 @@
-import { AppSpinner } from "@/components/zaui";
+import { AppSpinner, Avatar } from "@/components/zaui";
 import { useHomeViewState } from "@/hooks/useHomeViewState";
 import { useLoveDaysAuth } from "@/hooks/useLoveDaysAuth";
 import { EditProfilePage } from "@/pages/edit-profile/EditProfilePage";
@@ -6,6 +6,7 @@ import { HomePage } from "@/pages/home/HomePage";
 import { InviteAcceptPage } from "@/pages/invite-accept/InviteAcceptPage";
 import { PermissionGate } from "@/pages/permission/PermissionGate";
 import { SetupPage } from "@/pages/setup/SetupPage";
+import logoSrc from "../assets/images/logo.png";
 
 export function LoveDaysApp() {
   const auth = useLoveDaysAuth();
@@ -46,7 +47,7 @@ export function LoveDaysApp() {
   if (state === "booting") {
     return (
       <div className="boot-screen">
-        <AppSpinner />
+        <AppSpinner logo={<img src={logoSrc} alt="Love Days logo" />} />
       </div>
     );
   }

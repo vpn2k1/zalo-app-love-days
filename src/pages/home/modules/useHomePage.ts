@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import { useAppSnackbar } from "@/components/zaui";
 import type { AnniversaryDraft } from "@/types/anniversary";
 import { diffInDays, getNextAnniversary } from "@/utils/date";
-import { pickImagePath } from "@/utils/imagePicker";
 import type { HomePageContentProps } from "../types/HomePageType";
 
 export function useHomePage({
@@ -42,29 +41,6 @@ export function useHomePage({
   );
   const visibleAnniversaries = anniversaries.slice(0, 2);
 
-  const saveAvatar = async () => {
-    let imagePath = "";
-    try {
-      imagePath = await pickImagePath();
-    } catch (error) {
-      console.error(error);
-      snackbar.showError("Không thể chọn ảnh. Vui lòng thử lại.");
-      return;
-    }
-
-    if (!imagePath) return;
-
-    try {
-      await onSaveProfile({
-        display_name: currentUser.display_name || currentUser.name,
-        custom_avatar_url: imagePath,
-      });
-      snackbar.showSuccess("Đã cập nhật ảnh đại diện.");
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const addAnniversary = async (draft: AnniversaryDraft) => {
     try {
       await onAddAnniversary(draft);
@@ -83,7 +59,6 @@ export function useHomePage({
     nextAnniversary,
     partner,
     partnerPerson,
-    saveAvatar,
     setShowAnniversaryForm,
     showAnniversaryForm,
     visibleAnniversaries,

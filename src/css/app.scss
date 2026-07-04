@@ -127,6 +127,24 @@ body {
   background: var(--love-bg);
 }
 
+.app-spinner {
+  display: grid;
+  place-items: center;
+  gap: 10px;
+}
+
+.app-spinner__logo {
+  display: grid;
+  place-items: center;
+}
+
+.app-spinner__logo img,
+.app-spinner__logo > * {
+  width: 84px;
+  height: 84px;
+  border-radius: 14px;
+}
+
 .permission-card,
 .soft-card,
 .main-love-card,

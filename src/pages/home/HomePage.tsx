@@ -20,10 +20,7 @@ import { StartDateModal } from "./items/StartDateModal";
 import { TimelineSection } from "./items/TimelineSection";
 import { useHomePageController } from "./modules/useHomePageController";
 import { useHomePage } from "./modules/useHomePage";
-import type {
-  HomePageContentProps,
-  HomePageProps,
-} from "./types/HomePageType";
+import type { HomePageContentProps, HomePageProps } from "./types/HomePageType";
 
 export function HomePage({ user }: HomePageProps) {
   const queryClient = useQueryClient();
@@ -99,9 +96,8 @@ function HomePageContent(props: HomePageContentProps) {
         currentPerson={home.currentPerson}
         partnerPerson={home.partnerPerson}
         onAddPartner={onAddPartner}
-        onSaveAvatar={home.saveAvatar}
       />
-      <DaysTogetherButton days={home.days} onClick={openDatePicker} />
+      <DaysTogetherButton startDate={coupleData.couple.start_date} />
       <StartDateModal
         currentStartDate={coupleData.couple.start_date}
         loading={profileLoading}
@@ -109,7 +105,7 @@ function HomePageContent(props: HomePageContentProps) {
         onClose={closeDatePicker}
         onSave={onUpdateStartDate}
       />
-      <QuickActionGrid
+      {/* <QuickActionGrid
         onEditProfile={onEditProfile}
         onAddPartner={onAddPartner}
         onAddAnniversary={toggleAnniversaryForm}
@@ -131,7 +127,7 @@ function HomePageContent(props: HomePageContentProps) {
         mockMode={isMockMode}
         addPartnerLoading={addPartnerLoading}
         profileLoading={profileLoading}
-      />
+      /> */}
     </Page>
   );
 }
@@ -155,9 +151,7 @@ function HomeMissingCoupleState() {
   return <HomeLoadingState />;
 }
 
-function getProfileLoading(
-  profile: ReturnType<typeof useProfileMutations>,
-) {
+function getProfileLoading(profile: ReturnType<typeof useProfileMutations>) {
   if (profile.saveProfileMutation.isPending) return true;
   if (profile.updateStartDateMutation.isPending) return true;
 

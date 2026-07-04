@@ -10,7 +10,7 @@ export function HomeHero({ backgroundUrl }: Props) {
 
   if (backgroundUrl) {
     return (
-      <>
+      <Box>
         <Box
           className="relative mb-3.5 flex min-h-44 cursor-pointer flex-col justify-end overflow-hidden rounded-[18px] px-[22px] pb-[22px] pt-[55px]"
           role="button"
@@ -23,16 +23,13 @@ export function HomeHero({ backgroundUrl }: Props) {
             src={backgroundUrl}
           />
           <Box className="absolute inset-0 bg-gradient-to-b from-[#3c2435]/5 to-[#3c2435]/45" />
-          <Text className="relative mx-auto max-w-[270px] text-center text-xs font-extrabold text-white/90">
-            Chạm để phóng to ảnh của hai bạn
-          </Text>
         </Box>
         <AppImageViewer
           images={[{ src: backgroundUrl, alt: "Ảnh cặp đôi" }]}
           visible={viewerVisible}
           onClose={() => setViewerVisible(false)}
         />
-      </>
+      </Box>
     );
   }
 
