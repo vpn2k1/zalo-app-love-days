@@ -6,7 +6,7 @@ type UploadImageInput = {
   coupleId: string;
   fileName: string;
   path: string | null | undefined;
-  scope: "avatars" | "anniversaries";
+  scope: "avatars" | "anniversaries" | "backgrounds";
 };
 
 export const mediaService = {

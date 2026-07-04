@@ -1,7 +1,6 @@
 import { Box, Button, Text } from "@/components/zaui";
 import type { Anniversary, UpcomingAnniversary } from "@/types/anniversary";
 import { formatDate } from "@/utils/date";
-import { homeStyles } from "../modules/inlineStyles";
 import { MilestoneCard } from "./MilestoneCard";
 
 type Props = {
@@ -17,20 +16,23 @@ export function MemoryGardenSection({
 }: Props) {
   return (
     <>
-      <Box style={homeStyles.sectionTitle}>
-        <Text.Title size="small" style={homeStyles.sectionTitleText}>
+      <Box className="mb-2 mt-1 flex items-center justify-between gap-3">
+        <Text.Title
+          size="small"
+          className="font-serif font-medium text-[#2f1d2a]"
+        >
           Memory garden
         </Text.Title>
         <Button
           htmlType="button"
-          style={homeStyles.linkButton}
+          className="min-h-8 rounded-full bg-transparent px-2.5 font-[850] text-[#e14d86]"
           onClick={onShowAnniversaryForm}
         >
           View all
         </Button>
       </Box>
 
-      <div style={homeStyles.eventGrid}>
+      <Box className="mb-3 grid grid-cols-2 gap-2.5">
         <MilestoneCard
           icon="zi-calendar"
           title="Next anniversary"
@@ -43,7 +45,7 @@ export function MemoryGardenSection({
           label={`${anniversaries.length} memories`}
           value={getFirstMemoryValue(anniversaries)}
         />
-      </div>
+      </Box>
     </>
   );
 }

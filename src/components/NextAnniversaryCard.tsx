@@ -14,11 +14,11 @@ export function NextAnniversaryCard({ anniversary }: Props) {
         <>
           <Text.Title size="small">{anniversary.title}</Text.Title>
           <Text className="subtle">{formatDate(anniversary.date)}</Text>
-          <div className="countdown-pill">
+          <Box className="countdown-pill">
             {anniversary.daysLeft === 0
               ? "Hôm nay"
               : `Còn ${anniversary.daysLeft} ngày`}
-          </div>
+          </Box>
         </>
       ) : (
         <Text className="empty-text">Chưa có kỷ niệm nào.</Text>

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppSnackbar } from "@/components/zaui";
 import { anniversariesQueryKey, coupleQueryKey } from "@/config/queryKeys";
-import { setCurrentUserCache } from "@/hooks/useCurrentUser";
+import { useCurrentUserActions } from "@/hooks/useCurrentUser";
 import { setHomeViewState } from "@/hooks/useHomeViewState";
 import { coupleService } from "@/services/coupleService";
 import type { CoupleWithMembers, SetupCoupleInput } from "@/types/couple";
@@ -14,6 +14,7 @@ type Input = {
 export function useCreateCoupleMutation({ user }: Input) {
   const queryClient = useQueryClient();
   const snackbar = useAppSnackbar();
+  const { setUser } = useCurrentUserActions();
   const createCoupleMutation = useMutation({
     mutationKey: ["createCouple"],
     mutationFn: (input: SetupCoupleInput) => {
@@ -27,7 +28,7 @@ export function useCreateCoupleMutation({ user }: Input) {
       )?.user;
       let nextUser: AppUser = { ...user, display_name: input.displayName };
       if (owner) nextUser = owner;
-      setCurrentUserCache(queryClient, nextUser);
+      setUser(nextUser);
       queryClient.setQueryData<CoupleWithMembers>(
         coupleQueryKey(user.id),
         data,

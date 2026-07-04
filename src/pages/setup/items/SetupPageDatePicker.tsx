@@ -1,6 +1,6 @@
 import { AppDatePicker } from "@/components/forms";
+import { Box } from "@/components/zaui";
 import { useFormContext } from "react-hook-form";
-import { Box, Icon, Text } from "zmp-ui";
 
 export function SetupPageDatePicker() {
   const { control } = useFormContext();

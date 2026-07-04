@@ -1,13 +1,14 @@
-import { Button } from "@/components/zaui";
+import { Box, Button } from "@/components/zaui";
 
 type Props = {
   loading?: boolean;
   onBack: () => void;
+  onSave: () => void;
 };
 
-export function EditProfileActions({ loading, onBack }: Props) {
+export function EditProfileActions({ loading, onBack, onSave }: Props) {
   return (
-    <div className="app-setup-action app-edit-actions">
+    <Box className="app-setup-action app-edit-actions">
       <Button
         variant="secondary"
         htmlType="button"
@@ -16,9 +17,9 @@ export function EditProfileActions({ loading, onBack }: Props) {
       >
         Quay lại
       </Button>
-      <Button htmlType="submit" loading={loading}>
+      <Button htmlType="button" loading={loading} onClick={onSave}>
         Lưu
       </Button>
-    </div>
+    </Box>
   );
 }

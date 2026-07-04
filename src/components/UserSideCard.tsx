@@ -65,7 +65,7 @@ export function UserSideCard({
           ) : (
             avatar
           )}
-          <div className="side-name-row">
+          <Box className="side-name-row">
             <Text className="side-name">{getDisplayName(user)}</Text>
             {onEditName && (
               <Button
@@ -77,12 +77,12 @@ export function UserSideCard({
                 <Icon icon="zi-edit" />
               </Button>
             )}
-          </div>
+          </Box>
           <Text className="side-label">{label}</Text>
         </>
       ) : (
         <>
-          <div className="avatar-placeholder">?</div>
+          <Box className="avatar-placeholder">?</Box>
           <Text className="side-name muted">Chưa kết nối</Text>
           <Text className="side-label">{label}</Text>
           {onEmptyAction && (

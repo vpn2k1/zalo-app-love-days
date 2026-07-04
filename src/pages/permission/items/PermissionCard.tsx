@@ -7,14 +7,16 @@ type Props = {
 
 export function PermissionCard({ copy, title }: Props) {
   return (
-    <section className="app-opening-card">
-      <div>
-        <Text.Title size="small">{title}</Text.Title>
-        <Text className="app-card-copy">{copy}</Text>
-      </div>
-      <Box className="app-small-heart">
-        <Icon icon="zi-heart" />
+    <Box className="app-opening-card app-permission-card flex min-h-[220px] flex-col items-center justify-center gap-4">
+      <Box className="w-full text-center">
+        <Text.Title size="small">
+          {title} <Icon icon="zi-heart-solid" className="text-red-500" />
+        </Text.Title>
       </Box>
-    </section>
+
+      <Box className="w-full text-center">
+        <Text className="app-card-copy">{copy}</Text>
+      </Box>
+    </Box>
   );
 }

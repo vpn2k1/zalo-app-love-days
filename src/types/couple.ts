@@ -5,6 +5,7 @@ export type Couple = {
   start_date: string;
   title: string;
   theme: string;
+  background_url?: string | null;
   created_by: string;
   created_at?: string;
   updated_at?: string;

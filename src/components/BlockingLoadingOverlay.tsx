@@ -1,4 +1,4 @@
-import { AppSpinner, Text } from "@/components/zaui";
+import { AppSpinner, Box, Text } from "@/components/zaui";
 
 type Props = {
   show: boolean;
@@ -9,12 +9,12 @@ export function BlockingLoadingOverlay({ show, message }: Props) {
   if (!show) return null;
 
   return (
-    <div className="app-blocking-overlay" role="alert" aria-live="assertive">
-      <div className="app-blocking-dialog">
+    <Box className="app-blocking-overlay" role="alert" aria-live="assertive">
+      <Box className="app-blocking-dialog">
         <AppSpinner />
         <Text.Title size="small">Chờ một chút</Text.Title>
         <Text>{message}</Text>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

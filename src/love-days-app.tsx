@@ -1,7 +1,6 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { AppSpinner } from "@/components/zaui";
+import { useHomeViewState } from "@/hooks/useHomeViewState";
 import { useLoveDaysAuth } from "@/hooks/useLoveDaysAuth";
-import { setHomeViewState, useHomeViewState } from "@/hooks/useHomeViewState";
 import { EditProfilePage } from "@/pages/edit-profile/EditProfilePage";
 import { HomePage } from "@/pages/home/HomePage";
 import { InviteAcceptPage } from "@/pages/invite-accept/InviteAcceptPage";
@@ -9,8 +8,7 @@ import { PermissionGate } from "@/pages/permission/PermissionGate";
 import { SetupPage } from "@/pages/setup/SetupPage";
 
 export function LoveDaysApp() {
-  const queryClient = useQueryClient();
-  const auth = useLoveDaysAuth({ queryClient });
+  const auth = useLoveDaysAuth();
   const state = useHomeViewState();
 
   if (state === "invite") {

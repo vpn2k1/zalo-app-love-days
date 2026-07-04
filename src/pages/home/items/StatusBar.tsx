@@ -1,15 +1,14 @@
 import { Box, Icon, Text } from "@/components/zaui";
-import { homeStyles } from "../modules/inlineStyles";
 
 export function StatusBar() {
   return (
-    <div style={homeStyles.status}>
+    <Box className="mx-1.5 mb-[17px] flex items-center justify-between">
       <Text>9:41</Text>
-      <Box style={homeStyles.statusIcons}>
+      <Box className="flex gap-[5px] text-sm">
         <Icon icon="zi-more-grid" />
         <Icon icon="zi-search" />
         <Icon icon="zi-close" />
       </Box>
-    </div>
+    </Box>
   );
 }

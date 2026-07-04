@@ -1,4 +1,4 @@
-import { Button } from "@/components/zaui";
+import { Box, Button } from "@/components/zaui";
 
 type Props = {
   disabled?: boolean;
@@ -7,7 +7,7 @@ type Props = {
 
 export function EditProfileDangerZone({ disabled, onOpenConfirm }: Props) {
   return (
-    <section className="app-danger-zone">
+    <Box className="app-danger-zone">
       <Button
         fullWidth
         variant="secondary"
@@ -17,6 +17,6 @@ export function EditProfileDangerZone({ disabled, onOpenConfirm }: Props) {
       >
         Rời khỏi Love Days
       </Button>
-    </section>
+    </Box>
   );
 }

@@ -1,5 +1,4 @@
 import { Box, Button, Icon, Text } from "@/components/zaui";
-import { homeStyles } from "../modules/inlineStyles";
 
 type Props = {
   title: string;
@@ -9,10 +8,15 @@ type Props = {
 
 export function HomeHeader({ title, subtitle, onEditProfile }: Props) {
   return (
-    <Box style={homeStyles.header}>
+    <Box className="mb-[13px] flex items-center justify-between">
       <Box>
-        <Text.Title size="large" style={homeStyles.headerTitle}>{title}</Text.Title>
-        <Text style={homeStyles.headerSubtitle}>{subtitle}</Text>
+        <Text.Title
+          size="large"
+          className="font-serif text-[18px] font-medium text-[#2f1d2a]"
+        >
+          {title}
+        </Text.Title>
+        <Text className="text-xs font-semibold text-[#8f7485]">{subtitle}</Text>
       </Box>
       <Box
         aria-label="Mở hồ sơ"

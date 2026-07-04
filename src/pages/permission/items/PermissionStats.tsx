@@ -1,4 +1,4 @@
-import { Text } from "@/components/zaui";
+import { Box, Text } from "@/components/zaui";
 
 type Props = {
   dayTitle: string;
@@ -6,9 +6,9 @@ type Props = {
 
 export function PermissionStats({ dayTitle }: Props) {
   return (
-    <section className="app-opening-days">
+    <Box className="app-opening-days app-alternate-intro-counter">
       <Text.Title size="large">{dayTitle}</Text.Title>
-      <Text>thiết lập rồi vào app</Text>
-    </section>
+      <Text>days together</Text>
+    </Box>
   );
 }

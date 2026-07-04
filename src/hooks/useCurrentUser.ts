@@ -48,6 +48,26 @@ export function useCurrentUser(options: Options = {}) {
   };
 }
 
+export function useCurrentUserActions() {
+  const queryClient = useQueryClient();
+  const setUser = useCallback(
+    (user: AppUser) => setCurrentUserCache(queryClient, user),
+    [queryClient],
+  );
+  const getUser = useCallback(
+    () => getCurrentUserCache(queryClient),
+    [queryClient],
+  );
+  const updateUser = useCallback(
+    (updater: UpdateCurrentUser) => {
+      updateCurrentUserCache(queryClient, updater);
+    },
+    [queryClient],
+  );
+
+  return { getUser, setUser, updateUser };
+}
+
 export async function authorizeCurrentUser() {
   await zaloService.requestUserInfoPermission();
   return restoreCurrentUser();

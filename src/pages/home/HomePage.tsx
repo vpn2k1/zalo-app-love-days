@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { AppSpinner, Page } from "@/components/zaui";
+import { AppSpinner, Box, Page } from "@/components/zaui";
 import { useHomeViewState, setHomeViewState } from "@/hooks/useHomeViewState";
 import { useLoveDaysData } from "@/hooks/useLoveDaysData";
 import { useProfileMutations } from "@/hooks/useProfileMutations";
@@ -18,7 +18,6 @@ import { QuickActionGrid } from "./items/QuickActionGrid";
 import { StatusBar } from "./items/StatusBar";
 import { StartDateModal } from "./items/StartDateModal";
 import { TimelineSection } from "./items/TimelineSection";
-import { homeStyles } from "./modules/inlineStyles";
 import { useHomePageController } from "./modules/useHomePageController";
 import { useHomePage } from "./modules/useHomePage";
 import type {
@@ -88,14 +87,14 @@ function HomePageContent(props: HomePageContentProps) {
   };
 
   return (
-    <Page style={homeStyles.page}>
+    <Page className="mx-auto min-h-screen w-[min(100%,430px)] bg-[#fff4f8] px-[18px] pb-[34px] pt-4 text-[#3c2435]">
       <StatusBar />
       <HomeHeader
         title="Our little universe"
         subtitle={`Friday, ${formatDate(coupleData.couple.start_date)}`}
         onEditProfile={onEditProfile}
       />
-      <HomeHero />
+      <HomeHero backgroundUrl={coupleData.couple.background_url} />
       <CouplePeoplePanel
         currentPerson={home.currentPerson}
         partnerPerson={home.partnerPerson}
@@ -139,9 +138,9 @@ function HomePageContent(props: HomePageContentProps) {
 
 function HomeLoadingState() {
   return (
-    <div className="boot-screen">
+    <Box className="boot-screen">
       <AppSpinner />
-    </div>
+    </Box>
   );
 }
 
@@ -150,7 +149,7 @@ function HomeMissingCoupleState() {
 
   useEffect(() => {
     if (state !== "home") return;
-    setHomeViewState("setup");
+    setHomeViewState("permission");
   }, [state]);
 
   return <HomeLoadingState />;

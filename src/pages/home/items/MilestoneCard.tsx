@@ -1,5 +1,4 @@
 import { Box, Icon, Text } from "@/components/zaui";
-import { homeStyles } from "../modules/inlineStyles";
 import type { ZmpIconName } from "../types/HomePageType";
 
 type Props = {
@@ -11,13 +10,13 @@ type Props = {
 
 export function MilestoneCard({ icon, title, label, value }: Props) {
   return (
-    <Box style={homeStyles.milestone}>
-      <Box style={homeStyles.milestoneIcon}>
+    <Box className="h-[92px] rounded-[18px] bg-white/90 p-3">
+      <Box className="mb-2 grid size-[30px] place-items-center rounded-[11px] bg-[#fff0f6] text-[#e14d86]">
         <Icon icon={icon} />
       </Box>
-      <Text style={homeStyles.muted}>{title}</Text>
-      <Text style={homeStyles.milestoneValue}>{value}</Text>
-      <Text style={homeStyles.muted}>{label}</Text>
+      <Text className="text-xs leading-[1.35] text-[#8b6b7d]">{title}</Text>
+      <Text className="mt-0.5 text-xl font-[850] text-[#3a2232]">{value}</Text>
+      <Text className="text-xs leading-[1.35] text-[#8b6b7d]">{label}</Text>
     </Box>
   );
 }

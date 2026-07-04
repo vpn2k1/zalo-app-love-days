@@ -3354,6 +3354,504 @@
           "fontWeight": "normal"
         }
       ]
+    },
+    {
+      "type": "frame",
+      "id": "O4z4Gm",
+      "x": 1900,
+      "y": 0,
+      "name": "Alternate Intro Screen",
+      "clip": true,
+      "width": 430,
+      "height": 932,
+      "fill": "#FFF5FA",
+      "cornerRadius": 34,
+      "layout": "none",
+      "children": [
+        {
+          "type": "ellipse",
+          "id": "J9yXNu",
+          "x": 216,
+          "y": 350,
+          "name": "Soft Pearl Two",
+          "fill": "#FFFFFFB3",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "type": "ellipse",
+          "id": "Lsudf",
+          "x": 30,
+          "y": 156,
+          "name": "Soft Pearl One",
+          "fill": "#FFFFFF99",
+          "width": 12,
+          "height": 12
+        },
+        {
+          "type": "icon",
+          "id": "YoGq6",
+          "x": 372,
+          "y": 223,
+          "name": "Floating Heart Two",
+          "width": 14,
+          "height": 14,
+          "icon": "heart",
+          "library": "lucide",
+          "fill": "#B79CFF"
+        },
+        {
+          "type": "frame",
+          "id": "I42adH",
+          "x": 0,
+          "y": 0,
+          "name": "Lavender Keepsake Tile",
+          "width": "fit_content(0)",
+          "height": "fit_content(0)",
+          "gap": 6
+        },
+        {
+          "type": "frame",
+          "id": "eWcb6",
+          "x": 0,
+          "y": 0,
+          "name": "Memory Count Tile",
+          "width": "fit_content(0)",
+          "height": "fit_content(0)",
+          "gap": 4
+        },
+        {
+          "type": "frame",
+          "id": "AViiT",
+          "x": 0,
+          "y": 0,
+          "name": "Calendar Memory Tile",
+          "width": "fit_content(0)",
+          "height": "fit_content(0)",
+          "gap": 6
+        },
+        {
+          "type": "frame",
+          "id": "m0Bpew",
+          "x": 0,
+          "y": 0,
+          "name": "Abstract Couple Timeline Tile",
+          "width": "fit_content(0)",
+          "height": 230,
+          "gap": 8,
+          "padding": 14
+        },
+        {
+          "type": "ellipse",
+          "id": "uEvn6",
+          "x": -24,
+          "y": 244,
+          "name": "Rose Ambient Glow",
+          "fill": "#FFB8D24D",
+          "width": 160,
+          "height": 160
+        },
+        {
+          "type": "ellipse",
+          "id": "Z46T0",
+          "x": 228,
+          "y": 82,
+          "name": "Lavender Ambient Glow",
+          "fill": "#D8CBFF66",
+          "width": 180,
+          "height": 180
+        },
+        {
+          "type": "text",
+          "id": "l8RL7",
+          "x": 24,
+          "y": 18,
+          "name": "Status Time",
+          "fill": "#3A2430",
+          "content": "9:41",
+          "fontFamily": "Inter",
+          "fontSize": 15,
+          "fontWeight": "600"
+        },
+        {
+          "type": "icon",
+          "id": "aAnDe",
+          "x": 338,
+          "y": 18,
+          "name": "Status Signal",
+          "width": 17,
+          "height": 17,
+          "icon": "signal",
+          "library": "lucide",
+          "fill": "#3A2430"
+        },
+        {
+          "type": "icon",
+          "id": "R5JHnM",
+          "x": 362,
+          "y": 18,
+          "name": "Status Wifi",
+          "width": 17,
+          "height": 17,
+          "icon": "wifi",
+          "library": "lucide",
+          "fill": "#3A2430"
+        },
+        {
+          "type": "icon",
+          "id": "WOuD9",
+          "x": 386,
+          "y": 16,
+          "name": "Status Battery",
+          "width": 21,
+          "height": 21,
+          "icon": "battery",
+          "library": "lucide",
+          "fill": "#3A2430"
+        },
+        {
+          "type": "text",
+          "id": "vtF49",
+          "x": 18,
+          "y": 420,
+          "name": "Intro Subtitle",
+          "fill": "#8E6077",
+          "textGrowth": "fixed-width-height",
+          "width": 394,
+          "height": 38,
+          "content": "Đếm ngày yêu, lưu kỷ niệm và nhắc những dịp quan trọng trong một mini app thật nhẹ.",
+          "lineHeight": 1.35,
+          "textAlign": "center",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "vZdKO",
+          "x": 18,
+          "y": 786,
+          "name": "Create Love Space Button",
+          "width": 394,
+          "height": 58,
+          "fill": "#C94477",
+          "cornerRadius": 9999,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#C9447740",
+            "offset": {
+              "x": 0,
+              "y": 12
+            },
+            "blur": 24
+          },
+          "gap": 10,
+          "padding": [
+            16,
+            24
+          ],
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon",
+              "id": "R7Vvb",
+              "name": "Create Button Sparkle Icon",
+              "width": 20,
+              "height": 20,
+              "icon": "sparkles",
+              "library": "lucide",
+              "fill": "#FFFFFF"
+            },
+            {
+              "type": "text",
+              "id": "RFjo3",
+              "name": "Create Button Label",
+              "fill": "#FFFFFF",
+              "content": "Tạo không gian yêu",
+              "fontFamily": "Inter",
+              "fontSize": 16,
+              "fontWeight": "800"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "qBVzi",
+          "x": 18,
+          "y": 138,
+          "name": "Opening Hero Visual",
+          "clip": true,
+          "width": 394,
+          "height": 258,
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 145,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#F8BBD4",
+                "position": 0
+              },
+              {
+                "color": "#D9C8FF",
+                "position": 0.62
+              },
+              {
+                "color": "#FFE6D6",
+                "position": 1
+              }
+            ]
+          },
+          "cornerRadius": 30,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#D8A5C34D",
+            "offset": {
+              "x": 0,
+              "y": 14
+            },
+            "blur": 30
+          },
+          "layout": "none",
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "txAqW",
+              "x": 0,
+              "y": 136,
+              "name": "Photo Glow Left",
+              "fill": "#FFFFFF55",
+              "width": 122,
+              "height": 122
+            },
+            {
+              "type": "ellipse",
+              "id": "GUXGX",
+              "x": 258,
+              "y": 0,
+              "name": "Photo Glow Right",
+              "fill": "#FFFFFF55",
+              "width": 126,
+              "height": 126
+            },
+            {
+              "type": "icon",
+              "id": "DHK4C",
+              "x": 172,
+              "y": 58,
+              "name": "Couple Placeholder Icon",
+              "width": 50,
+              "height": 50,
+              "icon": "heart",
+              "library": "lucide",
+              "fill": "#FFFFFF"
+            },
+            {
+              "type": "text",
+              "id": "NiM5M",
+              "x": 56,
+              "y": 124,
+              "name": "Photo Placeholder Text",
+              "fill": "#FFFFFFF2",
+              "textGrowth": "fixed-width",
+              "width": 282,
+              "content": "Bắt đầu câu chuyện của hai bạn",
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 16,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "p0MsWp",
+          "x": 18,
+          "y": 624,
+          "name": "Opening Message Card",
+          "width": 394,
+          "height": 118,
+          "fill": "#FFFFFFD9",
+          "cornerRadius": 22,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#E5B4CC44",
+            "offset": {
+              "x": 0,
+              "y": 8
+            },
+            "blur": 20
+          },
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "NQTjL",
+              "x": 36,
+              "y": 18,
+              "name": "First Partner Name",
+              "fill": "#3A2430",
+              "content": "Lưu lại hành trình",
+              "fontFamily": "Cormorant Garamond",
+              "fontSize": 32,
+              "fontWeight": "700"
+            },
+            {
+              "type": "frame",
+              "id": "fSEwd",
+              "x": 304,
+              "y": 22,
+              "name": "Heart Connector",
+              "width": 34,
+              "height": 34,
+              "fill": "#FFE5EF",
+              "cornerRadius": 17,
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "V2PP8K",
+                  "x": 7,
+                  "y": 7,
+                  "name": "Heart Icon",
+                  "width": 19,
+                  "height": 19,
+                  "icon": "heart",
+                  "library": "lucide",
+                  "fill": "#D84F82"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "nMIqC",
+              "x": 229,
+              "y": 10,
+              "name": "Second Partner Name",
+              "enabled": false,
+              "fill": "#3A2430",
+              "content": "Noah",
+              "fontFamily": "Cormorant Garamond",
+              "fontSize": 29,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "rfP8a",
+              "x": 36,
+              "y": 68,
+              "name": "Since Label",
+              "fill": "#9C7488",
+              "content": "Đếm ngày bên nhau, kỷ niệm và ghi chú trong Zalo",
+              "fontFamily": "Inter",
+              "fontSize": 13,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "ojLo7",
+          "x": 18,
+          "y": 484,
+          "name": "Days Together Counter",
+          "width": 394,
+          "height": 116,
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 120,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#FFFFFF",
+                "position": 0
+              },
+              {
+                "color": "#FFEAF3",
+                "position": 0.55
+              },
+              {
+                "color": "#EFE7FF",
+                "position": 1
+              }
+            ]
+          },
+          "cornerRadius": 26,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#DDB2CB55",
+            "offset": {
+              "x": 0,
+              "y": 12
+            },
+            "blur": 26
+          },
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "kUKgO",
+              "x": 148,
+              "y": 12,
+              "name": "Counter Number",
+              "fill": "#C94477",
+              "content": "1,234",
+              "fontFamily": "Cormorant Garamond",
+              "fontSize": 54,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "fS3Ac",
+              "x": 142,
+              "y": 76,
+              "name": "Counter Caption",
+              "fill": "#5B3549",
+              "content": "days together",
+              "fontFamily": "Inter",
+              "fontSize": 16,
+              "fontWeight": "700"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "ZmIBG",
+          "x": 18,
+          "y": 60,
+          "name": "Welcome Label",
+          "fill": "#7F4B66",
+          "content": "Love Days",
+          "fontFamily": "Cormorant Garamond",
+          "fontSize": 24,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "chTmo",
+          "x": 18,
+          "y": 88,
+          "name": "Today Label",
+          "fill": "#9C7488",
+          "content": "Mini app lưu giữ hành trình yêu",
+          "fontFamily": "Inter",
+          "fontSize": 12,
+          "fontWeight": "normal"
+        }
+      ]
     }
   ],
   "fileToken": "8f63b9c5-ec3e-44bc-b840-97d052b301da"

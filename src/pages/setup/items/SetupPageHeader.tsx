@@ -1,12 +1,12 @@
-import { Box, Icon, Text } from "zmp-ui";
+import { Box, Icon, Text } from "@/components/zaui";
 
 export function SetupPageHeader() {
   return (
     <Box className="app-setup-hero">
-      <div className="app-opening-pill">
+      <Box className="app-opening-pill">
         <Icon icon="zi-heart" />
         <Text>Thiết lập</Text>
-      </div>
+      </Box>
       <Text.Title size="large">
         Câu chuyện của hai bạn bắt đầu từ đây
       </Text.Title>

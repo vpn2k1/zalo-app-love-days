@@ -1,12 +1,12 @@
-import { Icon, Text } from "@/components/zaui";
+import { Box, Icon, Text } from "@/components/zaui";
 
 export function InviteAcceptHero() {
   return (
-    <section className="app-opening-hero">
-      <div className="app-hero-icon">
+    <Box className="app-opening-hero">
+      <Box className="app-hero-icon">
         <Icon icon="zi-heart" />
-      </div>
+      </Box>
       <Text className="app-hero-copy">Người ấy đang chờ bạn tham gia</Text>
-    </section>
+    </Box>
   );
 }

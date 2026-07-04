@@ -1,46 +1,60 @@
 import { useCallback, useEffect, useMemo } from "react";
-import { useMutation, type QueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppSnackbar } from "@/components/zaui";
 import { coupleQueryKey } from "@/config/queryKeys";
-import {
-  authorizeCurrentUser,
-  setCurrentUserCache,
-  useCurrentUser,
-} from "@/hooks/useCurrentUser";
+import { authorizeCurrentUser, useCurrentUser } from "@/hooks/useCurrentUser";
 import { coupleService } from "@/services/coupleService";
 import type { AppUser } from "@/types/user";
 import { getInviteCodeFromUrl } from "@/utils/invite";
 import { setHomeViewState } from "./useHomeViewState";
 
-type Input = {
-  queryClient: QueryClient;
-};
-
-export function useLoveDaysAuth({ queryClient }: Input) {
+export function useLoveDaysAuth() {
+  const queryClient = useQueryClient();
   const inviteCode = useMemo(getInviteCodeFromUrl, []);
   const currentUser = useCurrentUser();
   const { refetch } = currentUser.currentUserQuery;
+  const { setUser } = currentUser;
   const snackbar = useAppSnackbar();
 
-  const openAfterAuth = useCallback(
+  const getCoupleAfterAuth = useCallback(
     async (appUser: AppUser) => {
-      setCurrentUserCache(queryClient, appUser);
+      setUser(appUser);
       const data = await coupleService.getCoupleByUser(appUser.id);
       queryClient.setQueryData(coupleQueryKey(appUser.id), data);
+      return data;
+    },
+    [queryClient, setUser],
+  );
+
+  const openExistingSpace = useCallback(
+    async (appUser: AppUser) => {
+      const data = await getCoupleAfterAuth(appUser);
+      if (!data) {
+        setHomeViewState("permission");
+        return;
+      }
+      setHomeViewState("home");
+    },
+    [getCoupleAfterAuth],
+  );
+
+  const openAfterPermission = useCallback(
+    async (appUser: AppUser) => {
+      const data = await getCoupleAfterAuth(appUser);
       if (!data) {
         setHomeViewState("setup");
         return;
       }
       setHomeViewState("home");
     },
-    [queryClient],
+    [getCoupleAfterAuth],
   );
 
   const authorizeUser = useCallback(async () => {
     const appUser = await authorizeCurrentUser();
-    setCurrentUserCache(queryClient, appUser);
+    setUser(appUser);
     return appUser;
-  }, [queryClient]);
+  }, [setUser]);
 
   useEffect(() => {
     if (inviteCode) {
@@ -50,19 +64,21 @@ export function useLoveDaysAuth({ queryClient }: Input) {
 
     refetch()
       .then((result) => {
-        if (!result.data) throw new Error("Không thể khôi phục thông tin Zalo.");
+        if (!result.data) {
+          throw new Error("Không thể khôi phục thông tin Zalo.");
+        }
 
-        return openAfterAuth(result.data);
+        return openExistingSpace(result.data);
       })
       .catch(() => {
         setHomeViewState("permission");
       });
-  }, [inviteCode, openAfterAuth, refetch]);
+  }, [inviteCode, openExistingSpace, refetch]);
 
   const authorizeMutation = useMutation({
     mutationFn: authorizeUser,
     onSuccess: async (appUser) => {
-      await openAfterAuth(appUser);
+      await openAfterPermission(appUser);
     },
     onError: (error) => {
       console.error(error);

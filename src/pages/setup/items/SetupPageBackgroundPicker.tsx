@@ -1,11 +1,11 @@
-import { useFormContext } from "react-hook-form";
-import { useAppSnackbar } from "@/components/zaui";
+import { useFormContext, useWatch } from "react-hook-form";
+import { Box, Button, Icon, Text, useAppSnackbar } from "@/components/zaui";
 import { pickImagePath } from "@/utils/imagePicker";
-import { Box, Button, Icon, Text } from "zmp-ui";
 
 export function SetupPageBackgroundPicker() {
   const snackbar = useAppSnackbar();
-  const { setValue } = useFormContext();
+  const { control, setValue } = useFormContext();
+  const backgroundUrl = useWatch({ control, name: "backgroundUrl" }) || "";
   const pickBackground = async () => {
     try {
       const image = await pickImagePath();
@@ -18,11 +18,20 @@ export function SetupPageBackgroundPicker() {
   return (
     <Box className="app-setup-card  flex gap-4">
       <Box
-        className="app-hero flex flex-1 items-center justify-center"
+        className="app-hero relative flex flex-1 cursor-pointer items-center justify-center overflow-hidden"
         aria-label="Chọn ảnh nền"
         onClick={pickBackground}
       >
-        <Icon icon="zi-members" size={60} className="text-white" />
+        {backgroundUrl && (
+          <img
+            alt=""
+            className="absolute inset-0 size-full object-cover"
+            src={backgroundUrl}
+          />
+        )}
+        {!backgroundUrl && (
+          <Icon icon="zi-members" size={60} className="text-white" />
+        )}
       </Box>
       <Box className="app-setup-user-copy">
         <Text className="app-opening-card-title">Ảnh cặp đôi</Text>

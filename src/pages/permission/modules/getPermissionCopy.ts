@@ -3,18 +3,23 @@ import type { PermissionCopy } from "../types/PermissionGateType";
 export function getPermissionCopy(blocked?: boolean): PermissionCopy {
   if (blocked) {
     return {
-      actionLabel: "Thử lại",
+      actionLabel: "Tạo không gian yêu",
       cardCopy:
-        "Ứng dụng cần quyền đọc thông tin cơ bản để tạo không gian riêng cho hai bạn.",
-      cardTitle: "Cần quyền Zalo để tiếp tục",
-      dayTitle: "thử lại",
+        "Đếm ngày bên nhau, kỷ niệm và ghi chú trong Zalo",
+      cardTitle: "Lưu lại hành trình",
+      dayTitle: "0",
+      heroTitle: "Bắt đầu câu chuyện của hai bạn",
+      note: "Love Days chỉ dùng thông tin Zalo cơ bản để tạo hồ sơ cho bạn.",
     };
   }
 
   return {
-    actionLabel: "Thiết lập",
-    cardCopy: "Đếm ngày bên nhau, kỷ niệm và ghi chú trong Zalo",
+    actionLabel: "Tạo không gian yêu",
+    cardCopy:
+      "Đếm ngày bên nhau, kỷ niệm và ghi chú trong Zalo",
     cardTitle: "Lưu lại hành trình",
-    dayTitle: "1 chạm",
+    dayTitle: "1,234",
+    heroTitle: "Bắt đầu câu chuyện của hai bạn",
+    note: "Đếm ngày yêu, lưu kỷ niệm và nhắc những dịp quan trọng trong một mini app thật nhẹ.",
   };
 }

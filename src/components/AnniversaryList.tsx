@@ -40,13 +40,13 @@ function AnniversaryItem({
       {item.image_url && (
         <img className="anniversary-thumb" src={item.image_url} alt="" />
       )}
-      <div>
+      <Box>
         <Text className="anniversary-title">{item.title}</Text>
         <Text className="subtle">
           {formatDate(item.date)} · {repeatLabel}
         </Text>
         {item.note && <Text className="anniversary-note">{item.note}</Text>}
-      </div>
+      </Box>
       <Text className="heart-dot">♥</Text>
     </Box>
   );

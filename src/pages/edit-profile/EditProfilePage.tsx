@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { useQueryClient } from "@tanstack/react-query";
-import { AppSpinner, Page, useAppSnackbar } from "@/components/zaui";
+import { AppSpinner, Box, Page } from "@/components/zaui";
 import { useHomeViewState, setHomeViewState } from "@/hooks/useHomeViewState";
 import { useLoveDaysData } from "@/hooks/useLoveDaysData";
-import { pickImagePath } from "@/utils/imagePicker";
 import { StatusBar } from "@/pages/home/items/StatusBar";
 import { EditProfileActions } from "./items/EditProfileActions";
 import { EditProfileDangerZone } from "./items/EditProfileDangerZone";
@@ -27,16 +26,13 @@ export function EditProfilePage({ user }: EditProfilePageProps) {
     queryClient,
     user,
   });
-  const snackbar = useAppSnackbar();
   const [confirmLeave, setConfirmLeave] = useState(false);
-  const { control, handleSubmit, setValue, watch } = useForm<ProfileFormValues>({
+  const methods = useForm<ProfileFormValues>({
     defaultValues: {
       display_name: user.display_name || user.name,
       custom_avatar_url: user.custom_avatar_url || user.avatar_url || "",
     },
   });
-  const avatarUrl = watch("custom_avatar_url");
-  const avatarSrc = getAvatarSrc(avatarUrl);
 
   const submit = async (values: ProfileFormValues) => {
     try {
@@ -49,29 +45,16 @@ export function EditProfilePage({ user }: EditProfilePageProps) {
     }
   };
 
-  const pickAvatar = async () => {
-    try {
-      const image = await pickImagePath();
-      if (image) setValue("custom_avatar_url", image, { shouldDirty: true });
-    } catch (error) {
-      console.error(error);
-      snackbar.showError("Không thể chọn ảnh. Vui lòng thử lại.");
-    }
-  };
-
   if (coupleQuery.isFetching) return <EditProfileLoadingState />;
   if (!coupleData) return <EditProfileMissingCoupleState />;
 
   return (
-    <Page className="app-setup-page">
-      <form onSubmit={handleSubmit(submit)}>
+    <FormProvider {...methods}>
+      <Page className="app-setup-page">
         <StatusBar />
         <EditProfileHeader />
-        <EditProfilePhoto
-          avatarSrc={avatarSrc}
-          onPickAvatar={pickAvatar}
-        />
-        <EditProfileFields control={control} />
+        <EditProfilePhoto />
+        <EditProfileFields />
         <EditProfileDangerZone
           disabled={profile.saveProfileMutation.isPending}
           onOpenConfirm={() => setConfirmLeave(true)}
@@ -79,24 +62,25 @@ export function EditProfilePage({ user }: EditProfilePageProps) {
         <EditProfileActions
           loading={profile.saveProfileMutation.isPending}
           onBack={() => setHomeViewState("home")}
+          onSave={methods.handleSubmit(submit)}
         />
-      </form>
 
-      <EditProfileLeaveModal
-        visible={confirmLeave}
-        leaveLoading={profile.leaveCoupleMutation.isPending}
-        onClose={() => setConfirmLeave(false)}
-        onLeave={() => profile.leaveCoupleMutation.mutateAsync()}
-      />
-    </Page>
+        <EditProfileLeaveModal
+          visible={confirmLeave}
+          leaveLoading={profile.leaveCoupleMutation.isPending}
+          onClose={() => setConfirmLeave(false)}
+          onLeave={() => profile.leaveCoupleMutation.mutateAsync()}
+        />
+      </Page>
+    </FormProvider>
   );
 }
 
 function EditProfileLoadingState() {
   return (
-    <div className="boot-screen">
+    <Box className="boot-screen">
       <AppSpinner />
-    </div>
+    </Box>
   );
 }
 
@@ -105,14 +89,8 @@ function EditProfileMissingCoupleState() {
 
   useEffect(() => {
     if (state !== "edit") return;
-    setHomeViewState("setup");
+    setHomeViewState("permission");
   }, [state]);
 
   return <EditProfileLoadingState />;
-}
-
-function getAvatarSrc(avatarUrl: string) {
-  if (!avatarUrl) return undefined;
-
-  return avatarUrl;
 }

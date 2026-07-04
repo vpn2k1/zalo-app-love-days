@@ -2,7 +2,7 @@ import { Controller, type Control, type FieldValues, type Path } from "react-hoo
 import { Radio } from "zmp-ui";
 import type { RadioGroupProps, RadioProps } from "zmp-ui/radio";
 
-import { Text } from "@/components/zaui";
+import { Box, Text } from "@/components/zaui";
 import { requiredRule } from "@/components/forms/formRules";
 
 type Option = Pick<RadioProps, "disabled" | "label" | "value">;
@@ -32,7 +32,7 @@ export function AppRadioGroup<TFormValues extends FieldValues>({
       name={name}
       rules={{ required: requiredRule(required) }}
       render={({ field, fieldState }) => (
-        <div>
+        <Box>
           {label && <Text className="form-label">{label}</Text>}
           <Radio.Group
             {...groupProps}
@@ -44,7 +44,7 @@ export function AppRadioGroup<TFormValues extends FieldValues>({
           {fieldState.error && (
             <Text className="app-error-text">{fieldState.error.message}</Text>
           )}
-        </div>
+        </Box>
       )}
     />
   );

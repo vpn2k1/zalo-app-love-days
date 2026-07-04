@@ -2,7 +2,7 @@ import { Controller, type Control, type FieldValues, type Path } from "react-hoo
 import { Checkbox } from "zmp-ui";
 import type { CheckboxGroupProps, CheckboxProps } from "zmp-ui/checkbox";
 
-import { Text } from "@/components/zaui";
+import { Box, Text } from "@/components/zaui";
 import { requiredRule } from "@/components/forms/formRules";
 
 type Option = Pick<CheckboxProps, "disabled" | "label" | "value">;
@@ -38,7 +38,7 @@ export function AppCheckboxGroup<TFormValues extends FieldValues>({
         }
 
         return (
-          <div>
+          <Box>
             {label && <Text className="form-label">{label}</Text>}
           <Checkbox.Group
             {...groupProps}
@@ -50,7 +50,7 @@ export function AppCheckboxGroup<TFormValues extends FieldValues>({
           {fieldState.error && (
             <Text className="app-error-text">{fieldState.error.message}</Text>
           )}
-          </div>
+          </Box>
         );
       }}
     />

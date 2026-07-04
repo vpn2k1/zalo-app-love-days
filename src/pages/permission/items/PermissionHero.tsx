@@ -1,10 +1,19 @@
-import { Text } from "@/components/zaui";
+import { Box, Icon, Text } from "@/components/zaui";
 
-export function PermissionHero() {
+type Props = {
+  title: string;
+};
+
+export function PermissionHero({ title }: Props) {
   return (
-    <section className="app-opening-hero">
-      <div className="app-hero-icon">♡</div>
-      <Text className="app-hero-copy">Bắt đầu câu chuyện của hai bạn</Text>
-    </section>
+    <Box className="app-opening-hero app-alternate-intro-hero">
+      <Box className="app-alternate-pearl app-alternate-pearl-one" />
+      <Box className="app-alternate-pearl app-alternate-pearl-two" />
+      <Icon icon="zi-heart" className="app-alternate-floating-heart" />
+      <Box className="app-alternate-hero-icon">
+        <Icon icon="zi-heart" size={60} />
+      </Box>
+      <Text className="app-hero-copy">{title}</Text>
+    </Box>
   );
 }

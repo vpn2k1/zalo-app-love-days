@@ -1,7 +1,6 @@
 import { Box, Icon, Text } from "@/components/zaui";
 import type { Anniversary } from "@/types/anniversary";
 import { formatDate } from "@/utils/date";
-import { homeStyles } from "../modules/inlineStyles";
 
 type Props = {
   anniversaries: Anniversary[];
@@ -10,35 +9,43 @@ type Props = {
 export function TimelineSection({ anniversaries }: Props) {
   if (anniversaries.length === 0) {
     return (
-      <Box style={homeStyles.timeline}>
+      <Box className="mb-3 rounded-[18px] bg-white/90 px-3.5 pb-3.5 pt-2.5">
         <TimelineHeader />
-        <div style={homeStyles.timelineItem}>
-          <Text style={homeStyles.timelineIcon}>♡</Text>
-          <div>
-            <Text style={homeStyles.timelineTitle}>Beach sunset</Text>
-            <Text style={homeStyles.muted}>12 photos</Text>
-          </div>
-          <Text style={homeStyles.timelineIcon}>✦</Text>
-          <div>
-            <Text style={homeStyles.timelineTitle}>Coffee date</Text>
-            <Text style={homeStyles.muted}>5 photos</Text>
-          </div>
-        </div>
+        <Box className="flex min-h-10 items-center gap-3">
+          <Text className="grid size-[30px] flex-none place-items-center rounded-[11px] bg-[#fff0f6] text-[#e14d86]">
+            ♡
+          </Text>
+          <Box>
+            <Text className="font-[850] text-[#3a2232]">Beach sunset</Text>
+            <Text className="text-xs leading-[1.35] text-[#8b6b7d]">12 photos</Text>
+          </Box>
+          <Text className="grid size-[30px] flex-none place-items-center rounded-[11px] bg-[#fff0f6] text-[#e14d86]">
+            ✦
+          </Text>
+          <Box>
+            <Text className="font-[850] text-[#3a2232]">Coffee date</Text>
+            <Text className="text-xs leading-[1.35] text-[#8b6b7d]">5 photos</Text>
+          </Box>
+        </Box>
       </Box>
     );
   }
 
   return (
-    <Box style={homeStyles.timeline}>
+    <Box className="mb-3 rounded-[18px] bg-white/90 px-3.5 pb-3.5 pt-2.5">
       <TimelineHeader />
       {anniversaries.map((item) => (
-        <div style={homeStyles.timelineItem} key={item.id}>
-          <Text style={homeStyles.timelineIcon}>♡</Text>
-          <div>
-            <Text style={homeStyles.timelineTitle}>{item.title}</Text>
-            <Text style={homeStyles.muted}>{formatDate(item.date)}</Text>
-          </div>
-        </div>
+        <Box className="flex min-h-10 items-center gap-3" key={item.id}>
+          <Text className="grid size-[30px] flex-none place-items-center rounded-[11px] bg-[#fff0f6] text-[#e14d86]">
+            ♡
+          </Text>
+          <Box>
+            <Text className="font-[850] text-[#3a2232]">{item.title}</Text>
+            <Text className="text-xs leading-[1.35] text-[#8b6b7d]">
+              {formatDate(item.date)}
+            </Text>
+          </Box>
+        </Box>
       ))}
     </Box>
   );
@@ -46,11 +53,14 @@ export function TimelineSection({ anniversaries }: Props) {
 
 function TimelineHeader() {
   return (
-    <div style={homeStyles.timelineHead}>
-      <Text.Title size="small" style={homeStyles.sectionTitleText}>
+    <Box className="mb-2.5 flex items-center justify-between">
+      <Text.Title
+        size="small"
+        className="font-serif font-medium text-[#2f1d2a]"
+      >
         Photo album timeline
       </Text.Title>
       <Icon icon="zi-chevron-right" />
-    </div>
+    </Box>
   );
 }

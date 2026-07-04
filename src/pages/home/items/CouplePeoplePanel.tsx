@@ -1,4 +1,4 @@
-import { Icon } from "@/components/zaui";
+import { Box, Icon } from "@/components/zaui";
 import type { HomePageContentProps, Person } from "../types/HomePageType";
 import { PersonChip } from "./PersonChip";
 
@@ -22,20 +22,20 @@ export function CouplePeoplePanel({
   }
 
   return (
-    <div className="w-full grid grid-cols-10 items-start bg-white rounded-2xl p-4 gap-4 my-4">
-      <div className="col-span-4 flex justify-center">
+    <Box className="w-full grid grid-cols-10 items-start bg-white rounded-2xl p-4 gap-4 my-4">
+      <Box className="col-span-4 flex justify-center">
         <PersonChip person={currentPerson} onClick={onSaveAvatar} />
-      </div>
-      <div className="col-span-2 flex justify-center pt-3">
-        <Icon icon="zi-heart-solid" size={50} style={{ color: "#ef4444" }} />
-      </div>
-      <div className="col-span-4 flex justify-center">
+      </Box>
+      <Box className="col-span-2 flex justify-center pt-3">
+        <Icon icon="zi-heart-solid" size={50} className="text-[#ef4444]" />
+      </Box>
+      <Box className="col-span-4 flex justify-center">
         <PersonChip
           person={partnerPerson}
           emptyLabel="Mời người ấy"
           onClick={partnerClick}
         />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

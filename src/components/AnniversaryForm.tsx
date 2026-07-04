@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import {
   AppDatePicker,
   AppImagePicker,
@@ -6,7 +6,7 @@ import {
   AppTextArea,
   AppTextInput,
 } from "@/components/forms";
-import { Button, Text } from "@/components/zaui";
+import { Box, Button, Text } from "@/components/zaui";
 import type { AnniversaryDraft } from "@/types/anniversary";
 
 type Props = {
@@ -15,7 +15,7 @@ type Props = {
 };
 
 export function AnniversaryForm({ onAdd, loading }: Props) {
-  const { control, handleSubmit, reset, watch } = useForm<AnniversaryDraft>({
+  const methods = useForm<AnniversaryDraft>({
     defaultValues: {
       title: "",
       date: "",
@@ -24,6 +24,7 @@ export function AnniversaryForm({ onAdd, loading }: Props) {
       image_url: "",
     },
   });
+  const { control, handleSubmit, reset, watch } = methods;
   const title = watch("title");
   const date = watch("date");
   const canAdd = Boolean(title.trim() && date);
@@ -46,45 +47,48 @@ export function AnniversaryForm({ onAdd, loading }: Props) {
   };
 
   return (
-    <form className="anniversary-form" onSubmit={handleSubmit(submit)}>
-      <Text className="form-label">Ngày kỷ niệm</Text>
-      <AppTextInput
-        control={control}
-        name="title"
-        label="Tên kỷ niệm"
-        placeholder="Ví dụ: Lần đầu gặp nhau"
-      />
-      <AppDatePicker control={control} name="date" label="Ngày" required />
-      <AppImagePicker
-        control={control}
-        name="image_url"
-        label="Ảnh kỷ niệm"
-        optional
-      />
-      <AppSelect
-        control={control}
-        name="repeat_type"
-        label="Lặp lại"
-        options={[
-          { label: "Hàng năm", value: "yearly" },
-          { label: "Không lặp", value: "none" },
-        ]}
-      />
-      <AppTextArea
-        control={control}
-        name="note"
-        label="Ghi chú"
-        placeholder="Một lời nhắn nhỏ..."
-      />
-      <Button
-        fullWidth
-        disabled={!canAdd}
-        htmlType="submit"
-        variant="secondary"
-        loading={loading}
-      >
-        Thêm ngày kỷ niệm
-      </Button>
-    </form>
+    <FormProvider {...methods}>
+      <Box className="anniversary-form">
+        <Text className="form-label">Ngày kỷ niệm</Text>
+        <AppTextInput
+          control={control}
+          name="title"
+          label="Tên kỷ niệm"
+          placeholder="Ví dụ: Lần đầu gặp nhau"
+        />
+        <AppDatePicker control={control} name="date" label="Ngày" required />
+        <AppImagePicker
+          control={control}
+          name="image_url"
+          label="Ảnh kỷ niệm"
+          optional
+        />
+        <AppSelect
+          control={control}
+          name="repeat_type"
+          label="Lặp lại"
+          options={[
+            { label: "Hàng năm", value: "yearly" },
+            { label: "Không lặp", value: "none" },
+          ]}
+        />
+        <AppTextArea
+          control={control}
+          name="note"
+          label="Ghi chú"
+          placeholder="Một lời nhắn nhỏ..."
+        />
+        <Button
+          fullWidth
+          disabled={!canAdd}
+          htmlType="button"
+          variant="secondary"
+          loading={loading}
+          onClick={handleSubmit(submit)}
+        >
+          Thêm ngày kỷ niệm
+        </Button>
+      </Box>
+    </FormProvider>
   );
 }

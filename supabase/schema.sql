@@ -16,6 +16,7 @@ create table if not exists public.couples (
   start_date date not null,
   title text not null default 'Love Days',
   theme text not null default 'pastel',
+  background_url text,
   created_by uuid not null references public.users(id) on delete cascade,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -45,6 +46,9 @@ create table if not exists public.anniversaries (
 
 alter table public.anniversaries
 add column if not exists image_url text;
+
+alter table public.couples
+add column if not exists background_url text;
 
 insert into storage.buckets (id, name, public)
 values ('love-days-media', 'love-days-media', true)

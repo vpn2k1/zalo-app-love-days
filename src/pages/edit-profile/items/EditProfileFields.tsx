@@ -1,21 +1,20 @@
-import type { Control } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { AppTextInput } from "@/components/forms";
+import { Box } from "@/components/zaui";
 import type { ProfileFormValues } from "../types/EditProfilePageType";
 
-type Props = {
-  control: Control<ProfileFormValues>;
-};
+export function EditProfileFields() {
+  const { control } = useFormContext<ProfileFormValues>();
 
-export function EditProfileFields({ control }: Props) {
   return (
-    <section className="app-setup-card">
-      <div className="app-setup-form">
+    <Box className="app-setup-card">
+      <Box className="app-setup-form">
         <AppTextInput
           control={control}
           name="display_name"
           label="Tên hiển thị"
         />
-      </div>
-    </section>
+      </Box>
+    </Box>
   );
 }

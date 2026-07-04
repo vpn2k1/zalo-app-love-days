@@ -91,6 +91,7 @@ export const mockDb = {
       start_date: input.startDate,
       title: "Love Days",
       theme: "pastel",
+      background_url: input.backgroundUrl,
       created_by: user.id,
       created_at: now(),
       updated_at: now(),

@@ -53,7 +53,6 @@ export const coupleService = {
     if (existingCouple) {
       return existingCouple;
     }
-
     const { data: couple, error: coupleError } = await supabase
       .from("couples")
       .insert({
@@ -66,6 +65,20 @@ export const coupleService = {
       .single();
     if (coupleError) throw coupleError;
 
+    let savedCouple = couple as Couple;
+    const backgroundUrl = await mediaService.uploadImagePath({
+      coupleId: savedCouple.id, fileName: "background", path: input.backgroundUrl, scope: "backgrounds",
+    });
+    if (backgroundUrl) {
+      const { data: updatedCouple, error: backgroundError } = await supabase
+        .from("couples")
+        .update({ background_url: backgroundUrl, updated_at: new Date().toISOString() })
+        .eq("id", savedCouple.id)
+        .select("*")
+        .single();
+      if (backgroundError) throw backgroundError;
+      savedCouple = updatedCouple as Couple;
+    }
     const customAvatarUrl = await mediaService.uploadImagePath({
       coupleId: couple.id,
       fileName: `avatar-${user.id}`,
@@ -119,7 +132,7 @@ export const coupleService = {
       if (anniversaryError) throw anniversaryError;
     }
 
-    return { couple, members: [{ ...(member as CoupleMember), user: updatedUser }] };
+    return { couple: savedCouple, members: [{ ...(member as CoupleMember), user: updatedUser }] };
   },
 
   async updateCoupleStartDate(coupleId: string, startDate: string): Promise<Couple> {

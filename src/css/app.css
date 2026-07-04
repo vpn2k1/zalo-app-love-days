@@ -148,6 +148,95 @@
   box-shadow: 0 10px 22px rgba(201, 61, 116, 0.08);
 }
 
+.app-permission-pill-row {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.app-permission-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  color: #8f4e6b;
+  background: rgba(255, 255, 255, 0.72);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.app-permission-card {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.app-permission-card-copy {
+  width: 100%;
+}
+
+.app-permission-steps {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.app-permission-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: #fff7fb;
+  color: #7c5a6d;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.app-permission-step .app-small-heart {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  border-radius: 13px;
+  background: #ffe9f2;
+}
+
+.app-permission-stats {
+  gap: 6px;
+}
+
+.app-permission-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.app-permission-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  color: #8a6476;
+  background: #fdf2f7;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.app-permission-chip-accent {
+  color: #ffffff;
+  background: #d9467e;
+}
+
 .app-opening-avatar {
   display: grid;
   place-items: center;
@@ -1021,7 +1110,9 @@
 }
 
 .app-opening-page {
+  min-height: 100vh;
   padding: 16px 18px 24px;
+  overflow: hidden;
 }
 
 .app-opening-header {
@@ -1040,11 +1131,173 @@
   padding: 0 20px;
 }
 
+.app-permission-hero {
+  align-content: center;
+  gap: 10px;
+  min-height: 236px;
+  padding: 20px 22px;
+  text-align: center;
+}
+
+.app-permission-hero .zaui-text-title {
+  max-width: 280px;
+  color: #3c2435;
+  font-size: 26px;
+  line-height: 1.12;
+}
+
+.app-permission-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  color: #7d3156;
+  background: rgba(255, 255, 255, 0.58);
+  font-size: 12px;
+  font-weight: 800;
+}
+
 .app-opening-card {
   min-height: 88px;
   justify-content: space-between;
   gap: 12px;
   padding: 15px 18px;
+}
+
+.app-permission-card {
+  align-items: flex-start;
+}
+
+.app-alternate-intro-hero {
+  position: relative;
+  min-height: 200px;
+  margin-top: 30px;
+  margin-bottom: 24px;
+  overflow: hidden;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 15% 88%, rgba(255, 255, 255, 0.34) 0 15%, transparent 30%),
+    radial-gradient(circle at 82% 8%, rgba(255, 255, 255, 0.34) 0 17%, transparent 32%),
+    linear-gradient(145deg, #f8bbd4 0%, #d9c8ff 62%, #ffe6d6 100%);
+  box-shadow: 0 14px 30px rgba(216, 165, 195, 0.3);
+}
+
+.app-alternate-intro-hero::before,
+.app-alternate-intro-hero::after {
+  display: none;
+}
+
+.app-alternate-hero-icon {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin-top: 20px;
+  color: #ffffff;
+  font-size: 50px;
+}
+
+.app-alternate-intro-hero .app-hero-copy {
+  position: relative;
+  z-index: 1;
+  max-width: 282px;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 16px;
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.app-alternate-intro-subtitle {
+  margin: 0 auto 24px;
+  max-width: 394px;
+  color: #8e6077;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.app-alternate-pearl,
+.app-alternate-floating-heart {
+  position: absolute;
+  z-index: 1;
+}
+
+.app-alternate-pearl {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.64);
+}
+
+.app-alternate-pearl-one {
+  top: 18px;
+  left: 12px;
+  width: 12px;
+  height: 12px;
+}
+
+.app-alternate-pearl-two {
+  right: 178px;
+  bottom: 32px;
+  width: 16px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.app-alternate-floating-heart {
+  top: 85px;
+  right: 26px;
+  color: #b79cff;
+  font-size: 14px;
+}
+
+.app-alternate-intro-counter {
+  min-height: 116px;
+  margin-top: 0;
+  border-radius: 26px;
+  background:
+    linear-gradient(120deg, #ffffff 0%, #ffeaf3 55%, #efe7ff 100%);
+  box-shadow: 0 12px 26px rgba(221, 178, 203, 0.33);
+}
+
+.app-alternate-intro-counter .zaui-text-title {
+  color: #c94477;
+  font-size: 54px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.app-alternate-intro-counter .zaui-text {
+  color: #5b3549;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.app-alternate-intro-card {
+  min-height: 118px;
+  align-items: flex-start;
+  margin-top: 24px;
+  padding: 18px 18px 18px;
+  border: 0;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 8px 20px rgba(229, 180, 204, 0.27);
+}
+
+.app-alternate-intro-card .zaui-text-title {
+  color: #3a2430;
+  font-size: 32px;
+  line-height: 1.1;
+}
+
+.app-alternate-intro-card .app-card-copy {
+  margin-top: 12px;
+  color: #9c7488;
+  font-size: 13px;
 }
 
 .app-opening-card .zaui-text-title {

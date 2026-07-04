@@ -1,7 +1,7 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { useAppSnackbar } from "@/components/zaui";
-import { setCurrentUserCache } from "@/hooks/useCurrentUser";
+import { useCurrentUserActions } from "@/hooks/useCurrentUser";
 import { authService } from "@/services/authService";
 import { coupleService } from "@/services/coupleService";
 import { mediaService } from "@/services/mediaService";
@@ -22,6 +22,7 @@ export function useProfileMutations({
   user,
 }: Input) {
   const snackbar = useAppSnackbar();
+  const { setUser } = useCurrentUserActions();
   const saveProfileMutation = useMutation({
     mutationFn: async (payload: ProfilePayload) => {
       if (!user || !coupleData) throw new Error("Bạn cần cấp quyền Zalo trước.");
@@ -49,19 +50,19 @@ export function useProfileMutations({
         display_name: payload.display_name,
         custom_avatar_url: payload.custom_avatar_url,
       };
-      setCurrentUserCache(queryClient, optimisticUser);
+      setUser(optimisticUser);
       updateCoupleUserCache(queryClient, optimisticUser);
       return { previousCouple, previousUser };
     },
     onSuccess: async (updated) => {
-      setCurrentUserCache(queryClient, updated);
+      setUser(updated);
       updateCoupleUserCache(queryClient, updated);
       await queryClient.invalidateQueries({ queryKey: coupleQueryKey(updated.id) });
       setHomeViewState("home");
     },
     onError: (error, _payload, context) => {
       if (context) {
-        setCurrentUserCache(queryClient, context.previousUser);
+        setUser(context.previousUser);
         queryClient.setQueryData(
           coupleQueryKey(context.previousUser.id),
           context.previousCouple,
@@ -103,7 +104,7 @@ export function useProfileMutations({
       queryClient.removeQueries({
         queryKey: anniversariesQueryKey(coupleData?.couple.id),
       });
-      setHomeViewState("setup");
+      setHomeViewState("permission");
     },
     onError: (error) => {
       console.error(error);

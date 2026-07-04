@@ -1,6 +1,6 @@
 import { useMutation, type QueryClient } from "@tanstack/react-query";
 import { useAppSnackbar } from "@/components/zaui";
-import { setCurrentUserCache } from "@/hooks/useCurrentUser";
+import { useCurrentUserActions } from "@/hooks/useCurrentUser";
 import { coupleService } from "@/services/coupleService";
 import { inviteService } from "@/services/inviteService";
 import type { CoupleWithMembers } from "@/types/couple";
@@ -24,11 +24,12 @@ export function useInviteAcceptance({
   user,
 }: Input) {
   const snackbar = useAppSnackbar();
+  const { setUser } = useCurrentUserActions();
   const acceptInviteMutation = useMutation({
     mutationFn: async () => {
       if (!inviteCode) throw new Error("Thiếu mã lời mời.");
       const appUser = user ?? (await authorizeUser());
-      setCurrentUserCache(queryClient, appUser);
+      setUser(appUser);
       const existingCouple = await coupleService.getCoupleByUser(appUser.id);
       if (existingCouple) {
         queryClient.setQueryData(coupleQueryKey(appUser.id), existingCouple);
@@ -37,7 +38,7 @@ export function useInviteAcceptance({
       return { appUser, accepted };
     },
     onSuccess: async ({ appUser, accepted }) => {
-      setCurrentUserCache(queryClient, appUser);
+      setUser(appUser);
       setInviteConflict("");
       queryClient.setQueryData(coupleQueryKey(appUser.id), accepted);
       await queryClient.invalidateQueries({
@@ -70,7 +71,7 @@ export function useInviteAcceptance({
       setHomeViewState("home");
       return;
     }
-    setHomeViewState("setup");
+    setHomeViewState("permission");
   };
 
   return { acceptInviteMutation, closeInviteConflict };

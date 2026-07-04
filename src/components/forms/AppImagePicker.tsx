@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Controller, type Control, type FieldValues, type Path } from "react-hook-form";
-import { AppImageViewer, Button, Icon, Text } from "@/components/zaui";
+import { AppImageViewer, Box, Button, Icon, Text } from "@/components/zaui";
 import { requiredRule } from "@/components/forms/formRules";
 import { pickImagePath } from "@/utils/imagePicker";
 
@@ -54,7 +54,7 @@ export function AppImagePicker<TFormValues extends FieldValues>({
         };
 
         return (
-          <div className="app-image-picker">
+          <Box className="app-image-picker">
             <Text className="form-label">{labelText}</Text>
             {value && (
               <>
@@ -74,7 +74,7 @@ export function AppImagePicker<TFormValues extends FieldValues>({
                 />
               </>
             )}
-            <div className="app-image-picker-actions">
+            <Box className="app-image-picker-actions">
               <Button
                 htmlType="button"
                 variant="secondary"
@@ -95,9 +95,9 @@ export function AppImagePicker<TFormValues extends FieldValues>({
                   Xóa ảnh
                 </Button>
               )}
-            </div>
+            </Box>
             {errorText && <Text className="app-error-text">{errorText}</Text>}
-          </div>
+          </Box>
         );
       }}
     />
