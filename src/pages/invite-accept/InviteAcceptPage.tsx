@@ -1,4 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
+import { BlockingLoadingOverlay } from "@/components/BlockingLoadingOverlay";
 import { Page } from "@/components/zaui";
 import { StatusBar } from "@/pages/home/items/StatusBar";
 import { InviteAcceptAction } from "./items/InviteAcceptAction";
@@ -42,6 +43,10 @@ export function InviteAcceptPage({
         conflictMessage={invite.inviteConflict}
         loading={invite.acceptInviteMutation.isPending}
         onCloseConflict={invite.closeInviteConflict}
+      />
+      <BlockingLoadingOverlay
+        show={invite.acceptInviteMutation.isPending}
+        message="Đang ghép đôi..."
       />
     </Page>
   );

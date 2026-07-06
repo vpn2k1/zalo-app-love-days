@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppSnackbar } from "@/components/zaui";
 import { anniversariesQueryKey, coupleQueryKey } from "@/config/queryKeys";
+import { useAppNavigation } from "@/hooks/useAppNavigation";
 import { useCurrentUserActions } from "@/hooks/useCurrentUser";
-import { setHomeViewState } from "@/hooks/useHomeViewState";
 import { coupleService } from "@/services/coupleService";
 import type { CoupleWithMembers, SetupCoupleInput } from "@/types/couple";
 import type { AppUser } from "@/types/user";
@@ -15,6 +15,7 @@ export function useCreateCoupleMutation({ user }: Input) {
   const queryClient = useQueryClient();
   const snackbar = useAppSnackbar();
   const { setUser } = useCurrentUserActions();
+  const navigation = useAppNavigation();
   const createCoupleMutation = useMutation({
     mutationKey: ["createCouple"],
     mutationFn: (input: SetupCoupleInput) => {
@@ -36,11 +37,11 @@ export function useCreateCoupleMutation({ user }: Input) {
       await queryClient.invalidateQueries({
         queryKey: anniversariesQueryKey(data.couple.id),
       });
-      setHomeViewState("home");
+      navigation.goHome({ replace: true });
     },
     onError: (error) => {
       console.error(error);
-      let message = "Không thể tạo Love Days. Vui lòng thử lại.";
+      let message = "Không thể tạo Yêu. Vui lòng thử lại.";
       if (error instanceof Error) message = error.message;
       snackbar.showError(message);
     },

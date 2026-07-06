@@ -1,4 +1,8 @@
 import { inviteConfig } from "@/config/invite";
+import {
+  getInviteErrorMessage,
+  inviteConflictMessages,
+} from "@/services/inviteErrors";
 import type { CoupleWithMembers } from "@/types/couple";
 import type { PartnerInvite } from "@/types/invite";
 import type { AppUser } from "@/types/user";
@@ -14,7 +18,7 @@ export const mockInviteDb = {
     if (hasPartner || members.length >= 2) {
       state.invites = cancelPendingInvites(state.invites, coupleId);
       writeState(state);
-      throw new Error("Love Days này đã có đối tác, không thể tạo thêm lời mời.");
+      throw new Error("Yêu này đã có đối tác, không thể tạo thêm lời mời.");
     }
 
     const invite: PartnerInvite = {
@@ -51,7 +55,7 @@ export const mockInviteDb = {
     if (hasPartner || roomMembers.length >= 2) {
       state.invites = cancelPendingInvites(state.invites, invite.couple_id);
       writeState(state);
-      throw new Error("Love Days này đã có người ghép nối. Lời mời không còn hiệu lực.");
+      throw new Error(inviteConflictMessages.targetMatchedOther);
     }
 
     state.members.push({
@@ -69,7 +73,7 @@ export const mockInviteDb = {
     writeState(state);
 
     const couple = state.couples.find((item) => item.id === invite.couple_id);
-    if (!couple) throw new Error("Không tìm thấy Love Days.");
+    if (!couple) throw new Error("Không tìm thấy Yêu.");
     const members = state.members
       .filter((member) => member.couple_id === couple.id)
       .map((member) => ({
@@ -87,15 +91,13 @@ function acceptExistingCouple(
   if (invite && existingCouple.couple.id === invite.couple_id) {
     return existingCouple;
   }
-  throw new Error("Bạn đã ghép nối trong một Love Days khác.");
+  throw new Error(inviteConflictMessages.currentUserMatchedOther);
 }
 
 function validateInvite(invite?: PartnerInvite): asserts invite is PartnerInvite {
-  if (!invite) throw new Error("Lời mời không hợp lệ.");
-  if (invite.status === "accepted" || invite.status === "cancelled") {
-    throw new Error("Lời mời này đã hết hiệu lực vì Love Days đã ghép nối với người khác.");
+  if (!invite || invite.status !== "pending") {
+    throw new Error(getInviteErrorMessage(invite));
   }
-  if (invite.status !== "pending") throw new Error("Lời mời không hợp lệ.");
   if (new Date(invite.expires_at).getTime() < Date.now()) {
     throw new Error("Lời mời đã hết hạn.");
   }

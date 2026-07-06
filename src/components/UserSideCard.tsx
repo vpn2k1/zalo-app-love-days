@@ -12,7 +12,7 @@ type Props = {
 };
 
 const getDisplayName = (user?: AppUser) =>
-  user?.display_name || user?.name || "Love Days";
+  user?.display_name || user?.name || "Yêu";
 
 const getAvatar = (user?: AppUser) => user?.custom_avatar_url || user?.avatar_url;
 

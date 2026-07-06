@@ -16,7 +16,7 @@ export function EditProfileLeaveModal({
   return (
     <AppModal
       visible={visible}
-      title="Rời khỏi Love Days?"
+      title="Rời khỏi Yêu?"
       description="Thao tác này sẽ xoá dữ liệu cặp đôi, lời mời và các kỷ niệm đã lưu."
       maskClosable={!leaveLoading}
       onClose={onClose}

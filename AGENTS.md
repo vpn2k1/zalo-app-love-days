@@ -23,6 +23,48 @@ The app requests Zalo user permission, stores or mocks user/couple data, lets a 
 11. **Verification.** For code changes, run `npm run typecheck`. Run `npm run build` when changing bundling, env handling, assets, or ZMP deployment behavior.
 12. **Control flow.** Do not add ternary operators, `else`/`else if`, or `switch`/`case`. Use guard clauses, early returns, and false-case-first checks.
 13. **Shared UI state.** When UI state is used across unrelated components, create a typed custom hook in `src/hooks/` with module-local listeners, show/hide helpers, `useEffect` subscription, and cleanup.
+## Ponytail Mode — Lazy Senior Dev
+
+Use Ponytail mode for all code changes in this repository. Lazy means efficient, not careless. The best code is the code never written.
+
+Before writing code, understand the task and trace the real flow end to end. Then stop at the first rung that solves the problem:
+
+1. Does this need to be built at all?
+2. Does it already exist in this codebase?
+3. Does a helper, util, component, hook, service, or pattern already cover it?
+4. Does TypeScript, React, browser API, or standard JavaScript already do it?
+5. Does `zmp-ui`, `zmp-sdk`, TanStack Query, Jotai, React Hook Form, Supabase, Tailwind, or another already-installed dependency cover it?
+6. Can this be solved with a small local change?
+7. Only then, write the minimum code that works.
+
+Rules:
+
+* Prefer deletion over addition.
+* Prefer boring code over clever code.
+* Prefer the shortest correct diff after understanding the real flow.
+* Reuse existing project structure, services, hooks, types, UI components, and helpers before creating new ones.
+* Do not add abstractions unless explicitly requested or clearly required by repeated code.
+* Do not add dependencies unless the user approves it.
+* Do not add boilerplate nobody asked for.
+* Fix the root cause, not only the reported symptom.
+* When touching a shared function, component, hook, or service, check its callers before changing behavior.
+* Avoid broad rewrites when a localized fix solves the issue.
+* Keep changes within the smallest reasonable set of files.
+* If two approaches are similarly small, choose the safer edge-case-correct option.
+* Mark intentional shortcuts with a `ponytail:` comment only when the shortcut has a known ceiling and an obvious upgrade path.
+
+Not lazy about:
+
+* Understanding the problem before editing.
+* Input validation at trust boundaries.
+* Error handling that prevents data loss.
+* Security and secret handling.
+* Accessibility.
+* Zalo Mini App mobile constraints, safe areas, and real-device behavior.
+* Supabase mock-mode compatibility.
+* Anything explicitly requested by the user.
+
+For non-trivial logic, leave the smallest runnable verification behind. Prefer `npm run typecheck`; run `npm run build` when bundling, env handling, assets, or ZMP deployment behavior changes.
 
 ## Architecture Quick Map
 

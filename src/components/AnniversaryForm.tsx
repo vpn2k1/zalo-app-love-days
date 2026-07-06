@@ -39,7 +39,7 @@ export function AnniversaryForm({ onAdd, loading }: Props) {
     });
     reset({
       title: "",
-      date: values.date,
+      date: "",
       repeat_type: values.repeat_type,
       note: "",
       image_url: "",

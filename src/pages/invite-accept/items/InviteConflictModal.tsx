@@ -14,7 +14,7 @@ export function InviteConflictModal({
   return (
     <AppModal
       visible={Boolean(conflictMessage)}
-      title="Bạn đã có Love Days rồi"
+      title="Không thể ghép đôi"
       description={getConflictDescription(conflictMessage)}
       maskClosable={false}
       actions={[
@@ -33,5 +33,5 @@ export function InviteConflictModal({
 function getConflictDescription(conflictMessage?: string) {
   if (!conflictMessage) return undefined;
 
-  return `${conflictMessage} Khi đóng thông báo, Love Days sẽ mở không gian hiện tại của bạn. Nếu tài khoản này chưa tạo không gian nào, app sẽ đưa bạn tới bước thiết lập ban đầu.`;
+  return `${conflictMessage} Khi đóng thông báo, Yêu sẽ mở không gian hiện tại của bạn. Nếu tài khoản này chưa tạo không gian nào, ứng dụng sẽ đưa bạn tới bước thiết lập ban đầu.`;
 }

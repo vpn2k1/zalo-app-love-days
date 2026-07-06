@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { anniversaryService } from "@/services/anniversaryService";
 import { coupleService } from "@/services/coupleService";
 import type { AppUser } from "@/types/user";
 import { anniversariesQueryKey, coupleQueryKey } from "@/config/queryKeys";
@@ -16,7 +17,7 @@ export function useLoveDaysData({ user }: Input) {
   const coupleData = coupleQuery.data ?? null;
   const anniversariesQuery = useQuery({
     queryKey: anniversariesQueryKey(coupleData?.couple.id),
-    queryFn: () => coupleService.getAnniversaries(coupleData!.couple.id),
+    queryFn: () => anniversaryService.list(coupleData!.couple.id),
     enabled: Boolean(coupleData),
   });
 

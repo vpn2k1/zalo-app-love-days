@@ -1,14 +1,15 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { useAppSnackbar } from "@/components/zaui";
+import { useAppNavigation } from "@/hooks/useAppNavigation";
 import { useCurrentUserActions } from "@/hooks/useCurrentUser";
 import { authService } from "@/services/authService";
+import { coupleDisplayService } from "@/services/coupleDisplayService";
 import { coupleService } from "@/services/coupleService";
 import { mediaService } from "@/services/mediaService";
 import type { CoupleWithMembers } from "@/types/couple";
 import type { AppUser } from "@/types/user";
 import { anniversariesQueryKey, coupleQueryKey } from "@/config/queryKeys";
-import { setHomeViewState } from "./useHomeViewState";
 
 type Input = {
   coupleData: CoupleWithMembers | null;
@@ -23,6 +24,7 @@ export function useProfileMutations({
 }: Input) {
   const snackbar = useAppSnackbar();
   const { setUser } = useCurrentUserActions();
+  const navigation = useAppNavigation();
   const saveProfileMutation = useMutation({
     mutationFn: async (payload: ProfilePayload) => {
       if (!user || !coupleData) throw new Error("Bạn cần cấp quyền Zalo trước.");
@@ -58,7 +60,7 @@ export function useProfileMutations({
       setUser(updated);
       updateCoupleUserCache(queryClient, updated);
       await queryClient.invalidateQueries({ queryKey: coupleQueryKey(updated.id) });
-      setHomeViewState("home");
+      navigation.goHome();
     },
     onError: (error, _payload, context) => {
       if (context) {
@@ -77,7 +79,7 @@ export function useProfileMutations({
 
   const updateStartDateMutation = useMutation({
     mutationFn: async (startDate: string) => {
-      if (!coupleData) throw new Error("Không tìm thấy Love Days.");
+      if (!coupleData) throw new Error("Không tìm thấy.");
       return coupleService.updateCoupleStartDate(coupleData.couple.id, startDate);
     },
     onSuccess: async () => {
@@ -93,9 +95,33 @@ export function useProfileMutations({
     },
   });
 
+  const updateBackgroundMutation = useMutation({
+    mutationFn: async (backgroundUrl: string | null) => {
+      if (!coupleData) throw new Error("Không tìm thấy.");
+      const savedUrl = await mediaService.uploadImagePath({
+        coupleId: coupleData.couple.id,
+        fileName: "background",
+        path: backgroundUrl,
+        scope: "backgrounds",
+      });
+      return coupleDisplayService.updateBackground(coupleData.couple.id, savedUrl);
+    },
+    onSuccess: async () => {
+      if (!user) return;
+      await queryClient.invalidateQueries({ queryKey: coupleQueryKey(user.id) });
+    },
+    onError: (error) => {
+      console.error(error);
+      snackbar.showError(getErrorMessage(
+        error,
+        "Không thể cập nhật ảnh nền. Vui lòng thử lại.",
+      ));
+    },
+  });
+
   const leaveCoupleMutation = useMutation({
     mutationFn: async () => {
-      if (!coupleData) throw new Error("Không tìm thấy Love Days.");
+      if (!coupleData) throw new Error("Không tìm thấy.");
       await coupleService.leaveCouple(coupleData.couple.id);
     },
     onSuccess: async () => {
@@ -104,18 +130,23 @@ export function useProfileMutations({
       queryClient.removeQueries({
         queryKey: anniversariesQueryKey(coupleData?.couple.id),
       });
-      setHomeViewState("permission");
+      navigation.goPermission({ replace: true });
     },
     onError: (error) => {
       console.error(error);
       snackbar.showError(getErrorMessage(
         error,
-        "Không thể rời khỏi Love Days. Vui lòng thử lại.",
+        "Không thể rời khỏi. Vui lòng thử lại.",
       ));
     },
   });
 
-  return { leaveCoupleMutation, saveProfileMutation, updateStartDateMutation };
+  return {
+    leaveCoupleMutation,
+    saveProfileMutation,
+    updateBackgroundMutation,
+    updateStartDateMutation,
+  };
 }
 
 type ProfilePayload = { display_name: string; custom_avatar_url: string | null };

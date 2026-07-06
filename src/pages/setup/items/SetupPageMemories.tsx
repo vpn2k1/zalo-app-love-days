@@ -6,7 +6,7 @@ import type { SetupFormValues } from "../types/SetupPageType";
 
 export function SetupPageMemories() {
   const { control } = useFormContext<SetupFormValues>();
-  const { append, fields } = useFieldArray({
+  const { append, fields, remove } = useFieldArray({
     control,
     name: "anniversaries",
   });
@@ -17,7 +17,7 @@ export function SetupPageMemories() {
         <Icon icon="zi-calendar" />
       </Box>
       <AnniversaryForm onAdd={(draft) => append(draft)} />
-      <AnniversaryList anniversaries={fields} />
+      <AnniversaryList anniversaries={fields} onRemove={remove} />
     </Box>
   );
 }

@@ -12,7 +12,7 @@ export function InviteAcceptAction({ loading, onAccept }: Props) {
         Tham gia ngay
       </Button>
       <Text className="app-opening-note">
-        Bạn có thể chỉnh hồ sơ sau khi vào app.
+        Bạn có thể chỉnh hồ sơ sau khi vào ứng dụng.
       </Text>
     </Box>
   );

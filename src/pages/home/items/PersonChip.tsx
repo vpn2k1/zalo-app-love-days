@@ -1,5 +1,7 @@
 import { useState } from "react";
+
 import { Avatar, Box, Icon, Text, AppImageViewer } from "@/components/zaui";
+
 import type { Person } from "../types/HomePageType";
 
 type Props = {
@@ -15,9 +17,10 @@ export function PersonChip({ person, emptyLabel, onEmptyClick }: Props) {
   const handleAvatarClick = () => {
     if (avatarSrc) {
       setShowImageViewer(true);
-    } else {
-      onEmptyClick?.();
+      return;
     }
+
+    onEmptyClick?.();
   };
 
   return (

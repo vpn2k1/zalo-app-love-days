@@ -1,12 +1,13 @@
 import { useMutation, type QueryClient } from "@tanstack/react-query";
 import { useAppSnackbar } from "@/components/zaui";
+import { useAppNavigation } from "@/hooks/useAppNavigation";
 import { useCurrentUserActions } from "@/hooks/useCurrentUser";
 import { coupleService } from "@/services/coupleService";
+import { isInviteConflictMessage } from "@/services/inviteErrors";
 import { inviteService } from "@/services/inviteService";
 import type { CoupleWithMembers } from "@/types/couple";
 import type { AppUser } from "@/types/user";
 import { anniversariesQueryKey, coupleQueryKey } from "@/config/queryKeys";
-import { setHomeViewState } from "@/hooks/useHomeViewState";
 
 type Input = {
   authorizeUser: () => Promise<AppUser>;
@@ -25,6 +26,7 @@ export function useInviteAcceptance({
 }: Input) {
   const snackbar = useAppSnackbar();
   const { setUser } = useCurrentUserActions();
+  const navigation = useAppNavigation();
   const acceptInviteMutation = useMutation({
     mutationFn: async () => {
       if (!inviteCode) throw new Error("Thiếu mã lời mời.");
@@ -44,13 +46,13 @@ export function useInviteAcceptance({
       await queryClient.invalidateQueries({
         queryKey: anniversariesQueryKey(accepted.couple.id),
       });
-      setHomeViewState("home");
+      navigation.goHome({ replace: true });
     },
     onError: (error) => {
       console.error(error);
       let message = "Không thể nhận lời mời. Vui lòng thử lại.";
       if (error instanceof Error) message = error.message;
-      if (message.includes("Bạn đã ghép nối")) {
+      if (isInviteConflictMessage(message)) {
         setInviteConflict(message);
         return;
       }
@@ -61,17 +63,17 @@ export function useInviteAcceptance({
   const closeInviteConflict = async () => {
     setInviteConflict("");
     if (!user) {
-      setHomeViewState("permission");
+      navigation.goPermission({ replace: true });
       return;
     }
     const data = queryClient.getQueryData<CoupleWithMembers>(coupleQueryKey(user.id))
       ?? await coupleService.getCoupleByUser(user.id);
     queryClient.setQueryData(coupleQueryKey(user.id), data);
     if (data) {
-      setHomeViewState("home");
+      navigation.goHome({ replace: true });
       return;
     }
-    setHomeViewState("permission");
+    navigation.goPermission({ replace: true });
   };
 
   return { acceptInviteMutation, closeInviteConflict };

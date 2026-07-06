@@ -1,71 +1,72 @@
 import { Box, Button, Text } from "@/components/zaui";
-import type { Anniversary, UpcomingAnniversary } from "@/types/anniversary";
+import type { UpcomingAnniversary } from "@/types/anniversary";
 import { formatDate } from "@/utils/date";
-import { MilestoneCard } from "./MilestoneCard";
 
 type Props = {
-  anniversaries: Anniversary[];
   nextAnniversary: UpcomingAnniversary | null;
   onShowAnniversaryForm: () => void;
 };
 
 export function MemoryGardenSection({
-  anniversaries,
   nextAnniversary,
   onShowAnniversaryForm,
 }: Props) {
   return (
-    <>
-      <Box className="mb-2 mt-1 flex items-center justify-between gap-3">
-        <Text.Title
-          size="small"
-          className="font-serif font-medium text-[#2f1d2a]"
-        >
-          Memory garden
-        </Text.Title>
+    <Box className="mb-3 overflow-hidden rounded-[24px] border border-white/75 bg-[radial-gradient(circle_at_3%_86%,#fff0da_0_15%,transparent_28%)] bg-white/85 p-4 shadow-[0_16px_34px_rgba(84,49,72,0.1)]">
+      <Box className="mb-3 flex items-center justify-between gap-3">
+        <Box className="min-w-0">
+          <Text className="text-[12px] font-extrabold uppercase tracking-[0.16em] text-[#c45a86]">
+            Ngày kỷ niệm sắp tới
+          </Text>
+          <Text className="mt-1 overflow-hidden text-ellipsis whitespace-nowrap text-[20px] font-[900] leading-tight text-[#2f1d2a]">
+            {getNextAnniversaryTitle(nextAnniversary)}
+          </Text>
+        </Box>
+        <Box className="grid min-w-[86px] flex-none place-items-center rounded-[20px] bg-white/80 px-3 py-2 text-center shadow-sm">
+          <Text className="text-[24px] font-[900] leading-none text-[#d9467e]">
+            {getDaysLeft(nextAnniversary)}
+          </Text>
+          <Text className="mt-1 text-[11px] font-bold text-[#9b6b82]">
+            ngày nữa
+          </Text>
+        </Box>
+      </Box>
+      <Box className="flex items-center justify-between gap-3 rounded-[18px] bg-white/60 px-3 py-2">
+        <Text className="text-[13px] font-bold text-[#716773]">
+          {getNextAnniversaryDate(nextAnniversary)}
+        </Text>
         <Button
+          className="min-h-8 rounded-full px-3 text-[12px] font-[850] text-[#d9467e]"
           htmlType="button"
-          className="min-h-8 rounded-full bg-transparent px-2.5 font-[850] text-[#e14d86]"
+          size="small"
+          variant="tertiary"
           onClick={onShowAnniversaryForm}
         >
-          View all
+          Thêm kỷ niệm
         </Button>
       </Box>
-
-      <Box className="mb-3 grid grid-cols-2 gap-2.5">
-        <MilestoneCard
-          icon="zi-calendar"
-          title="Next anniversary"
-          label={getNextAnniversaryLabel(nextAnniversary)}
-          value={getNextAnniversaryValue(nextAnniversary)}
-        />
-        <MilestoneCard
-          icon="zi-heart"
-          title="First trip"
-          label={`${anniversaries.length} memories`}
-          value={getFirstMemoryValue(anniversaries)}
-        />
-      </Box>
-    </>
+    </Box>
   );
 }
 
-function getNextAnniversaryLabel(
-  nextAnniversary: Props["nextAnniversary"],
-) {
-  if (!nextAnniversary) return "Chưa có lịch";
-  return `Còn ${nextAnniversary.daysLeft} ngày`;
+function getNextAnniversaryTitle(nextAnniversary: Props["nextAnniversary"]) {
+  if (!nextAnniversary) return "Chưa có kỷ niệm";
+
+  return nextAnniversary.title;
 }
 
-function getNextAnniversaryValue(
-  nextAnniversary: Props["nextAnniversary"],
-) {
+function getNextAnniversaryDate(nextAnniversary: Props["nextAnniversary"]) {
   if (!nextAnniversary) return "Thêm ngay";
+
   return formatDate(nextAnniversary.date);
 }
 
-function getFirstMemoryValue(anniversaries: Anniversary[]) {
-  const [first] = anniversaries;
-  if (!first) return "Da Nang";
-  return first.title;
+function getDaysLeft(nextAnniversary: Props["nextAnniversary"]) {
+  if (!nextAnniversary) return anniversariesCountFallback();
+
+  return nextAnniversary.daysLeft.toLocaleString();
+}
+
+function anniversariesCountFallback() {
+  return "0";
 }

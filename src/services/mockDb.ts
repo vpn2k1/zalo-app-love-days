@@ -89,7 +89,7 @@ export const mockDb = {
     const couple: Couple = {
       id: uid("couple"),
       start_date: input.startDate,
-      title: "Love Days",
+      title: "Yêu",
       theme: "pastel",
       background_url: input.backgroundUrl,
       created_by: user.id,
@@ -118,8 +118,18 @@ export const mockDb = {
   updateCoupleStartDate(coupleId: string, startDate: string): Couple {
     const state = readState();
     const couple = state.couples.find((item) => item.id === coupleId);
-    if (!couple) throw new Error("Không tìm thấy Love Days.");
+    if (!couple) throw new Error("Không tìm thấy Yêu.");
     couple.start_date = startDate;
+    couple.updated_at = now();
+    writeState(state);
+    return couple;
+  },
+
+  updateCoupleBackground(coupleId: string, backgroundUrl: string | null): Couple {
+    const state = readState();
+    const couple = state.couples.find((item) => item.id === coupleId);
+    if (!couple) throw new Error("Không tìm thấy Yêu.");
+    couple.background_url = backgroundUrl;
     couple.updated_at = now();
     writeState(state);
     return couple;

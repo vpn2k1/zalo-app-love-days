@@ -15,7 +15,7 @@ export function EditProfileDangerZone({ disabled, onOpenConfirm }: Props) {
         disabled={disabled}
         onClick={onOpenConfirm}
       >
-        Rời khỏi Love Days
+        Rời khỏi không gian
       </Button>
     </Box>
   );

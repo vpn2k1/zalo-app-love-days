@@ -1,5 +1,9 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useFormContext, useWatch } from "react-hook-form";
 import { Box, Text } from "@/components/zaui";
-import { useEffect, useMemo, useState } from "react";
+import type { AppSheetRef } from "@/components/zaui";
+import { DaysTogetherSheet } from "./DaysTogetherSheet";
+import type { HomeDisplayFormValues } from "../types/HomePageType";
 
 type ElapsedTime = {
   days: number;
@@ -8,14 +12,25 @@ type ElapsedTime = {
   seconds: number;
 };
 
-export function DaysTogetherButton({ startDate }: { startDate: string }) {
+type Props = {
+  loading?: boolean;
+  onSaveDisplayInfo: (values: HomeDisplayFormValues) => Promise<unknown>;
+};
+
+export function DaysTogetherButton({ loading, onSaveDisplayInfo }: Props) {
+  const { control, handleSubmit } = useFormContext<HomeDisplayFormValues>();
+  const startDate = useWatch<HomeDisplayFormValues, "startDate">({
+    control,
+    name: "startDate",
+    exact: true,
+  });
+  const sheetRef = useRef<AppSheetRef>(null);
   const [elapsed, setElapsed] = useState<ElapsedTime>({
     days: 0,
     hours: 0,
     minutes: 0,
     seconds: 0,
   });
-
   const startTime = useMemo(() => {
     if (!startDate) return null;
 
@@ -47,10 +62,26 @@ export function DaysTogetherButton({ startDate }: { startDate: string }) {
     return () => clearInterval(id);
   }, [startTime]);
 
+  const openSheet = () => {
+    sheetRef.current?.open();
+  };
+
+  const closeSheet = () => {
+    sheetRef.current?.close();
+  };
+
+  const saveDisplayInfo = handleSubmit(async (values) => {
+    await onSaveDisplayInfo(values);
+    closeSheet();
+  });
+
   if (!startDate) return null;
 
   return (
-    <Box className="relative mb-3.5 w-full overflow-hidden rounded-[28px] bg-gradient-to-br from-[#fff7fb] via-white to-[#ffe4ef] px-5 py-6 text-center shadow-[0_18px_40px_rgba(217,70,126,0.18)] border border-white/80">
+    <Box
+      onClick={openSheet}
+      className="relative mb-3.5 w-full overflow-hidden rounded-[28px] bg-gradient-to-br from-[#fff7fb] via-white to-[#ffe4ef] px-5 py-6 text-center shadow-[0_18px_40px_rgba(217,70,126,0.18)] border border-white/80"
+    >
       {/* Decorative blur circles */}
       <Box className="pointer-events-none absolute -left-8 -top-8 h-24 w-24 rounded-full bg-[#ffd1e3] opacity-60 blur-2xl" />
       <Box className="pointer-events-none absolute -bottom-10 -right-8 h-28 w-28 rounded-full bg-[#f9a8d4] opacity-40 blur-2xl" />
@@ -79,6 +110,15 @@ export function DaysTogetherButton({ startDate }: { startDate: string }) {
           Từ ngày {formatDate(startDate)}
         </Text>
       </Box>
+      <DaysTogetherSheet
+        control={control}
+        elapsed={elapsed}
+        loading={loading}
+        sheetRef={sheetRef}
+        startDate={startDate}
+        onClose={closeSheet}
+        onSave={saveDisplayInfo}
+      />
     </Box>
   );
 }

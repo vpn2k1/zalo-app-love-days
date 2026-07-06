@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useQueryClient } from "@tanstack/react-query";
+import { BlockingLoadingOverlay } from "@/components/BlockingLoadingOverlay";
 import { AppSpinner, Box, Page } from "@/components/zaui";
-import { useHomeViewState, setHomeViewState } from "@/hooks/useHomeViewState";
+import { useAppNavigation } from "@/hooks/useAppNavigation";
 import { useLoveDaysData } from "@/hooks/useLoveDaysData";
 import { StatusBar } from "@/pages/home/items/StatusBar";
 import { EditProfileActions } from "./items/EditProfileActions";
@@ -20,6 +21,7 @@ import "../../css/app.css";
 
 export function EditProfilePage({ user }: EditProfilePageProps) {
   const queryClient = useQueryClient();
+  const navigation = useAppNavigation();
   const { coupleData, coupleQuery } = useLoveDaysData({ user });
   const profile = useProfilePageController({
     coupleData,
@@ -45,7 +47,7 @@ export function EditProfilePage({ user }: EditProfilePageProps) {
     }
   };
 
-  if (coupleQuery.isFetching) return <EditProfileLoadingState />;
+  if (coupleQuery.isPending) return <EditProfileLoadingState />;
   if (!coupleData) return <EditProfileMissingCoupleState />;
 
   return (
@@ -61,7 +63,7 @@ export function EditProfilePage({ user }: EditProfilePageProps) {
         />
         <EditProfileActions
           loading={profile.saveProfileMutation.isPending}
-          onBack={() => setHomeViewState("home")}
+          onBack={navigation.goHome}
           onSave={methods.handleSubmit(submit)}
         />
 
@@ -70,6 +72,10 @@ export function EditProfilePage({ user }: EditProfilePageProps) {
           leaveLoading={profile.leaveCoupleMutation.isPending}
           onClose={() => setConfirmLeave(false)}
           onLeave={() => profile.leaveCoupleMutation.mutateAsync()}
+        />
+        <BlockingLoadingOverlay
+          show={getBlockingLoading(profile)}
+          message="Đang lưu thay đổi..."
         />
       </Page>
     </FormProvider>
@@ -85,12 +91,18 @@ function EditProfileLoadingState() {
 }
 
 function EditProfileMissingCoupleState() {
-  const state = useHomeViewState();
+  const navigation = useAppNavigation();
 
   useEffect(() => {
-    if (state !== "edit") return;
-    setHomeViewState("permission");
-  }, [state]);
+    navigation.goPermission({ replace: true });
+  }, [navigation]);
 
   return <EditProfileLoadingState />;
+}
+
+function getBlockingLoading(profile: ReturnType<typeof useProfilePageController>) {
+  if (profile.leaveCoupleMutation.isPending) return true;
+  if (profile.saveProfileMutation.isPending) return true;
+
+  return false;
 }

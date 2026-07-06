@@ -57,7 +57,7 @@ export const coupleService = {
       .from("couples")
       .insert({
         start_date: input.startDate,
-        title: "Love Days",
+        title: "Yêu",
         theme: "pastel",
         created_by: user.id,
       })

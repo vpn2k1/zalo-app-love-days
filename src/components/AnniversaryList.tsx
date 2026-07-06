@@ -1,17 +1,18 @@
-import { Box, Text } from "@/components/zaui";
+import { Box, Icon, Text } from "@/components/zaui";
 import type { Anniversary, AnniversaryDraft } from "@/types/anniversary";
 import { formatDate } from "@/utils/date";
 
 type Props = {
   anniversaries: Array<Anniversary | AnniversaryDraft>;
+  onRemove: (index: number) => void;
 };
 
-export function AnniversaryList({ anniversaries }: Props) {
+export function AnniversaryList({ anniversaries, onRemove }: Props) {
   if (anniversaries.length === 0) {
     return (
       <Box className="empty-state">
         <Text>Chưa có ngày kỷ niệm riêng.</Text>
-        <Text className="subtle">Bạn có thể thêm sau khi tạo Love Days.</Text>
+        <Text className="subtle">Bạn có thể thêm sau khi tạo.</Text>
       </Box>
     );
   }
@@ -19,7 +20,11 @@ export function AnniversaryList({ anniversaries }: Props) {
   return (
     <Box className="anniversary-list">
       {anniversaries.map((item, index) => (
-        <AnniversaryItem item={item} key={`${item.title}-${item.date}-${index}`} />
+        <AnniversaryItem
+          item={item}
+          onRemove={() => onRemove(index)}
+          key={`${item.title}-${item.date}-${index}`}
+        />
       ))}
     </Box>
   );
@@ -27,8 +32,10 @@ export function AnniversaryList({ anniversaries }: Props) {
 
 function AnniversaryItem({
   item,
+  onRemove,
 }: {
   item: Anniversary | AnniversaryDraft;
+  onRemove: () => void;
 }) {
   let repeatLabel = "Không lặp";
   if (item.repeat_type === "yearly") {
@@ -47,7 +54,9 @@ function AnniversaryItem({
         </Text>
         {item.note && <Text className="anniversary-note">{item.note}</Text>}
       </Box>
-      <Text className="heart-dot">♥</Text>
+      <Box onClick={onRemove} className="anniversary-remove">
+        <Icon icon="zi-delete" size={30} className="text-red-500" />
+      </Box>
     </Box>
   );
 }

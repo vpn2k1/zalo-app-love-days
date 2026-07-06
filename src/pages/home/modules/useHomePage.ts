@@ -1,45 +1,35 @@
 import { useMemo, useState } from "react";
 import { useAppSnackbar } from "@/components/zaui";
-import type { AnniversaryDraft } from "@/types/anniversary";
+import type { Anniversary, AnniversaryDraft } from "@/types/anniversary";
 import { diffInDays, getNextAnniversary } from "@/utils/date";
 import type { HomePageContentProps } from "../types/HomePageType";
 
 export function useHomePage({
-  user,
   coupleData,
   anniversaries,
-  onSaveProfile,
   onAddAnniversary,
+  startDate,
 }: Pick<
   HomePageContentProps,
-  "user" | "coupleData" | "anniversaries" | "onSaveProfile" | "onAddAnniversary"
->) {
+  "coupleData" | "anniversaries" | "onAddAnniversary"
+> & {
+  startDate: string;
+}) {
   const [showAnniversaryForm, setShowAnniversaryForm] = useState(false);
   const snackbar = useAppSnackbar();
-  const currentMember = coupleData.members.find((member) => member.user_id === user.id);
-  const partnerMember = coupleData.members.find((member) => member.user_id !== user.id);
-  let currentUser = user;
-  if (currentMember?.user_id === user.id) {
-    currentUser = { ...currentMember.user, ...user };
-  }
-  const partner = partnerMember?.user;
-  const currentPerson = {
-    name: currentUser.display_name || currentUser.name,
-    avatar: currentUser.custom_avatar_url || currentUser.avatar_url,
-  };
-  let partnerPerson;
-  if (partner) {
-    partnerPerson = {
-      name: partner.display_name || partner.name,
-      avatar: partner.custom_avatar_url || partner.avatar_url,
-    };
-  }
-  const days = diffInDays(coupleData.couple.start_date);
-  const nextAnniversary = useMemo(
-    () => getNextAnniversary(coupleData.couple, anniversaries),
-    [anniversaries, coupleData.couple],
+  const couple = useMemo(
+    () => ({ ...coupleData.couple, start_date: startDate }),
+    [coupleData.couple, startDate],
   );
-  const visibleAnniversaries = anniversaries.slice(0, 2);
+  const days = diffInDays(startDate);
+  const nextAnniversary = useMemo(
+    () => getNextAnniversary(couple, anniversaries),
+    [anniversaries, couple],
+  );
+  const visibleAnniversaries = useMemo(
+    () => getNewestAnniversaries(anniversaries),
+    [anniversaries],
+  );
 
   const addAnniversary = async (draft: AnniversaryDraft) => {
     try {
@@ -53,14 +43,27 @@ export function useHomePage({
 
   return {
     addAnniversary,
-    currentUser,
-    currentPerson,
     days,
     nextAnniversary,
-    partner,
-    partnerPerson,
     setShowAnniversaryForm,
     showAnniversaryForm,
     visibleAnniversaries,
   };
+}
+
+function getNewestAnniversaries(anniversaries: Anniversary[]) {
+  return [...anniversaries]
+    .sort(compareAnniversaryDateDesc)
+    .slice(0, 5);
+}
+
+function compareAnniversaryDateDesc(left: Anniversary, right: Anniversary) {
+  return getDateTime(right.date) - getDateTime(left.date);
+}
+
+function getDateTime(value: string) {
+  const time = new Date(value).getTime();
+  if (Number.isNaN(time)) return 0;
+
+  return time;
 }

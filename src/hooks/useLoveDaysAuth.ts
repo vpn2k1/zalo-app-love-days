@@ -1,20 +1,22 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppSnackbar } from "@/components/zaui";
 import { coupleQueryKey } from "@/config/queryKeys";
+import { useAppNavigation } from "@/hooks/useAppNavigation";
 import { authorizeCurrentUser, useCurrentUser } from "@/hooks/useCurrentUser";
 import { coupleService } from "@/services/coupleService";
 import type { AppUser } from "@/types/user";
 import { getInviteCodeFromUrl } from "@/utils/invite";
-import { setHomeViewState } from "./useHomeViewState";
 
 export function useLoveDaysAuth() {
   const queryClient = useQueryClient();
+  const bootedRef = useRef(false);
   const inviteCode = useMemo(getInviteCodeFromUrl, []);
   const currentUser = useCurrentUser();
   const { refetch } = currentUser.currentUserQuery;
   const { setUser } = currentUser;
   const snackbar = useAppSnackbar();
+  const navigation = useAppNavigation();
 
   const getCoupleAfterAuth = useCallback(
     async (appUser: AppUser) => {
@@ -30,24 +32,24 @@ export function useLoveDaysAuth() {
     async (appUser: AppUser) => {
       const data = await getCoupleAfterAuth(appUser);
       if (!data) {
-        setHomeViewState("permission");
+        navigation.goPermission({ replace: true });
         return;
       }
-      setHomeViewState("home");
+      navigation.goHome({ replace: true });
     },
-    [getCoupleAfterAuth],
+    [getCoupleAfterAuth, navigation],
   );
 
   const openAfterPermission = useCallback(
     async (appUser: AppUser) => {
       const data = await getCoupleAfterAuth(appUser);
       if (!data) {
-        setHomeViewState("setup");
+        navigation.goSetup({ replace: true });
         return;
       }
-      setHomeViewState("home");
+      navigation.goHome({ replace: true });
     },
-    [getCoupleAfterAuth],
+    [getCoupleAfterAuth, navigation],
   );
 
   const authorizeUser = useCallback(async () => {
@@ -57,8 +59,19 @@ export function useLoveDaysAuth() {
   }, [setUser]);
 
   useEffect(() => {
+    if (bootedRef.current) return;
+
+    bootedRef.current = true;
+
     if (inviteCode) {
-      setHomeViewState("invite");
+      refetch()
+        .then((result) => {
+          if (result.data) setUser(result.data);
+        })
+        .catch(() => undefined)
+        .then(() => {
+          navigation.goInvite({ replace: true });
+        });
       return;
     }
 
@@ -71,9 +84,9 @@ export function useLoveDaysAuth() {
         return openExistingSpace(result.data);
       })
       .catch(() => {
-        setHomeViewState("permission");
+        navigation.goPermission({ replace: true });
       });
-  }, [inviteCode, openExistingSpace, refetch]);
+  }, [inviteCode, navigation, openExistingSpace, refetch]);
 
   const authorizeMutation = useMutation({
     mutationFn: authorizeUser,
@@ -83,9 +96,9 @@ export function useLoveDaysAuth() {
     onError: (error) => {
       console.error(error);
       snackbar.showError(
-        "Bạn cần cho phép lấy thông tin Zalo để thiết lập Love Days.",
+        "Bạn cần cho phép lấy thông tin Zalo để thiết lập.",
       );
-      setHomeViewState("permission");
+      navigation.goPermission({ replace: true });
     },
   });
 

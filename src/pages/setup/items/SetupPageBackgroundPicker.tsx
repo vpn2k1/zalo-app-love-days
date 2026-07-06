@@ -36,7 +36,7 @@ export function SetupPageBackgroundPicker() {
       <Box className="app-setup-user-copy">
         <Text className="app-opening-card-title">Ảnh cặp đôi</Text>
         <Text className="app-opening-card-copy">
-          Có thể thêm sau, nhưng một tấm ảnh sẽ làm màn Home ngọt hơn.
+          Có thể thêm sau, nhưng một tấm ảnh sẽ làm màn chính ngọt hơn.
         </Text>
         <Button
           htmlType="button"

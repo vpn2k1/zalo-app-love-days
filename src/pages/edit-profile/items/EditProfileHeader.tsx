@@ -7,7 +7,7 @@ export function EditProfileHeader() {
         <Icon icon="zi-user" />
         <Text>Hồ sơ</Text>
       </Box>
-      <Text.Title size="large">Chỉnh lại góc nhỏ của hai bạn</Text.Title>
+      <Text.Title size="normal">Chỉnh lại góc nhỏ của bạn</Text.Title>
       <Text className="app-opening-copy">
         Cập nhật tên và ảnh đại diện sẽ hiện trên trang kỷ niệm.
       </Text>

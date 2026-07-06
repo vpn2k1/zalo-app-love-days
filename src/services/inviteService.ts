@@ -3,6 +3,10 @@ import { isMockMode, supabase } from "@/services/supabaseClient";
 import { inviteConfig } from "@/config/invite";
 import { buildInvitePath, buildInviteUrl } from "@/utils/invite";
 import { coupleService } from "@/services/coupleService";
+import {
+  getInviteErrorMessage,
+  inviteConflictMessages,
+} from "@/services/inviteErrors";
 import { zaloService } from "@/services/zaloService";
 import type { Couple, CoupleMember, CoupleWithMembers } from "@/types/couple";
 import type { PartnerInvite } from "@/types/invite";
@@ -61,17 +65,8 @@ const ensureCoupleCanInvite = async (coupleId: string) => {
   const hasPartner = members.some((member) => member.role === "partner" || member.side === "right");
   if (hasPartner || members.length >= 2) {
     await cancelPendingInvitesForCouple(coupleId);
-    throw new Error("Love Days này đã có đối tác, không thể tạo thêm lời mời.");
+    throw new Error("Yêu này đã có đối tác, không thể tạo thêm lời mời.");
   }
-};
-
-const getInviteErrorMessage = (invite?: PartnerInvite | null) => {
-  if (!invite) return "Lời mời không hợp lệ.";
-  if (invite.status === "accepted" || invite.status === "cancelled") {
-    return "Lời mời này đã hết hiệu lực vì Love Days đã ghép nối với người khác.";
-  }
-  if (invite.status === "expired") return "Lời mời đã hết hạn.";
-  return "Lời mời không hợp lệ.";
 };
 
 export const inviteService = {
@@ -143,7 +138,7 @@ export const inviteService = {
       if (invite && existingCouple.couple.id === invite.couple_id) {
         return existingCouple;
       }
-      throw new Error("Bạn đã ghép nối trong một Love Days khác.");
+      throw new Error(inviteConflictMessages.currentUserMatchedOther);
     }
 
     if (!invite || invite.status !== "pending") {
@@ -162,7 +157,7 @@ export const inviteService = {
     const hasPartner = members.some((member) => member.role === "partner" || member.side === "right");
     if (hasPartner || members.length >= 2) {
       await cancelPendingInvitesForCouple(invite.couple_id);
-      throw new Error("Love Days này đã có người ghép nối. Lời mời không còn hiệu lực.");
+      throw new Error(inviteConflictMessages.targetMatchedOther);
     }
 
     const { error: memberError } = await supabase
@@ -175,7 +170,7 @@ export const inviteService = {
       });
     if (memberError) {
       await cancelPendingInvitesForCouple(invite.couple_id);
-      throw new Error("Love Days này đã có người ghép nối. Lời mời không còn hiệu lực.");
+      throw new Error(inviteConflictMessages.targetMatchedOther);
     }
 
     const { error: acceptError } = await supabase
