@@ -13,13 +13,15 @@
   width: min(100%, 430px);
   min-height: 100vh;
   margin: 0 auto;
-  overflow: hidden;
   padding: 16px 18px 24px;
   color: #3b2233;
   background:
     radial-gradient(circle at 6% 31%, rgba(255, 236, 199, 0.92) 0 13%, transparent 24%),
     radial-gradient(circle at 96% 10%, rgba(255, 204, 223, 0.96) 0 14%, transparent 26%),
     linear-gradient(180deg, #fff6fb 0%, #fff0f6 55%, #fff8ee 100%);
+}
+.app-opening-page::-webkit-scrollbar {
+  display: none;
 }
 
 .app-opening-status,
@@ -1112,7 +1114,6 @@
 .app-opening-page {
   min-height: 100vh;
   padding: 16px 18px 24px;
-  overflow: hidden;
 }
 
 .app-opening-header {

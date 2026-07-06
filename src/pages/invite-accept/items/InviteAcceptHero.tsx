@@ -4,9 +4,13 @@ export function InviteAcceptHero() {
   return (
     <Box className="app-opening-hero">
       <Box className="app-hero-icon">
-        <Icon icon="zi-heart" />
+        <Icon icon="zi-heart-solid" size={50} className="text-red-400" />
       </Box>
-      <Text className="app-hero-copy">Người ấy đang chờ bạn tham gia</Text>
+      <Text
+        className="text-[var(--love-primary)] text-lg font-serif"
+      >
+        Người ấy đang chờ bạn tham gia
+      </Text>
     </Box>
   );
 }

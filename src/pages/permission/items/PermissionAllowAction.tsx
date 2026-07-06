@@ -12,7 +12,7 @@ export function PermissionAllowAction({
   onAllow,
 }: Props) {
   return (
-    <Box className="app-opening-action">
+    <Box className="mt-4">
       <Button fullWidth loading={loading} onClick={onAllow}>
         {actionLabel}
       </Button>

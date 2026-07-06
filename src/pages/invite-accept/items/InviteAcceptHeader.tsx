@@ -4,7 +4,7 @@ export function InviteAcceptHeader() {
   return (
     <Box className="app-opening-header">
       <Text.Title size="large">Yêu</Text.Title>
-      <Text>Lời mời dành riêng cho hai bạn</Text>
+      <Text>Lời mời dành riêng cho bạn</Text>
     </Box>
   );
 }
