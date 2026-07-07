@@ -737,7 +737,13 @@ textarea,
   border: 1px solid rgba(201, 47, 103, 0.28);
   color: #ffffff;
   background: linear-gradient(135deg, var(--love-primary), var(--love-primary-strong));
-  box-shadow: 0 12px 26px rgba(201, 47, 103, 0.24);
+}
+
+.zaui-btn-primary:disabled {
+  border: 1px solid rgba(201, 47, 103, 0.28);
+  color: #ffffff;
+  background: var(--love-muted);
+  box-shadow: none;
 }
 
 .zaui-btn-secondary {

@@ -1,19 +1,19 @@
-import { Box, Text } from "@/components/zaui";
-import { formatDate } from "@/utils/date";
+import { Box, Button, Icon, Text } from "@/components/zaui";
 import type { MemoryDetailFormProps } from "../types/MemoryDetailPageType";
 
-export function MemoryDetailHeader({ memory }: MemoryDetailFormProps) {
+export function MemoryDetailHeader({ memory, onBack }: MemoryDetailFormProps) {
   return (
-    <Box className="mb-4 rounded-[24px] border border-[var(--love-border)] bg-white/85 p-3.5 shadow-[0_14px_30px_rgba(201,47,103,0.08)]">
-      <Text className="text-xs font-bold uppercase text-[#c45a86]">
+    <Box className="mb-3 flex items-center gap-2">
+      <Button
+        className="min-h-10 min-w-10 p-0 text-[#d9467e]"
+        htmlType="button"
+        icon={<Icon icon="zi-chevron-left" />}
+        variant="tertiary"
+        onClick={onBack}
+      />
+      <Text.Title size="small" className="font-serif text-[#2f1d2a]">
         Chi tiết kỷ niệm
-      </Text>
-      <Text.Title size="small" className="mt-1 font-serif text-[#2f1d2a]">
-        {memory.title}
       </Text.Title>
-      <Text className="mt-1 text-xs font-bold text-[#8b6b7d]">
-        {formatDate(memory.date)}
-      </Text>
     </Box>
   );
 }

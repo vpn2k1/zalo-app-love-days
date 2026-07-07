@@ -1,15 +1,15 @@
-import { useState } from "react";
+import { requiredRule } from "@/components/forms/formRules";
+import { AppActionSheet, Box, Button, Icon, Text } from "@/components/zaui";
+import { pickImagePath, type ImageSourceType } from "@/utils/imagePicker";
+import { ReactNode, useState } from "react";
 import {
   Controller,
   type Control,
-  type ControllerRenderProps,
   type ControllerFieldState,
+  type ControllerRenderProps,
   type FieldValues,
   type Path,
 } from "react-hook-form";
-import { AppActionSheet, Box, Button, Icon, Text } from "@/components/zaui";
-import { requiredRule } from "@/components/forms/formRules";
-import { pickImagePath, type ImageSourceType } from "@/utils/imagePicker";
 
 type Props<TFormValues extends FieldValues> = {
   control: Control<TFormValues>;
@@ -17,6 +17,7 @@ type Props<TFormValues extends FieldValues> = {
   label: string;
   optional?: boolean;
   required?: boolean | string;
+  customs?: ReactNode;
 };
 
 export function AppImagePicker<TFormValues extends FieldValues>({
@@ -25,6 +26,7 @@ export function AppImagePicker<TFormValues extends FieldValues>({
   label,
   optional,
   required,
+  customs,
 }: Props<TFormValues>) {
   return (
     <Controller
@@ -37,6 +39,7 @@ export function AppImagePicker<TFormValues extends FieldValues>({
           fieldState={fieldState}
           label={label}
           optional={optional}
+          customs={customs}
         />
       )}
     />
@@ -48,6 +51,7 @@ type AppImagePickerFieldProps<TFormValues extends FieldValues> = {
   fieldState: ControllerFieldState;
   label: string;
   optional?: boolean;
+  customs?: ReactNode;
 };
 
 function AppImagePickerField<TFormValues extends FieldValues>({
@@ -55,6 +59,7 @@ function AppImagePickerField<TFormValues extends FieldValues>({
   fieldState,
   label,
   optional,
+  customs,
 }: AppImagePickerFieldProps<TFormValues>) {
   const [error, setError] = useState("");
   const [sheetVisible, setSheetVisible] = useState(false);
@@ -92,27 +97,38 @@ function AppImagePickerField<TFormValues extends FieldValues>({
   };
 
   return (
-    <Box className="app-image-picker">
-      <Text className="form-label">{labelText}</Text>
-      <Box className="app-image-picker-frame">
-        <Box
-          className="app-image-picker-trigger"
-          aria-label={getPickerAriaLabel(value)}
-          onClick={openSheet}
-        >
-          <ImagePickerContent label={label} value={value} />
+    <Box>
+      {!customs && (
+        <Box className="app-image-picker">
+          <Text className="form-label">{labelText}</Text>
+          <Box className="app-image-picker-frame">
+            <Box
+              className="app-image-picker-trigger"
+              aria-label={getPickerAriaLabel(value)}
+              onClick={openSheet}
+            >
+              <ImagePickerContent label={label} value={value} />
+            </Box>
+            {value && (
+              <Button
+                className="app-image-picker-clear"
+                htmlType="button"
+                aria-label="Xóa ảnh"
+                icon={<Icon icon="zi-close" />}
+                variant="tertiary"
+                onClick={clearImage}
+              />
+            )}
+          </Box>
+
+          {errorText && <Text className="app-error-text">{errorText}</Text>}
         </Box>
-        {value && (
-          <Button
-            className="app-image-picker-clear"
-            htmlType="button"
-            aria-label="Xóa ảnh"
-            icon={<Icon icon="zi-close" />}
-            variant="tertiary"
-            onClick={clearImage}
-          />
-        )}
-      </Box>
+      )}
+      {!!customs && (
+        <Box aria-label={getPickerAriaLabel(value)} onClick={openSheet}>
+          {customs}
+        </Box>
+      )}
       <AppActionSheet
         actions={[
           {
@@ -132,7 +148,6 @@ function AppImagePickerField<TFormValues extends FieldValues>({
         unmountOnClose={false}
         onClose={closeSheet}
       />
-      {errorText && <Text className="app-error-text">{errorText}</Text>}
     </Box>
   );
 }

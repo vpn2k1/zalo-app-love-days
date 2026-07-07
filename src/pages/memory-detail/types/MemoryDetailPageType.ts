@@ -4,4 +4,5 @@ export type MemoryDetailFormValues = AnniversaryUpdateInput;
 
 export type MemoryDetailFormProps = {
   memory: Anniversary;
+  onBack: () => void;
 };

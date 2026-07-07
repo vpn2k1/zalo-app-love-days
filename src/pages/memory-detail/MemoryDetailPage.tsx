@@ -91,7 +91,7 @@ function MemoryDetailContent({
   return (
     <FormProvider {...methods}>
       <Page className="mx-auto min-h-screen w-[min(100%,430px)] bg-[#fff4f8] px-[18px] pb-[calc(96px+env(safe-area-inset-bottom))] pt-4 text-[#3c2435]">
-        <MemoryDetailHeader memory={memory} />
+        <MemoryDetailHeader memory={memory} onBack={onBack}/>
         <MemoryImagePreview imageUrl={imageUrl} onOpen={openViewer} />
         <MemoryDetailFields />
         <MemoryDetailFooter

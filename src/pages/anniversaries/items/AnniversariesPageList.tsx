@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Box, Text } from "@/components/zaui";
+import { Box, Icon, Text } from "@/components/zaui";
 import type { Anniversary } from "@/types/anniversary";
 import { formatDate } from "@/utils/date";
 
@@ -93,8 +93,8 @@ function AnniversaryRow({
     >
       <AnniversaryThumb item={item} />
       <Box className="min-w-0 flex-1">
-        <Text className="overflow-hidden text-ellipsis whitespace-nowrap font-[850] text-[#3a2232]">
-          {item.title}
+        <Text className="overflow-hidden text-ellipsis whitespace-nowrap font-[850] text-[#3a2232] line-clamp-1">
+         {item.title}
         </Text>
         <Text className="text-xs leading-[1.35] text-[#8b6b7d]">
           {formatDate(item.date)} · {getRepeatLabel(item)}
@@ -120,11 +120,7 @@ function AnniversaryThumb({ item }: { item: Anniversary }) {
     );
   }
 
-  return (
-    <Text className="grid size-[50px] flex-none place-items-center rounded-[16px] bg-[#fff0f6] text-[#e14d86]">
-      ♡
-    </Text>
-  );
+  return <Icon icon="zi-heart-solid" className="text-[var(--love-primary)]"/>
 }
 
 function getRepeatLabel(item: Anniversary) {

@@ -1,4 +1,5 @@
 import { Box, Button, Icon, Text } from "@/components/zaui";
+import { useAppNavigation } from "@/hooks/useAppNavigation";
 import type { Anniversary } from "@/types/anniversary";
 import { formatDate } from "@/utils/date";
 
@@ -8,6 +9,10 @@ type Props = {
 };
 
 export function TimelineSection({ anniversaries, onViewAll }: Props) {
+  const navigate = useAppNavigation();
+  const goDetail = (id: string) => {
+    navigate.goMemory(id);
+  };
   if (anniversaries.length === 0) {
     return (
       <Box className="mb-3 rounded-[24px] border border-white/75 bg-[radial-gradient(circle_at_3%_86%,#fff0da_0_15%,transparent_28%)] bg-white/90 px-4 pb-4 pt-3 shadow-[0_16px_34px_rgba(84,49,72,0.08)]">
@@ -32,16 +37,25 @@ export function TimelineSection({ anniversaries, onViewAll }: Props) {
       <TimelineHeader onViewAll={onViewAll} />
       <Box className="grid gap-2">
         {anniversaries.map((item) => (
-          <TimelineItem item={item} key={item.id} />
+          <TimelineItem goDetail={goDetail} item={item} key={item.id} />
         ))}
       </Box>
     </Box>
   );
 }
 
-function TimelineItem({ item }: { item: Anniversary }) {
+function TimelineItem({
+  item,
+  goDetail,
+}: {
+  item: Anniversary;
+  goDetail: (id: string) => void;
+}) {
   return (
-    <Box className="flex min-h-[64px] items-center gap-3 rounded-[18px] bg-white/65 p-2.5">
+    <Box
+      className="flex min-h-[64px] items-center gap-3 rounded-[18px] bg-white/65 p-2.5"
+      onClick={() => goDetail(item.id)}
+    >
       <TimelineThumb item={item} />
       <Box className="min-w-0 flex-1">
         <Box className="flex min-w-0 items-center gap-2">
