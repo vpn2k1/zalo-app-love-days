@@ -1,6 +1,11 @@
 import { useRef, useState } from "react";
-import { Controller, type Control, type FieldValues, type Path } from "react-hook-form";
-import { Box, Calendar } from "zmp-ui";
+import {
+  Controller,
+  type Control,
+  type FieldValues,
+  type Path,
+} from "react-hook-form";
+import { Box, Calendar, Text } from "zmp-ui";
 import type { DatePickerProps } from "zmp-ui/date-picker";
 import { requiredRule } from "@/components/forms/formRules";
 import { AppDatePickerTrigger } from "@/components/forms/AppDatePickerTrigger";
@@ -8,7 +13,12 @@ import { AppModal } from "@/components/zaui";
 
 type Props<TFormValues extends FieldValues> = Omit<
   DatePickerProps,
-  "action" | "columnsFormat" | "dateFormat" | "formatPickedValueDisplay" | "onChange" | "value"
+  | "action"
+  | "columnsFormat"
+  | "dateFormat"
+  | "formatPickedValueDisplay"
+  | "onChange"
+  | "value"
 > & {
   control: Control<TFormValues>;
   name: Path<TFormValues>;
@@ -49,20 +59,27 @@ function getStatus(
   return status;
 }
 
-function getErrorText(fieldError: string | undefined, errorText: string | undefined) {
+function getErrorText(
+  fieldError: string | undefined,
+  errorText: string | undefined,
+) {
   if (fieldError) return fieldError;
 
   return errorText;
 }
 
-function isDateDisabled(date: Date, startDate: Date | undefined, endDate: Date | undefined) {
+function isDateDisabled(
+  date: Date,
+  startDate: Date | undefined,
+  endDate: Date | undefined,
+) {
   if (startDate && date < startDate) return true;
   if (endDate && date > endDate) return true;
 
   return false;
 }
 
-export function AppDatePicker<TFormValues extends FieldValues>({
+export function AppDatePicker2<TFormValues extends FieldValues>({
   control,
   name,
   label,
@@ -89,7 +106,10 @@ export function AppDatePicker<TFormValues extends FieldValues>({
   );
 }
 
-type AppDatePickerFieldProps = Omit<Props<FieldValues>, "control" | "name" | "required"> & {
+type AppDatePickerFieldProps = Omit<
+  Props<FieldValues>,
+  "control" | "name" | "required"
+> & {
   fieldValue: unknown;
   name: string;
   fieldError?: string;
@@ -157,9 +177,17 @@ function AppDatePickerField({
     onChange(formatDateValue(date));
     closeCalendar();
   };
-
+  const renderDayOfWeekNameRender = (d: number) => {
+    let day = `T${d + 1}`;
+    if (!d) day = "CN";
+    return (
+      <Text size="small" className="text-[var(--love-primary)]">
+        {day}
+      </Text>
+    );
+  };
   return (
-    <>
+    <Box>
       <AppDatePickerTrigger
         disabled={disabled}
         displayValue={displayValue}
@@ -189,11 +217,12 @@ function AppDatePickerField({
             defaultValue={defaultValue}
             locale={locale}
             startOfWeek={1}
+            dayOfWeekNameRender={renderDayOfWeekNameRender}
             disabledDate={(date) => isDateDisabled(date, startDate, endDate)}
             onSelect={selectDate}
           />
         </Box>
       </AppModal>
-    </>
+    </Box>
   );
 }

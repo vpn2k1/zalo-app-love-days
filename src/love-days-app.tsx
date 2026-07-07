@@ -10,6 +10,7 @@ import { appPaths } from "@/hooks/useAppNavigation";
 import { useLoveDaysAuth } from "@/hooks/useLoveDaysAuth";
 import { AlbumPage } from "@/pages/album/AlbumPage";
 import { AnniversariesPage } from "@/pages/anniversaries/AnniversariesPage";
+import { CalendarMemoriesPage } from "@/pages/calendar-memories/CalendarMemoriesPage";
 import { EditProfilePage } from "@/pages/edit-profile/EditProfilePage";
 import { HomePage } from "@/pages/home/HomePage";
 import { InviteAcceptPage } from "@/pages/invite-accept/InviteAcceptPage";
@@ -72,6 +73,10 @@ export function LoveDaysApp() {
       <Route
         path={appPaths.album}
         element={<AlbumRoute user={user} />}
+      />
+      <Route
+        path={appPaths.calendar}
+        element={<CalendarMemoriesRoute user={user} />}
       />
       <Route
         path={appPaths.anniversaries}
@@ -164,6 +169,12 @@ function AlbumRoute({ user }: ProtectedRouteProps) {
   if (!user) return <BootRoute />;
 
   return <AlbumPage user={user} />;
+}
+
+function CalendarMemoriesRoute({ user }: ProtectedRouteProps) {
+  if (!user) return <BootRoute />;
+
+  return <CalendarMemoriesPage user={user} />;
 }
 
 function AnniversariesRoute({ user }: ProtectedRouteProps) {

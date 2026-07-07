@@ -46,7 +46,7 @@ export function useHomePageView() {
     onSaveDisplayInfo: saveHomeDisplayInfo,
     onViewAlbums: navigation.goAlbum,
     onViewAllAnniversaries: navigation.goAnniversaries,
-    openCalendar: showAnniversaryForm,
+    openCalendar: navigation.goCalendar,
     partnerPerson,
     profileLoading: props.profileLoading,
     hideAnniversaryForm,

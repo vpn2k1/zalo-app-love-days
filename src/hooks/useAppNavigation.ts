@@ -6,6 +6,7 @@ export const appPaths = {
   anniversaries: "/anniversaries",
   blocked: "/blocked",
   booting: "/",
+  calendar: "/calendar",
   edit: "/edit",
   home: "/home",
   invite: "/invite",
@@ -27,6 +28,10 @@ export function useAppNavigation() {
 
   const goAnniversaries = useCallback(() => {
     navigate(appPaths.anniversaries);
+  }, [navigate]);
+
+  const goCalendar = useCallback(() => {
+    navigate(appPaths.calendar);
   }, [navigate]);
 
   const goEdit = useCallback(() => {
@@ -57,6 +62,7 @@ export function useAppNavigation() {
     () => ({
       goAlbum,
       goAnniversaries,
+      goCalendar,
       goEdit,
       goHome,
       goInvite,
@@ -67,6 +73,7 @@ export function useAppNavigation() {
     [
       goAlbum,
       goAnniversaries,
+      goCalendar,
       goEdit,
       goHome,
       goInvite,

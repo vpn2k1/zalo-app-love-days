@@ -4,6 +4,7 @@ export {
   Avatar,
   Box,
   Button,
+  Calendar,
   Icon,
   Page,
   Route,
