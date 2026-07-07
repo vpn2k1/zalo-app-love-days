@@ -8,7 +8,14 @@ type Props = {
 
 export function HomeHeader({ title, subtitle, onEditProfile }: Props) {
   return (
-    <Box className="mb-[13px] flex items-center justify-between">
+    <Box className="mb-[13px] flex items-center gap-2">
+      <Box
+        aria-label="Mở hồ sơ"
+        onClick={onEditProfile}
+        className="flex items-center p-2 my-2 rounded-full bg-[var(--love-primary)] text-white"
+      >
+        <Icon icon="zi-user" />
+      </Box>
       <Box>
         <Text.Title
           size="large"
@@ -17,12 +24,6 @@ export function HomeHeader({ title, subtitle, onEditProfile }: Props) {
           {title}
         </Text.Title>
         <Text className="text-xs font-semibold text-[#8f7485]">{subtitle}</Text>
-      </Box>
-      <Box
-        aria-label="Mở hồ sơ"
-        onClick={onEditProfile}
-      >
-        <Icon icon="zi-user" />
       </Box>
     </Box>
   );

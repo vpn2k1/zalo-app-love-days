@@ -7,7 +7,7 @@ type Props = {
 
 export function EditProfileDangerZone({ disabled, onOpenConfirm }: Props) {
   return (
-    <Box className="app-danger-zone">
+    <Box className="my-4">
       <Button
         fullWidth
         variant="secondary"

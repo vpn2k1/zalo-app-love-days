@@ -28,23 +28,18 @@ export function AnniversariesPageHeader({
   onBack,
 }: Props) {
   return (
-    <Box className="mb-4 rounded-[24px] border border-[var(--love-border)] bg-white/85 p-3.5 shadow-[0_14px_30px_rgba(201,47,103,0.08)]">
-      <Box className="mb-3 flex items-center gap-3">
+    <Box>
+      <Box className="mb-3 flex items-center gap-2">
         <Button
-          className="min-h-10 min-w-10 rounded-full bg-white/90 p-0 text-[#d9467e]"
+          className="min-h-10 min-w-10 p-0 text-[#d9467e]"
           htmlType="button"
           icon={<Icon icon="zi-chevron-left" />}
           variant="tertiary"
           onClick={onBack}
         />
-        <Box className="min-w-0 flex-1">
-          <Text.Title size="small" className="font-serif text-[#2f1d2a]">
-            Tất cả kỷ niệm
-          </Text.Title>
-          <Text className="text-xs font-bold text-[#8b6b7d]">
-            {filteredCount}/{totalCount} ngày đáng nhớ
-          </Text>
-        </Box>
+        <Text.Title size="small" className="font-serif text-[#2f1d2a]">
+          Tất cả kỷ niệm
+        </Text.Title>
       </Box>
       <Input.Search
         label="Tìm kiếm"
@@ -52,7 +47,7 @@ export function AnniversariesPageHeader({
         value={query}
         onChange={(event) => setQuery(event.currentTarget.value)}
       />
-      <Box className="mt-3 grid grid-cols-3 gap-2">
+      <Box className="my-3 grid grid-cols-3 gap-2">
         {FILTERS.map((item) => (
           <Button
             className={getFilterClassName(filter, item.value)}

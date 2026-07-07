@@ -30,7 +30,7 @@ export function AlbumFilterFields({ control, mode }: Props) {
 
   if (mode === "range") {
     return (
-      <Box className="mt-3 grid grid-cols-2 gap-2">
+      <Box className="mt-3 gap-2">
         <AppDatePicker
           control={control}
           name="startDate"

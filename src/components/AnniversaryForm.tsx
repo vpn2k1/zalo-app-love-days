@@ -12,9 +12,10 @@ import type { AnniversaryDraft } from "@/types/anniversary";
 type Props = {
   onAdd: (draft: AnniversaryDraft) => void | Promise<void>;
   loading?: boolean;
+  close?: () => void;
 };
 
-export function AnniversaryForm({ onAdd, loading }: Props) {
+export function AnniversaryForm({ onAdd, loading, close }: Props) {
   const methods = useForm<AnniversaryDraft>({
     defaultValues: {
       title: "",
@@ -44,12 +45,12 @@ export function AnniversaryForm({ onAdd, loading }: Props) {
       note: "",
       image_url: "",
     });
+    close?.();
   };
 
   return (
     <FormProvider {...methods}>
-      <Box className="anniversary-form">
-        <Text className="form-label">Ngày kỷ niệm</Text>
+      <Box className="anniversary-form p-4">
         <AppTextInput
           control={control}
           name="title"

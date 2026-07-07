@@ -19,7 +19,7 @@ export function PermissionGate({
 
   return (
     <Page className="app-opening-page">
-      <StatusBar />
+      {/* <StatusBar /> */}
       <PermissionHeader />
       <PermissionHero title={copy.heroTitle} />
       <Text className="app-alternate-intro-subtitle">{copy.note}</Text>

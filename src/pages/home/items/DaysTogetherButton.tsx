@@ -91,8 +91,8 @@ export function DaysTogetherButton({ loading, onSaveDisplayInfo }: Props) {
           Chúng mình đã bên nhau
         </Text>
 
-        <Box className="mt-3 flex items-end justify-center gap-2">
-          <Text className="font-serif text-[56px] font-bold leading-none text-[#d9467e] drop-shadow-sm">
+        <Box className="mt-3 flex min-w-0 flex-wrap items-end justify-center gap-2">
+          <Text className="min-w-0 font-serif text-[clamp(40px,15vw,56px)] font-bold leading-none text-[#d9467e] drop-shadow-sm">
             {elapsed.days.toLocaleString()}
           </Text>
           <Text className="mb-1 text-[18px] font-semibold text-[#9b6b82]">
@@ -100,7 +100,7 @@ export function DaysTogetherButton({ loading, onSaveDisplayInfo }: Props) {
           </Text>
         </Box>
 
-        <Box className="mt-5 grid grid-cols-3 gap-2">
+        <Box className="mt-5 grid grid-cols-3 gap-1.5">
           <TimeBox value={elapsed.hours} label="Giờ" />
           <TimeBox value={elapsed.minutes} label="Phút" />
           <TimeBox value={elapsed.seconds} label="Giây" />
@@ -125,8 +125,8 @@ export function DaysTogetherButton({ loading, onSaveDisplayInfo }: Props) {
 
 function TimeBox({ value, label }: { value: number; label: string }) {
   return (
-    <Box className="rounded-2xl bg-white/75 px-2 py-3 shadow-sm border border-white">
-      <Text className="text-[22px] font-bold leading-none text-[#d9467e]">
+    <Box className="min-w-0 rounded-2xl border border-white bg-white/75 px-1.5 py-3 shadow-sm">
+      <Text className="text-[clamp(18px,6vw,22px)] font-bold leading-none text-[#d9467e]">
         {String(value).padStart(2, "0")}
       </Text>
       <Text className="mt-1 text-[12px] font-medium text-[#9b6b82]">

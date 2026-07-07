@@ -16,15 +16,14 @@ export function SetupPageBackgroundPicker() {
     }
   };
   return (
-    <Box className="app-setup-card  flex gap-4">
+    <Box className="app-setup-card flex gap-2">
       <Box
         className="app-hero relative flex flex-1 cursor-pointer items-center justify-center overflow-hidden"
         aria-label="Chọn ảnh nền"
-        onClick={pickBackground}
       >
         {backgroundUrl && (
           <img
-            alt=""
+            alt="backgroundUrl"
             className="absolute inset-0 size-full object-cover"
             src={backgroundUrl}
           />
@@ -38,12 +37,8 @@ export function SetupPageBackgroundPicker() {
         <Text className="app-opening-card-copy">
           Có thể thêm sau, nhưng một tấm ảnh sẽ làm màn chính ngọt hơn.
         </Text>
-        <Button
-          htmlType="button"
-          className="app-setup-add-photo"
-          onClick={pickBackground}
-        >
-          <Text>+ Ảnh cặp đôi</Text>
+        <Button className="" onClick={pickBackground}>
+          <Text>+ Ảnh</Text>
         </Button>
       </Box>
     </Box>

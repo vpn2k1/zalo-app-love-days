@@ -9,6 +9,7 @@ import { AlbumPageGrid } from "./items/AlbumPageGrid";
 import { AlbumPageHeader } from "./items/AlbumPageHeader";
 import { useAlbumPage } from "./modules/useAlbumPage";
 import type { AlbumPageProps } from "./types/AlbumPageType";
+import { Header, Icon } from "zmp-ui";
 
 export function AlbumPage({ user }: AlbumPageProps) {
   const { anniversariesQuery, coupleData, coupleQuery } = useLoveDaysData({
@@ -41,7 +42,6 @@ function AlbumPageContent({
 
   return (
     <Page className="mx-auto min-h-screen w-[min(100%,430px)] bg-[#fff4f8] px-[18px] pb-[calc(34px+env(safe-area-inset-bottom))] pt-4 text-[#3c2435] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      <StatusBar />
       <AlbumPageHeader
         filteredCount={page.filteredCount}
         filters={page.filters}
@@ -56,6 +56,7 @@ function AlbumPageContent({
         isRefreshing={page.isRefreshing}
         items={page.items}
         onLoadMore={page.loadMore}
+        onOpenMemory={navigation.goMemory}
         onRefresh={page.refresh}
       />
     </Page>

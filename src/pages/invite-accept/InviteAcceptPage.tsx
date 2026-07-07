@@ -30,7 +30,7 @@ export function InviteAcceptPage({
 
   return (
     <Page className="app-opening-page">
-      <StatusBar />
+      {/* <StatusBar /> */}
       <InviteAcceptHeader />
       <InviteAcceptHero />
       <InviteAcceptCard />

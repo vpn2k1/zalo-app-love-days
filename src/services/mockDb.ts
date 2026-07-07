@@ -1,4 +1,8 @@
-import type { Anniversary, AnniversaryDraft } from "@/types/anniversary";
+import type {
+  Anniversary,
+  AnniversaryDraft,
+  AnniversaryUpdateInput,
+} from "@/types/anniversary";
 import type { Couple, CoupleMember, CoupleWithMembers, SetupCoupleInput } from "@/types/couple";
 import type { AppUser, ZaloUserProfile } from "@/types/user";
 import { mockInviteDb } from "./mockInviteDb";
@@ -160,6 +164,31 @@ export const mockDb = {
     state.anniversaries.push(anniversary);
     writeState(state);
     return anniversary;
+  },
+
+  updateAnniversary(
+    anniversaryId: string,
+    input: AnniversaryUpdateInput,
+  ): Anniversary {
+    const state = readState();
+    let updated: Anniversary | undefined;
+    state.anniversaries = state.anniversaries.map((anniversary) => {
+      if (anniversary.id !== anniversaryId) return anniversary;
+
+      updated = {
+        ...anniversary,
+        date: input.date,
+        image_url: input.image_url,
+        note: input.note,
+        repeat_type: input.repeat_type,
+        title: input.title,
+      };
+      return updated;
+    });
+    writeState(state);
+    if (!updated) throw new Error("Không tìm thấy kỷ niệm.");
+
+    return updated;
   },
 
   createInvite(coupleId: string, invitedBy: string) {

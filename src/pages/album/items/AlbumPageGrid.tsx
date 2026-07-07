@@ -9,6 +9,7 @@ type Props = {
   isRefreshing: boolean;
   items: Anniversary[];
   onLoadMore: () => void;
+  onOpenMemory: (memoryId: string) => void;
   onRefresh: () => void;
 };
 
@@ -19,6 +20,7 @@ export function AlbumPageGrid({
   isRefreshing,
   items,
   onLoadMore,
+  onOpenMemory,
   onRefresh,
 }: Props) {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
@@ -72,7 +74,11 @@ export function AlbumPageGrid({
       )}
       <Box className="grid grid-cols-2 gap-2.5">
         {items.map((item) => (
-          <AlbumCard item={item} key={item.id} />
+          <AlbumCard
+            item={item}
+            key={item.id}
+            onOpenMemory={onOpenMemory}
+          />
         ))}
       </Box>
       {canLoadMore && (
@@ -86,9 +92,24 @@ export function AlbumPageGrid({
   );
 }
 
-function AlbumCard({ item }: { item: Anniversary }) {
+function AlbumCard({
+  item,
+  onOpenMemory,
+}: {
+  item: Anniversary;
+  onOpenMemory: (memoryId: string) => void;
+}) {
+  const openMemory = () => {
+    onOpenMemory(item.id);
+  };
+
   return (
-    <Box className="min-w-0 overflow-hidden rounded-[18px] bg-white/90">
+    <Box
+      className="min-w-0 overflow-hidden rounded-[18px] bg-white/90"
+      role="button"
+      tabIndex={0}
+      onClick={openMemory}
+    >
       <img
         alt={item.title}
         className="aspect-square w-full object-cover"

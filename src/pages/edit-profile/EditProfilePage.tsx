@@ -53,7 +53,7 @@ export function EditProfilePage({ user }: EditProfilePageProps) {
   return (
     <FormProvider {...methods}>
       <Page className="app-setup-page">
-        <StatusBar />
+        {/* <StatusBar /> */}
         <EditProfileHeader />
         <EditProfilePhoto />
         <EditProfileFields />

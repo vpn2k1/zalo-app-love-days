@@ -425,11 +425,18 @@
 }
 
 .app-setup-card .anniversary-form {
+  max-height: 420px;
+  margin-top: 12px;
   margin-bottom: 14px;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-.app-setup-card .anniversary-list {
-  margin-top: 12px;
+.app-setup-card .anniversary-form::-webkit-scrollbar {
+  display: none;
 }
 
 .app-setup-action {

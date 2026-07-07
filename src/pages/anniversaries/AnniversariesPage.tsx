@@ -39,7 +39,7 @@ function AnniversariesPageContent({
 
   return (
     <Page className="mx-auto min-h-screen w-[min(100%,430px)] bg-[#fff4f8] px-[18px] pb-[34px] pt-4 text-[#3c2435]">
-      <StatusBar />
+      {/* <StatusBar /> */}
       <AnniversariesPageHeader
         filter={page.filter}
         filteredCount={page.filteredCount}
@@ -53,6 +53,7 @@ function AnniversariesPageContent({
         canLoadMore={page.canLoadMore}
         items={page.items}
         onLoadMore={page.loadMore}
+        onOpenMemory={navigation.goMemory}
       />
     </Page>
   );

@@ -11,6 +11,7 @@ import { SetupPageButton } from "./items/SetupPageButton";
 import { useSetupPageController } from "./modules/useSetupPageController";
 import type { SetupFormValues } from "./types/SetupPageType";
 import { BlockingLoadingOverlay } from "@/components/BlockingLoadingOverlay";
+import { SetupMemorySheet } from "./items/SetupMemorySheet";
 
 type Props = {
   user: AppUser;
@@ -30,12 +31,12 @@ export function SetupPage({ user }: Props) {
   return (
     <FormProvider {...methods}>
       <Page className="app-setup-page">
-        <StatusBar />
+        {/* <StatusBar /> */}
         <SetupPageHeader />
         <SetupPageBackgroundPicker />
         <SetupPageAvatarPicker user={user} />
         <SetupPageDatePicker />
-        <SetupPageMemories />
+        <SetupMemorySheet />
         <SetupPageButton
           loading={setup.createCoupleMutation.isPending}
           onCreate={async (input) => {

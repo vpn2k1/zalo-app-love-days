@@ -20,14 +20,14 @@ export function CouplePeoplePanel({
   }
 
   return (
-    <Box className="w-full grid grid-cols-10 items-start bg-white rounded-2xl p-4 gap-4 my-4">
-      <Box className="col-span-4 flex justify-center">
+    <Box className="my-4 grid w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-start gap-2 rounded-2xl bg-white p-3">
+      <Box className="min-w-0">
         <PersonChip person={currentPerson} />
       </Box>
-      <Box className="col-span-2 flex justify-center pt-3">
-        <Icon icon="zi-heart-solid" size={50} className="text-[#ef4444]" />
+      <Box className="flex justify-center pt-3">
+        <Icon icon="zi-heart-solid" size={36} className="text-[#ef4444]" />
       </Box>
-      <Box className="col-span-4 flex justify-center">
+      <Box className="min-w-0">
         <PersonChip
           person={partnerPerson}
           emptyLabel="Mời người ấy"

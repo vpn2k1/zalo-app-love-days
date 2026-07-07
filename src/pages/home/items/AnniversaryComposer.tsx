@@ -17,7 +17,12 @@ export function AnniversaryComposer({
 }: Props) {
   return (
     <AppSheet visible={visible} onClose={onClose}>
-      <Box className="px-5 pb-5 pt-2">
+      <Box
+        className="px-5 pb-5 pt-2 overflow-y-auto overflow-x-hidden"
+        style={{
+          scrollbarWidth: "none",
+        }}
+      >
         <Box className="mb-4 text-center">
           <Text className="text-[12px] font-bold uppercase tracking-[0.18em] text-[#c45a86]">
             Kỷ niệm mới

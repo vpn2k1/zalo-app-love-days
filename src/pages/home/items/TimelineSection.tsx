@@ -1,4 +1,4 @@
-import { Box, Button, Text } from "@/components/zaui";
+import { Box, Button, Icon, Text } from "@/components/zaui";
 import type { Anniversary } from "@/types/anniversary";
 import { formatDate } from "@/utils/date";
 
@@ -13,9 +13,7 @@ export function TimelineSection({ anniversaries, onViewAll }: Props) {
       <Box className="mb-3 rounded-[24px] border border-white/75 bg-[radial-gradient(circle_at_3%_86%,#fff0da_0_15%,transparent_28%)] bg-white/90 px-4 pb-4 pt-3 shadow-[0_16px_34px_rgba(84,49,72,0.08)]">
         <TimelineHeader onViewAll={onViewAll} />
         <Box className="flex min-h-[62px] items-center gap-3 rounded-[18px] bg-white/65 p-3">
-          <Text className="grid size-[42px] flex-none place-items-center rounded-[15px] bg-[#fff0f6] text-[#e14d86]">
-            ♡
-          </Text>
+          <Icon icon="zi-heart" className="text-[#e14d86]" />
           <Box className="min-w-0">
             <Text className="overflow-hidden text-ellipsis whitespace-nowrap font-[850] text-[#3a2232]">
               Chưa có kỷ niệm
@@ -87,7 +85,7 @@ function TimelineHeader({ onViewAll }: { onViewAll: () => void }) {
         size="small"
         className="font-serif font-medium text-[#2f1d2a]"
       >
-        5 kỷ niệm gần đây
+        Kỷ niệm gần đây
       </Text.Title>
       <Button
         className="min-h-8 rounded-full bg-transparent px-2.5 font-[850] text-[#e14d86]"

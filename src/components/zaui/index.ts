@@ -11,6 +11,7 @@ export {
   Text,
   useLocation,
   useNavigate,
+  useSearchParams,
   ZMPRouter,
 } from "zmp-ui";
 export { AppActionSheet } from "@/components/zaui/AppActionSheet";

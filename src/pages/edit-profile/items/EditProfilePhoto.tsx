@@ -40,6 +40,7 @@ export function EditProfilePhoto() {
         alt="avatar"
         className="absolute inset-0 size-full object-cover"
         src={avatarUrl}
+        onClick={handleAvatarClick}
       />
       <Box onClick={pickAvatar} className="app-profile-photo-action">
         <Icon icon="zi-camera" /> Đổi ảnh

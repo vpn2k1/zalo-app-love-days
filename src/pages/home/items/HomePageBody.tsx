@@ -16,7 +16,7 @@ export function HomePageBody() {
 
   return (
     <Page className="mx-auto min-h-screen w-[min(100%,430px)] bg-[#fff4f8] px-[18px] pb-[34px] pt-4 text-[#3c2435] [scrollbar-width:none]">
-      <StatusBar />
+      {/* <StatusBar /> */}
       <HomeHeader
         title="Góc nhỏ của chúng mình"
         subtitle={`Từ ngày ${formatDate(home.startDate)}`}

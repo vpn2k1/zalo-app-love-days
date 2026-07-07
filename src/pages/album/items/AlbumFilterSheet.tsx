@@ -1,7 +1,13 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { useForm, useWatch } from "react-hook-form";
 
-import { AppSheet, type AppSheetRef, Box, Button, Text } from "@/components/zaui";
+import {
+  AppSheet,
+  type AppSheetRef,
+  Box,
+  Button,
+  Text,
+} from "@/components/zaui";
 import { AlbumFilterFields } from "./AlbumFilterFields";
 import {
   emptyFilters,
@@ -38,12 +44,10 @@ const SORT_OPTIONS: Array<{ label: string; value: AlbumSortOrder }> = [
 ];
 
 export const AlbumFilterSheet = forwardRef<AppSheetRef, Props>(
-  function AlbumFilterSheet({
-    filters,
-    setFilters,
-    setSortOrder,
-    sortOrder,
-  }: Props, ref) {
+  function AlbumFilterSheet(
+    { filters, setFilters, setSortOrder, sortOrder }: Props,
+    ref,
+  ) {
     const { control, handleSubmit, reset, setValue } = useForm<AlbumFilters>({
       defaultValues: filters,
     });
@@ -72,7 +76,10 @@ export const AlbumFilterSheet = forwardRef<AppSheetRef, Props>(
 
     return (
       <AppSheet ref={sheetRef} title="Quản lý bộ lọc">
-        <Box className="px-4 pb-[calc(18px+env(safe-area-inset-bottom))] pt-2">
+        <Box
+          className="px-4 pb-[calc(18px+env(safe-area-inset-bottom))] pt-2 overflow-auto"
+          style={{ scrollbarWidth: "none" }}
+        >
           <Text className="mb-2 text-xs font-bold uppercase text-[#8b6b7d]">
             Lọc ảnh
           </Text>

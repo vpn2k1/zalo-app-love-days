@@ -9,6 +9,7 @@ export const appPaths = {
   edit: "/edit",
   home: "/home",
   invite: "/invite",
+  memory: "/memory",
   permission: "/permission",
   setup: "/setup",
 } as const;
@@ -36,6 +37,10 @@ export function useAppNavigation() {
     navigate(appPaths.home, options);
   }, [navigate]);
 
+  const goMemory = useCallback((memoryId: string) => {
+    navigate(`${appPaths.memory}?id=${encodeURIComponent(memoryId)}`);
+  }, [navigate]);
+
   const goInvite = useCallback((options?: NavigateOptions) => {
     navigate(appPaths.invite, options);
   }, [navigate]);
@@ -55,6 +60,7 @@ export function useAppNavigation() {
       goEdit,
       goHome,
       goInvite,
+      goMemory,
       goPermission,
       goSetup,
     }),
@@ -64,6 +70,7 @@ export function useAppNavigation() {
       goEdit,
       goHome,
       goInvite,
+      goMemory,
       goPermission,
       goSetup,
     ],

@@ -8,7 +8,7 @@ type Props = {
 
 export function EditProfileActions({ loading, onBack, onSave }: Props) {
   return (
-    <Box className="app-setup-action app-edit-actions">
+    <Box className="app-edit-actions">
       <Button
         variant="secondary"
         htmlType="button"

@@ -36,6 +36,23 @@
   box-sizing: border-box;
 }
 
+html,
+body,
+#app {
+  width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+#app::-webkit-scrollbar {
+  display: none;
+}
+
 body {
   margin: 0;
   color: var(--love-ink);
@@ -54,6 +71,54 @@ textarea,
 .zaui-text,
 .zaui-btn {
   font-family: inherit;
+  max-width: 100%;
+  white-space: normal;
+}
+
+.zaui-text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.zaui-routes {
+  height: 100%;
+}
+
+.zaui-routes .zaui-routes-item {
+  min-height: 100dvh;
+  max-height: none;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.zaui-routes .zaui-routes-item::-webkit-scrollbar {
+  display: none;
+}
+
+.zaui-page {
+  min-height: 100dvh;
+  max-height: none;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+.zaui-sheet-content,
+.zaui-action-sheet {
+  max-height: 90dvh;
+}
+
+.zaui-sheet-content-main {
+  min-height: 0;
+  overscroll-behavior: contain;
+}
+
+.zaui-sidebar,
+[class*="zaui-sidebar"],
+[class*="zmp-sidebar"] {
+  display: none;
 }
 
 .love-page {
@@ -724,6 +789,15 @@ textarea,
   display: none;
 }
 
+.zaui-routes .zaui-routes-item:has(.app-setup-page) {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.zaui-routes .zaui-routes-item:has(.app-setup-page)::-webkit-scrollbar {
+  display: none;
+}
+
 .zaui-page.app-setup-page .app-setup-action,
 .app-setup-page .app-setup-action {
   position: static;
@@ -826,6 +900,35 @@ textarea,
 
 .zaui-sheet-content-handler-wrapper {
   touch-action: none;
+}
+
+@media (max-width: 360px) {
+  .zaui-page {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  .zaui-sheet-content-main {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+}
+
+@media (max-width: 340px) {
+  .permission-card {
+    padding-right: 16px;
+    padding-left: 16px;
+    border-radius: 22px;
+  }
+
+  .inline-actions,
+  .bottom-action.dual {
+    grid-template-columns: 1fr;
+  }
+
+  .app-image-picker-trigger {
+    height: 136px;
+  }
 }
 
 @media (min-width: 480px) {

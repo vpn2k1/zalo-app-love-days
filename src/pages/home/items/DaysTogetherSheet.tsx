@@ -31,13 +31,18 @@ export function DaysTogetherSheet({
   elapsed,
   loading,
   sheetRef,
-  startDate,
   onClose,
   onSave,
 }: Props) {
   return (
     <AppSheet ref={sheetRef}>
-      <Box className="px-5 pb-5 pt-2">
+      <Box
+        className="px-5 pb-5 pt-2 overflow-y-auto overflow-x-hidden"
+        style={{
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+        }}
+      >
         <Box className="mb-5 text-center">
           <Text className="mt-2 text-[13px] leading-5 text-[#716773]">
             Thay đổi thông tin không gian
@@ -53,7 +58,7 @@ export function DaysTogetherSheet({
           />
         </Box>
 
-        <Box className="my-5 grid grid-cols-4 gap-2 text-center">
+        <Box className="my-5 grid grid-cols-2 gap-2 text-center min-[360px]:grid-cols-4">
           <TimePill value={elapsed.days.toLocaleString()} label="Ngày" />
           <TimePill
             value={String(elapsed.hours).padStart(2, "0")}
@@ -81,7 +86,11 @@ export function DaysTogetherSheet({
             fullWidth
             htmlType="button"
             variant="secondary"
-            onClick={onClose}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onClose();
+            }}
           >
             Đóng
           </Button>
@@ -103,8 +112,8 @@ export function DaysTogetherSheet({
 
 function TimePill({ value, label }: { value: string; label: string }) {
   return (
-    <Box className="rounded-2xl border border-white bg-white/80 px-2 py-3 shadow-sm">
-      <Text className="text-[18px] font-bold leading-none text-[#d9467e]">
+    <Box className="min-w-0 rounded-2xl border border-white bg-white/80 px-1.5 py-3 shadow-sm">
+      <Text className="text-[clamp(15px,5vw,18px)] font-bold leading-none text-[#d9467e]">
         {value}
       </Text>
       <Text className="mt-1 text-[11px] font-semibold text-[#9b6b82]">

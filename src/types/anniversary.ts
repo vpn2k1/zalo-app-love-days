@@ -20,6 +20,8 @@ export type AnniversaryDraft = {
   image_url?: string;
 };
 
+export type AnniversaryUpdateInput = AnniversaryDraft;
+
 export type UpcomingAnniversary = {
   title: string;
   date: string;

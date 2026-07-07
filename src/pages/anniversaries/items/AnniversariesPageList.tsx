@@ -7,12 +7,14 @@ type Props = {
   canLoadMore: boolean;
   items: Anniversary[];
   onLoadMore: () => void;
+  onOpenMemory: (memoryId: string) => void;
 };
 
 export function AnniversariesPageList({
   canLoadMore,
   items,
   onLoadMore,
+  onOpenMemory,
 }: Props) {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
@@ -51,7 +53,11 @@ export function AnniversariesPageList({
   return (
     <Box className="grid gap-2.5">
       {items.map((item) => (
-        <AnniversaryRow item={item} key={item.id} />
+        <AnniversaryRow
+          item={item}
+          key={item.id}
+          onOpenMemory={onOpenMemory}
+        />
       ))}
       {canLoadMore && (
         <div
@@ -67,9 +73,24 @@ export function AnniversariesPageList({
   );
 }
 
-function AnniversaryRow({ item }: { item: Anniversary }) {
+function AnniversaryRow({
+  item,
+  onOpenMemory,
+}: {
+  item: Anniversary;
+  onOpenMemory: (memoryId: string) => void;
+}) {
+  const openMemory = () => {
+    onOpenMemory(item.id);
+  };
+
   return (
-    <Box className="flex min-h-[74px] items-center gap-3 rounded-[18px] bg-white/90 p-3">
+    <Box
+      className="flex min-h-[74px] items-center gap-3 rounded-[18px] bg-white/90 p-3"
+      role="button"
+      tabIndex={0}
+      onClick={openMemory}
+    >
       <AnniversaryThumb item={item} />
       <Box className="min-w-0 flex-1">
         <Text className="overflow-hidden text-ellipsis whitespace-nowrap font-[850] text-[#3a2232]">

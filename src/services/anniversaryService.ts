@@ -1,7 +1,11 @@
 import { mockDb } from "@/services/mockDb";
 import { isMockMode, supabase } from "@/services/supabaseClient";
 import { mediaService } from "@/services/mediaService";
-import type { Anniversary, AnniversaryDraft } from "@/types/anniversary";
+import type {
+  Anniversary,
+  AnniversaryDraft,
+  AnniversaryUpdateInput,
+} from "@/types/anniversary";
 
 export const anniversaryService = {
   async list(coupleId: string): Promise<Anniversary[]> {
@@ -45,6 +49,39 @@ export const anniversaryService = {
         image_url: imageUrl,
         created_by: userId,
       })
+      .select("*")
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  async update(
+    coupleId: string,
+    anniversaryId: string,
+    input: AnniversaryUpdateInput,
+  ): Promise<Anniversary> {
+    if (isMockMode || !supabase) {
+      return mockDb.updateAnniversary(anniversaryId, input);
+    }
+
+    const imageUrl = await mediaService.uploadImagePath({
+      coupleId,
+      fileName: `anniversary-${anniversaryId}`,
+      path: input.image_url,
+      scope: "anniversaries",
+    });
+    const { data, error } = await supabase
+      .from("anniversaries")
+      .update({
+        date: input.date,
+        image_url: imageUrl,
+        note: input.note,
+        repeat_type: input.repeat_type,
+        title: input.title,
+      })
+      .eq("id", anniversaryId)
+      .eq("couple_id", coupleId)
       .select("*")
       .single();
 
