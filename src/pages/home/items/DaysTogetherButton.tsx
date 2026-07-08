@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { Box, Text } from "@/components/zaui";
 import type { AppSheetRef } from "@/components/zaui";
+import { useUpdateBackgroundMutation } from "@/hooks/mutations/useUpdateBackgroundMutation";
+import { useUpdateStartDateMutation } from "@/hooks/mutations/useUpdateStartDateMutation";
 import { DaysTogetherSheet } from "./DaysTogetherSheet";
 import type { HomeDisplayFormValues } from "../types/HomePageType";
 
@@ -12,12 +14,7 @@ type ElapsedTime = {
   seconds: number;
 };
 
-type Props = {
-  loading?: boolean;
-  onSaveDisplayInfo: (values: HomeDisplayFormValues) => Promise<unknown>;
-};
-
-export function DaysTogetherButton({ loading, onSaveDisplayInfo }: Props) {
+export function DaysTogetherButton() {
   const { control, handleSubmit } = useFormContext<HomeDisplayFormValues>();
   const startDate = useWatch<HomeDisplayFormValues, "startDate">({
     control,
@@ -31,6 +28,10 @@ export function DaysTogetherButton({ loading, onSaveDisplayInfo }: Props) {
     minutes: 0,
     seconds: 0,
   });
+  const updateBackground = useUpdateBackgroundMutation();
+  const updateStartDate = useUpdateStartDateMutation();
+  const loading = updateBackground.isPending || updateStartDate.isPending;
+
   const startTime = useMemo(() => {
     if (!startDate) return null;
 
@@ -71,7 +72,8 @@ export function DaysTogetherButton({ loading, onSaveDisplayInfo }: Props) {
   };
 
   const saveDisplayInfo = handleSubmit(async (values) => {
-    await onSaveDisplayInfo(values);
+    await updateBackground.mutateAsync(values.backgroundUrl || null);
+    await updateStartDate.mutateAsync(values.startDate);
     closeSheet();
   });
 

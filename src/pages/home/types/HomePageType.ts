@@ -15,18 +15,9 @@ export type HomePageContentProps = {
   addPartnerLoading?: boolean;
   addAnniversaryLoading?: boolean;
   blockingLoading: boolean;
-  profileLoading?: boolean;
   onAddPartner: () => Promise<unknown>;
-  onUpdateBackground: (backgroundUrl: string | null) => Promise<unknown>;
-  onUpdateProfile: (payload: ProfilePayload) => Promise<unknown>;
-  onUpdateStartDate: (startDate: string) => Promise<unknown>;
   onAddAnniversary: (draft: AnniversaryDraft) => Promise<unknown>;
   onEditProfile: () => void;
-};
-
-export type ProfilePayload = {
-  custom_avatar_url: string | null;
-  display_name: string;
 };
 
 export type Person = {
@@ -42,6 +33,7 @@ export type HomeDisplayFormValues = {
   partnerAvatar: string;
   partnerName: string;
   startDate: string;
+  coupleId: string;
 };
 
 export type ZmpIconName = ComponentProps<typeof Icon>["icon"];

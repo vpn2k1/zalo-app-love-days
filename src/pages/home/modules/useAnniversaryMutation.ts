@@ -1,18 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppSnackbar } from "@/components/zaui";
+import { useCoupleData } from "@/hooks/useCoupleData";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { anniversaryService } from "@/services/anniversaryService";
 import type { AnniversaryDraft } from "@/types/anniversary";
-import type { CoupleWithMembers } from "@/types/couple";
-import type { AppUser } from "@/types/user";
 import { anniversariesQueryKey } from "@/config/queryKeys";
 
-type Input = {
-  coupleData: CoupleWithMembers | null;
-  user: AppUser | null;
-};
-
-export function useAnniversaryMutation({ coupleData, user }: Input) {
+export function useAnniversaryMutation() {
   const queryClient = useQueryClient();
+  const { user } = useCurrentUser();
+  const { coupleData } = useCoupleData();
   const snackbar = useAppSnackbar();
 
   return useMutation({

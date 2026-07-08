@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Anniversary } from "@/types/anniversary";
 import type {
   AnniversaryFilter,
@@ -29,9 +29,9 @@ export function useAnniversariesPage({
   const items = filteredItems.slice(0, visibleCount);
   const canLoadMore = visibleCount < filteredItems.length;
 
-  const loadMore = useCallback(() => {
+  const loadMore = () => {
     setVisibleCount((current) => current + PAGE_SIZE);
-  }, []);
+  };
 
   return {
     canLoadMore,

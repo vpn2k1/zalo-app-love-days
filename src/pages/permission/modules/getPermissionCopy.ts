@@ -1,4 +1,11 @@
-import type { PermissionCopy } from "../types/PermissionGateType";
+export type PermissionCopy = {
+  actionLabel: string;
+  cardCopy: string;
+  cardTitle: string;
+  dayTitle: string;
+  heroTitle: string;
+  note: string;
+};
 
 export function getPermissionCopy(blocked?: boolean): PermissionCopy {
   if (blocked) {

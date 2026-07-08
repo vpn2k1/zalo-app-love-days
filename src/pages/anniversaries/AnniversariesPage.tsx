@@ -1,18 +1,21 @@
-import { useEffect } from "react";
+import { AppStatusBar } from "@/components/AppStatusBar";
 import { AppSpinner, Box, Page } from "@/components/zaui";
+import { useAnniversariesData } from "@/hooks/useAnniversariesData";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
-import { useLoveDaysData } from "@/hooks/useLoveDaysData";
-import { StatusBar } from "@/pages/home/items/StatusBar";
+import { useCoupleData } from "@/hooks/useCoupleData";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import type { Anniversary } from "@/types/anniversary";
+import { useEffect } from "react";
 import { AnniversariesPageHeader } from "./items/AnniversariesPageHeader";
 import { AnniversariesPageList } from "./items/AnniversariesPageList";
 import { useAnniversariesPage } from "./modules/useAnniversariesPage";
-import type { AnniversariesPageProps } from "./types/AnniversariesPageType";
 
-export function AnniversariesPage({ user }: AnniversariesPageProps) {
-  const { anniversariesQuery, coupleData, coupleQuery } = useLoveDaysData({
-    user,
-  });
+export function AnniversariesPage() {
+  const { user } = useCurrentUser();
+  const { coupleData, coupleQuery } = useCoupleData();
+  const { anniversariesQuery } = useAnniversariesData();
+
+  if (!user) return null;
 
   if (coupleQuery.isPending || (coupleData && anniversariesQuery.isPending)) {
     return <AnniversariesLoadingState />;
@@ -23,9 +26,7 @@ export function AnniversariesPage({ user }: AnniversariesPageProps) {
   }
 
   return (
-    <AnniversariesPageContent
-      anniversaries={getAnniversaries(anniversariesQuery.data)}
-    />
+    <AnniversariesPageContent anniversaries={anniversariesQuery.data ?? []} />
   );
 }
 
@@ -39,7 +40,7 @@ function AnniversariesPageContent({
 
   return (
     <Page className="mx-auto min-h-screen w-[min(100%,430px)] bg-[#fff4f8] px-[18px] pb-[34px] pt-4 text-[#3c2435]">
-      {/* <StatusBar /> */}
+      <AppStatusBar />
       <AnniversariesPageHeader
         filter={page.filter}
         filteredCount={page.filteredCount}
@@ -71,14 +72,8 @@ function AnniversariesMissingCoupleState() {
   const navigation = useAppNavigation();
 
   useEffect(() => {
-    navigation.goHome({ replace: true });
+    navigation.goSetup({ replace: true });
   }, [navigation]);
 
   return <AnniversariesLoadingState />;
-}
-
-function getAnniversaries(anniversaries?: Anniversary[]) {
-  if (!anniversaries) return [];
-
-  return anniversaries;
 }

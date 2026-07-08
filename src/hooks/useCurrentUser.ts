@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import {
   useQuery,
   useQueryClient,
@@ -24,48 +23,24 @@ export function useCurrentUser(options: Options = {}) {
     enabled: restore,
     retry: false,
   });
-  const setUser = useCallback(
-    (user: AppUser) => setCurrentUserCache(queryClient, user),
-    [queryClient],
-  );
-  const getUser = useCallback(
-    () => getCurrentUserCache(queryClient),
-    [queryClient],
-  );
-  const updateUser = useCallback(
-    (updater: UpdateCurrentUser) => {
-      updateCurrentUserCache(queryClient, updater);
-    },
-    [queryClient],
-  );
 
   return {
     currentUserQuery,
-    getUser,
-    setUser,
-    updateUser,
+    getUser: () => getCurrentUserCache(queryClient),
+    setUser: (user: AppUser) => setCurrentUserCache(queryClient, user),
+    updateUser: (updater: UpdateCurrentUser) => updateCurrentUserCache(queryClient, updater),
     user: currentUserQuery.data ?? null,
   };
 }
 
 export function useCurrentUserActions() {
   const queryClient = useQueryClient();
-  const setUser = useCallback(
-    (user: AppUser) => setCurrentUserCache(queryClient, user),
-    [queryClient],
-  );
-  const getUser = useCallback(
-    () => getCurrentUserCache(queryClient),
-    [queryClient],
-  );
-  const updateUser = useCallback(
-    (updater: UpdateCurrentUser) => {
-      updateCurrentUserCache(queryClient, updater);
-    },
-    [queryClient],
-  );
 
-  return { getUser, setUser, updateUser };
+  return {
+    getUser: () => getCurrentUserCache(queryClient),
+    setUser: (user: AppUser) => setCurrentUserCache(queryClient, user),
+    updateUser: (updater: UpdateCurrentUser) => updateCurrentUserCache(queryClient, updater),
+  };
 }
 
 export async function authorizeCurrentUser() {

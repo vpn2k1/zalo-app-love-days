@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import type { Anniversary } from "@/types/anniversary";
 import { parseLocalDate } from "@/utils/date";
@@ -46,11 +46,11 @@ export function useAlbumPage({
   const items = filteredItems.slice(0, visibleCount);
   const canLoadMore = visibleCount < filteredItems.length;
 
-  const loadMore = useCallback(() => {
+  const loadMore = () => {
     setVisibleCount((current) => current + PAGE_SIZE);
-  }, []);
+  };
 
-  const refresh = useCallback(() => {
+  const refresh = () => {
     if (isRefreshing) return;
 
     setIsRefreshing(true);
@@ -59,7 +59,7 @@ export function useAlbumPage({
       .then(() => {
         window.setTimeout(() => setIsRefreshing(false), REFRESH_DELAY_MS);
       });
-  }, [isRefreshing, onRefresh]);
+  };
 
   return {
     canLoadMore,

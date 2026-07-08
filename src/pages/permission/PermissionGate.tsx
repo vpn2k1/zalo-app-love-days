@@ -6,29 +6,29 @@ import { PermissionHeader } from "./items/PermissionHeader";
 import { PermissionHero } from "./items/PermissionHero";
 import { PermissionStats } from "./items/PermissionStats";
 import { getPermissionCopy } from "./modules/getPermissionCopy";
-import type { PermissionGateProps } from "./types/PermissionGateType";
 import "../../css/app.css";
 import { PermissionStep } from "./items/PermissionStep";
+import { AppStatusBar } from "@/components/AppStatusBar";
+import { useAuthorizeMutation } from "@/hooks/mutations/useAuthorizeMutation";
 
 export function PermissionGate({
   blocked,
-  loading,
-  onAllow,
-}: PermissionGateProps) {
+}: { blocked?: boolean }) {
+  const authorize = useAuthorizeMutation();
   const copy = getPermissionCopy(blocked);
 
   return (
     <Page className="app-opening-page">
-      {/* <StatusBar /> */}
+      <AppStatusBar />
       <PermissionHeader />
       <PermissionHero title={copy.heroTitle} />
       <Text className="app-alternate-intro-subtitle">{copy.note}</Text>
-      <PermissionStep/>
+      <PermissionStep />
       <PermissionCard copy={copy.cardCopy} title={copy.cardTitle} />
       <PermissionAllowAction
         actionLabel={copy.actionLabel}
-        loading={loading}
-        onAllow={onAllow}
+        loading={authorize.isPending}
+        onAllow={() => authorize.mutateAsync()}
       />
     </Page>
   );

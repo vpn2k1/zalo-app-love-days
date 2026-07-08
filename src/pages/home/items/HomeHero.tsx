@@ -1,5 +1,11 @@
 import { useFormContext } from "react-hook-form";
-import { Box, Icon, Text, useAppSnackbar } from "@/components/zaui";
+import {
+  AppImageViewer,
+  Box,
+  Icon,
+  Text,
+  useAppSnackbar,
+} from "@/components/zaui";
 import { pickImagePath } from "@/utils/imagePicker";
 import type { HomeDisplayFormValues } from "../types/HomePageType";
 
@@ -29,7 +35,6 @@ export function HomeHero({ backgroundUrl }: Props) {
         className="relative mb-3.5 flex min-h-44 cursor-pointer flex-col justify-end overflow-hidden rounded-[18px] px-[22px] pb-[22px] pt-[55px]"
         role="button"
         tabIndex={0}
-        onClick={changeBackground}
       >
         <img
           alt=""
@@ -37,6 +42,7 @@ export function HomeHero({ backgroundUrl }: Props) {
           src={backgroundUrl}
         />
         <Box className="absolute inset-0 bg-gradient-to-b from-[#3c2435]/5 to-[#3c2435]/45" />
+        <AppImageViewer images={[backgroundUrl]} />
       </Box>
     );
   }

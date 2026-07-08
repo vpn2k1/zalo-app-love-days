@@ -1,20 +1,22 @@
 import { useEffect } from "react";
 
+import { AppStatusBar } from "@/components/AppStatusBar";
 import { AppSpinner, Box, Page } from "@/components/zaui";
+import { useAnniversariesData } from "@/hooks/useAnniversariesData";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
-import { useLoveDaysData } from "@/hooks/useLoveDaysData";
-import { StatusBar } from "@/pages/home/items/StatusBar";
+import { useCoupleData } from "@/hooks/useCoupleData";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import type { Anniversary } from "@/types/anniversary";
 import { AlbumPageGrid } from "./items/AlbumPageGrid";
 import { AlbumPageHeader } from "./items/AlbumPageHeader";
 import { useAlbumPage } from "./modules/useAlbumPage";
-import type { AlbumPageProps } from "./types/AlbumPageType";
-import { Header, Icon } from "zmp-ui";
 
-export function AlbumPage({ user }: AlbumPageProps) {
-  const { anniversariesQuery, coupleData, coupleQuery } = useLoveDaysData({
-    user,
-  });
+export function AlbumPage() {
+  const { user } = useCurrentUser();
+  const { coupleData, coupleQuery } = useCoupleData();
+  const { anniversariesQuery } = useAnniversariesData();
+
+  if (!user) return null;
 
   if (coupleQuery.isPending || (coupleData && anniversariesQuery.isPending)) {
     return <AlbumLoadingState />;
@@ -24,7 +26,7 @@ export function AlbumPage({ user }: AlbumPageProps) {
 
   return (
     <AlbumPageContent
-      anniversaries={getAnniversaries(anniversariesQuery.data)}
+      anniversaries={anniversariesQuery.data ?? []}
       onRefresh={anniversariesQuery.refetch}
     />
   );
@@ -42,6 +44,7 @@ function AlbumPageContent({
 
   return (
     <Page className="mx-auto min-h-screen w-[min(100%,430px)] bg-[#fff4f8] px-[18px] pb-[calc(34px+env(safe-area-inset-bottom))] pt-4 text-[#3c2435] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <AppStatusBar />
       <AlbumPageHeader
         filteredCount={page.filteredCount}
         filters={page.filters}
@@ -75,14 +78,8 @@ function AlbumMissingCoupleState() {
   const navigation = useAppNavigation();
 
   useEffect(() => {
-    navigation.goHome({ replace: true });
+    navigation.goSetup({ replace: true });
   }, [navigation]);
 
   return <AlbumLoadingState />;
-}
-
-function getAnniversaries(anniversaries?: Anniversary[]) {
-  if (!anniversaries) return [];
-
-  return anniversaries;
 }

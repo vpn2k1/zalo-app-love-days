@@ -8,13 +8,33 @@ import { useHomePageContext } from "./useHomePageContext";
 export function useHomePageView() {
   const props = useHomePageContext();
   const navigation = useAppNavigation();
-  const memories = useWatch<HomeDisplayFormValues, "memories">({ name: "memories" });
-  const startDate = useWatch<HomeDisplayFormValues, "startDate">({ name: "startDate" });
-  const backgroundUrl = useWatch<HomeDisplayFormValues, "backgroundUrl">({ name: "backgroundUrl" });
-  const currentName = useWatch<HomeDisplayFormValues, "currentName">({ name: "currentName" });
-  const currentAvatar = useWatch<HomeDisplayFormValues, "currentAvatar">({ name: "currentAvatar" });
-  const partnerName = useWatch<HomeDisplayFormValues, "partnerName">({ name: "partnerName" });
-  const partnerAvatar = useWatch<HomeDisplayFormValues, "partnerAvatar">({ name: "partnerAvatar" });
+  const memories = useWatch<HomeDisplayFormValues, "memories">({
+    name: "memories",
+  });
+  const startDate = useWatch<HomeDisplayFormValues, "startDate">({
+    name: "startDate",
+    exact: true,
+  });
+  const backgroundUrl = useWatch<HomeDisplayFormValues, "backgroundUrl">({
+    name: "backgroundUrl",
+    exact: true,
+  });
+  const currentName = useWatch<HomeDisplayFormValues, "currentName">({
+    name: "currentName",
+    exact: true,
+  });
+  const currentAvatar = useWatch<HomeDisplayFormValues, "currentAvatar">({
+    name: "currentAvatar",
+    exact: true,
+  });
+  const partnerName = useWatch<HomeDisplayFormValues, "partnerName">({
+    name: "partnerName",
+    exact: true,
+  });
+  const partnerAvatar = useWatch<HomeDisplayFormValues, "partnerAvatar">({
+    name: "partnerAvatar",
+    exact: true,
+  });
   const home = useHomePage({ ...props, anniversaries: memories, startDate });
   const currentPerson = { avatar: currentAvatar, name: currentName };
   const partnerPerson = getPartnerPerson(partnerName, partnerAvatar);
@@ -31,9 +51,6 @@ export function useHomePageView() {
     home.setShowAnniversaryForm(false);
   };
 
-  const saveHomeDisplayInfo = (values: HomeDisplayFormValues) =>
-    saveDisplayInfo(props, values);
-
   return {
     addAnniversary: home.addAnniversary,
     addAnniversaryLoading: props.addAnniversaryLoading,
@@ -43,12 +60,10 @@ export function useHomePageView() {
     nextAnniversary: home.nextAnniversary,
     onAddPartner: props.onAddPartner,
     onEditProfile: props.onEditProfile,
-    onSaveDisplayInfo: saveHomeDisplayInfo,
     onViewAlbums: navigation.goAlbum,
     onViewAllAnniversaries: navigation.goAnniversaries,
     openCalendar: navigation.goCalendar,
     partnerPerson,
-    profileLoading: props.profileLoading,
     hideAnniversaryForm,
     showAnniversaryComposer: home.showAnniversaryForm,
     showAnniversaryForm,
@@ -56,18 +71,6 @@ export function useHomePageView() {
     toggleAnniversaryForm,
     visibleAnniversaries: home.visibleAnniversaries,
   };
-}
-
-async function saveDisplayInfo(
-  props: ReturnType<typeof useHomePageContext>,
-  values: HomeDisplayFormValues,
-) {
-  await props.onUpdateProfile({
-    custom_avatar_url: values.currentAvatar || null,
-    display_name: values.currentName.trim(),
-  });
-  await props.onUpdateBackground(values.backgroundUrl || null);
-  await props.onUpdateStartDate(values.startDate);
 }
 
 function getPartnerPerson(name: string, avatar: string): Person | undefined {

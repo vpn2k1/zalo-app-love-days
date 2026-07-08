@@ -16,7 +16,7 @@ export function HomePageBody() {
 
   return (
     <Page className="mx-auto min-h-screen w-[min(100%,430px)] bg-[#fff4f8] px-[18px] pb-[34px] pt-4 text-[#3c2435] [scrollbar-width:none]">
-      {/* <StatusBar /> */}
+      <StatusBar />
       <HomeHeader
         title="Góc nhỏ của chúng mình"
         subtitle={`Từ ngày ${formatDate(home.startDate)}`}
@@ -28,10 +28,7 @@ export function HomePageBody() {
         partnerPerson={home.partnerPerson}
         onAddPartner={home.onAddPartner}
       />
-      <DaysTogetherButton
-        loading={home.profileLoading}
-        onSaveDisplayInfo={home.onSaveDisplayInfo}
-      />
+      <DaysTogetherButton />
       <QuickActionGrid
         onOpenCalendar={home.openCalendar}
         onViewAlbums={home.onViewAlbums}

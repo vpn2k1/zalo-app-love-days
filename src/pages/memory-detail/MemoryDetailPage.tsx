@@ -1,10 +1,12 @@
+import { AppStatusBar } from "@/components/AppStatusBar";
+import { AppImageViewer, Page, useSearchParams } from "@/components/zaui";
+import { useAnniversariesData } from "@/hooks/useAnniversariesData";
+import { useAppNavigation } from "@/hooks/useAppNavigation";
+import { useCoupleData } from "@/hooks/useCoupleData";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import type { Anniversary } from "@/types/anniversary";
 import { useState } from "react";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
-import { AppImageViewer, Page, useSearchParams } from "@/components/zaui";
-import { useAppNavigation } from "@/hooks/useAppNavigation";
-import { useLoveDaysData } from "@/hooks/useLoveDaysData";
-import type { Anniversary } from "@/types/anniversary";
-import type { AppUser } from "@/types/user";
 import { MemoryDetailFields } from "./items/MemoryDetailFields";
 import { MemoryDetailFooter } from "./items/MemoryDetailFooter";
 import { MemoryDetailHeader } from "./items/MemoryDetailHeader";
@@ -18,18 +20,16 @@ import {
 import { useMemoryDetailUpdate } from "./modules/useMemoryDetailUpdate";
 import type { MemoryDetailFormValues } from "./types/MemoryDetailPageType";
 
-type Props = {
-  user: AppUser;
-};
-
-export function MemoryDetailPage({ user }: Props) {
+export function MemoryDetailPage() {
   const [searchParams] = useSearchParams();
   const memoryId = searchParams.get("id");
   const navigation = useAppNavigation();
-  const { anniversariesQuery, coupleData, coupleQuery } = useLoveDaysData({
-    user,
-  });
+  const { user } = useCurrentUser();
+  const { coupleData, coupleQuery } = useCoupleData();
+  const { anniversariesQuery } = useAnniversariesData();
   const memory = findMemory(anniversariesQuery.data, memoryId);
+
+  if (!user) return null;
 
   if (coupleQuery.isPending || anniversariesQuery.isPending) {
     return <MemoryDetailLoadingState />;
@@ -91,7 +91,8 @@ function MemoryDetailContent({
   return (
     <FormProvider {...methods}>
       <Page className="mx-auto min-h-screen w-[min(100%,430px)] bg-[#fff4f8] px-[18px] pb-[calc(96px+env(safe-area-inset-bottom))] pt-4 text-[#3c2435]">
-        <MemoryDetailHeader memory={memory} onBack={onBack}/>
+        <AppStatusBar />
+        <MemoryDetailHeader memory={memory} onBack={onBack} />
         <MemoryImagePreview imageUrl={imageUrl} onOpen={openViewer} />
         <MemoryDetailFields />
         <MemoryDetailFooter

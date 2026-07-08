@@ -1,34 +1,32 @@
 import { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { FormProvider } from "react-hook-form";
 import { BlockingLoadingOverlay } from "@/components/BlockingLoadingOverlay";
 import { AppSpinner, Box } from "@/components/zaui";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
-import { useLoveDaysData } from "@/hooks/useLoveDaysData";
-import { useProfileMutations } from "@/hooks/useProfileMutations";
+import { useAnniversariesData } from "@/hooks/useAnniversariesData";
+import { useCoupleData } from "@/hooks/useCoupleData";
+import { useLeaveCoupleMutation } from "@/hooks/mutations/useLeaveCoupleMutation";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { HomePageBody } from "./items/HomePageBody";
 import { useHomeDisplayForm } from "./modules/useHomeDisplayForm";
-import { useHomePageController } from "./modules/useHomePageController";
+import { useAnniversaryMutation } from "./modules/useAnniversaryMutation";
+import { useInvitePartnerMutation } from "./modules/useInvitePartnerMutation";
 import { HomePageProvider } from "./modules/useHomePageContext";
-import type { HomePageContentProps, HomePageProps } from "./types/HomePageType";
+import type { HomePageContentProps } from "./types/HomePageType";
 
-export function HomePage({ user }: HomePageProps) {
-  const queryClient = useQueryClient();
-  const navigation = useAppNavigation();
-  const { anniversariesQuery, coupleData, coupleQuery } = useLoveDaysData({
-    user,
-  });
-  const homeController = useHomePageController({ coupleData, user });
-  const profile = useProfileMutations({
-    coupleData,
-    queryClient,
-    user,
-  });
+export function HomePage() {
+  const { user } = useCurrentUser();
+  const { coupleData, coupleQuery } = useCoupleData();
+  const { anniversariesQuery } = useAnniversariesData();
+  const addAnniversaryMutation = useAnniversaryMutation();
+  const invitePartnerMutation = useInvitePartnerMutation();
+  const leaveCouple = useLeaveCoupleMutation();
 
   if (isInitialHomeLoading({ anniversariesQuery, coupleData, coupleQuery })) {
     return <HomeLoadingState />;
   }
 
+  if (!user) return <HomeLoadingState />;
   if (!coupleData) return <HomeMissingCoupleState />;
 
   return (
@@ -36,33 +34,22 @@ export function HomePage({ user }: HomePageProps) {
       user={user}
       coupleData={coupleData}
       anniversaries={anniversariesQuery.data ?? []}
-      addPartnerLoading={homeController.invitePartnerMutation.isPending}
-      blockingLoading={getBlockingLoading(homeController, profile)}
-      profileLoading={getProfileLoading(profile)}
-      addAnniversaryLoading={homeController.addAnniversaryMutation.isPending}
-      onAddPartner={() => homeController.invitePartnerMutation.mutateAsync()}
-      onUpdateBackground={(backgroundUrl) =>
-        profile.updateBackgroundMutation.mutateAsync(backgroundUrl)
-      }
-      onUpdateProfile={(payload) =>
-        profile.saveProfileMutation.mutateAsync(payload)
-      }
-      onUpdateStartDate={(startDate) =>
-        profile.updateStartDateMutation.mutateAsync(startDate)
-      }
-      onAddAnniversary={(draft) =>
-        homeController.addAnniversaryMutation.mutateAsync(draft)
-      }
-      onEditProfile={navigation.goEdit}
+      addPartnerLoading={invitePartnerMutation.isPending}
+      blockingLoading={getBlockingLoading(
+        addAnniversaryMutation.isPending,
+        invitePartnerMutation.isPending,
+        leaveCouple.isPending,
+      )}
+      addAnniversaryLoading={addAnniversaryMutation.isPending}
+      onAddPartner={() => invitePartnerMutation.mutateAsync()}
+      onAddAnniversary={(draft) => addAnniversaryMutation.mutateAsync(draft)}
+      onEditProfile={useAppNavigation().goEdit}
     />
   );
 }
 
 function HomePageContent(props: HomePageContentProps) {
-  const {
-    coupleData,
-    anniversaries,
-  } = props;
+  const { coupleData, anniversaries } = props;
   const methods = useHomeDisplayForm({
     anniversaries,
     coupleData,
@@ -93,24 +80,17 @@ function HomeMissingCoupleState() {
   const navigation = useAppNavigation();
 
   useEffect(() => {
-    navigation.goPermission({ replace: true });
+    navigation.goSetup({ replace: true });
   }, [navigation]);
 
   return <HomeLoadingState />;
 }
 
-function getProfileLoading(profile: ReturnType<typeof useProfileMutations>) {
-  if (profile.saveProfileMutation.isPending) return true;
-  if (profile.updateBackgroundMutation.isPending) return true;
-  if (profile.updateStartDateMutation.isPending) return true;
-
-  return false;
-}
-
-type HomeQueries = Pick<
-  ReturnType<typeof useLoveDaysData>,
-  "anniversariesQuery" | "coupleData" | "coupleQuery"
->;
+type HomeQueries = {
+  anniversariesQuery: ReturnType<typeof useAnniversariesData>["anniversariesQuery"];
+  coupleData: ReturnType<typeof useCoupleData>["coupleData"];
+  coupleQuery: ReturnType<typeof useCoupleData>["coupleQuery"];
+};
 
 function isInitialHomeLoading({
   anniversariesQuery,
@@ -124,13 +104,13 @@ function isInitialHomeLoading({
 }
 
 function getBlockingLoading(
-  homeController: ReturnType<typeof useHomePageController>,
-  profile: ReturnType<typeof useProfileMutations>,
+  isAddingAnniversary: boolean,
+  isInvitingPartner: boolean,
+  isLeavingCouple: boolean,
 ) {
-  if (homeController.addAnniversaryMutation.isPending) return true;
-  if (homeController.invitePartnerMutation.isPending) return true;
-  if (profile.leaveCoupleMutation.isPending) return true;
-  if (getProfileLoading(profile)) return true;
+  if (isAddingAnniversary) return true;
+  if (isInvitingPartner) return true;
+  if (isLeavingCouple) return true;
 
   return false;
 }

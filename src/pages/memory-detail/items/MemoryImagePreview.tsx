@@ -32,7 +32,7 @@ export function MemoryImagePreview({ imageUrl, onOpen }: Props) {
           <img
             alt="Ảnh mô tả kỷ niệm"
             className="max-h-[60vh] w-full object-cover"
-            src={"https://www.vecteezy.com/free-photos/image"}
+            src={imageUrl}
           />
         </Box>
         <AppImagePicker

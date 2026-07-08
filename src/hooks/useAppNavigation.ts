@@ -1,4 +1,3 @@
-import { useCallback, useMemo } from "react";
 import { useNavigate } from "@/components/zaui";
 
 export const appPaths = {
@@ -22,64 +21,18 @@ type NavigateOptions = {
 export function useAppNavigation() {
   const navigate = useNavigate();
 
-  const goAlbum = useCallback(() => {
-    navigate(appPaths.album);
-  }, [navigate]);
-
-  const goAnniversaries = useCallback(() => {
-    navigate(appPaths.anniversaries);
-  }, [navigate]);
-
-  const goCalendar = useCallback(() => {
-    navigate(appPaths.calendar);
-  }, [navigate]);
-
-  const goEdit = useCallback(() => {
-    navigate(appPaths.edit);
-  }, [navigate]);
-
-  const goHome = useCallback((options?: NavigateOptions) => {
-    navigate(appPaths.home, options);
-  }, [navigate]);
-
-  const goMemory = useCallback((memoryId: string) => {
-    navigate(`${appPaths.memory}?id=${encodeURIComponent(memoryId)}`);
-  }, [navigate]);
-
-  const goInvite = useCallback((options?: NavigateOptions) => {
-    navigate(appPaths.invite, options);
-  }, [navigate]);
-
-  const goPermission = useCallback((options?: NavigateOptions) => {
-    navigate(appPaths.permission, options);
-  }, [navigate]);
-
-  const goSetup = useCallback((options?: NavigateOptions) => {
-    navigate(appPaths.setup, options);
-  }, [navigate]);
-
-  return useMemo(
-    () => ({
-      goAlbum,
-      goAnniversaries,
-      goCalendar,
-      goEdit,
-      goHome,
-      goInvite,
-      goMemory,
-      goPermission,
-      goSetup,
-    }),
-    [
-      goAlbum,
-      goAnniversaries,
-      goCalendar,
-      goEdit,
-      goHome,
-      goInvite,
-      goMemory,
-      goPermission,
-      goSetup,
-    ],
-  );
+  return {
+    goBoot: () => navigate(appPaths.booting, { replace: true }),
+    goAlbum: () => navigate(appPaths.album),
+    goAnniversaries: () => navigate(appPaths.anniversaries),
+    goCalendar: () => navigate(appPaths.calendar),
+    goEdit: () => navigate(appPaths.edit),
+    goHome: (options?: NavigateOptions) => navigate(appPaths.home, options),
+    goMemory: (memoryId: string) =>
+      navigate(`${appPaths.memory}?id=${encodeURIComponent(memoryId)}`),
+    goInvite: (options?: NavigateOptions) => navigate(appPaths.invite, options),
+    goPermission: (options?: NavigateOptions) =>
+      navigate(appPaths.permission, options),
+    goSetup: (options?: NavigateOptions) => navigate(appPaths.setup, options),
+  };
 }

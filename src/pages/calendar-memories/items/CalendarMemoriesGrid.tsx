@@ -1,15 +1,28 @@
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import type { CellRenderInfo } from "zmp-ui/calendar";
 import { AppSpinner, Box, Calendar, Icon, Text } from "@/components/zaui";
 import type { Anniversary } from "@/types/anniversary";
 import { createCalendarMemoryLookup } from "../modules/calendarMemoryLookup";
 import { useDeferredCalendarReady } from "../modules/useDeferredCalendarReady";
-import { Button, Header } from "zmp-ui";
 
 type Props = {
   anniversaries: Anniversary[];
   onOpenMemory: (memoryId: string) => void;
 };
+
+type Lookup = ReturnType<typeof createCalendarMemoryLookup>;
+
+function renderCalendarCell(lookup: Lookup) {
+  return (date: Date, info: CellRenderInfo<Date>) => {
+    if (info.type !== "date") {
+      return <>{info.originNode}</>;
+    }
+
+    const memory = lookup.findByDate(date);
+    const dayLabel = date.getDate().toString();
+    return <CalendarDay hasMemory={Boolean(memory)} label={dayLabel} />;
+  };
+}
 
 export function CalendarMemoriesGrid({ anniversaries, onOpenMemory }: Props) {
   const lookup = useMemo(
@@ -18,17 +31,15 @@ export function CalendarMemoriesGrid({ anniversaries, onOpenMemory }: Props) {
   );
   const calendarReady = useDeferredCalendarReady();
 
-  const openDateMemory = useCallback(
-    (date: Date) => {
-      console.log(date.getUTCDate());
-      
-      const memory = lookup.findByDate(date);
-      if (!memory) return;
+  const openDateMemory = (date: Date) => {
+    console.log(date.getUTCDate());
 
-      onOpenMemory(memory.id);
-    },
-    [lookup, onOpenMemory],
-  );
+    const memory = lookup.findByDate(date);
+    if (!memory) return;
+
+    onOpenMemory(memory.id);
+  };
+
   const renderDayOfWeekNameRender = (d: number) => {
     let day = `T${d + 1}`;
     if (!d) day = "CN";
@@ -38,22 +49,6 @@ export function CalendarMemoriesGrid({ anniversaries, onOpenMemory }: Props) {
       </Text>
     );
   };
-  const renderCell = useCallback(
-    (date: Date, info: CellRenderInfo<Date>) => {
-      if (info.type !== "date") {
-        return <>{info.originNode}</>;
-      }
-
-      const memory = lookup.findByDate(date);
-      const dayLabel = date.getDate().toString();
-      if (!memory) {
-        return <CalendarDay label={dayLabel} />;
-      }
-
-      return <CalendarDay hasMemory label={dayLabel} />;
-    },
-    [lookup],
-  );
 
   if (!calendarReady) return <CalendarLoadingFrame />;
 
@@ -63,7 +58,7 @@ export function CalendarMemoriesGrid({ anniversaries, onOpenMemory }: Props) {
       startOfWeek={1}
       dayOfWeekNameRender={renderDayOfWeekNameRender}
       locale="vi-VN"
-      fullCellRender={renderCell}
+      fullCellRender={renderCalendarCell(lookup)}
       onSelect={openDateMemory}
     />
   );
