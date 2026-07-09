@@ -29,9 +29,8 @@ export function useAuthorizeMutation() {
     onError: (error) => {
       console.error(error);
       snackbar.showError(
-        "Bạn cần cho phép lấy thông tin Zalo để thiết lập.",
+        "Không thể kết nối. Vui lòng thử lại.",
       );
-      navigation.goPermission({ replace: true });
     },
   });
 }

@@ -60,6 +60,7 @@ export function useHomePageView() {
     nextAnniversary: home.nextAnniversary,
     onAddPartner: props.onAddPartner,
     onEditProfile: props.onEditProfile,
+    onUpdateBackground: props.onUpdateBackground,
     onViewAlbums: navigation.goAlbum,
     onViewAllAnniversaries: navigation.goAnniversaries,
     openCalendar: navigation.goCalendar,

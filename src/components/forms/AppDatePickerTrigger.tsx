@@ -34,7 +34,7 @@ export function AppDatePickerTrigger({
   onOpen,
 }: Props) {
   return (
-    <div className="app-date-picker-field">
+    <div className="">
       <Text className="form-label">{label}</Text>
       <button
         type="button"

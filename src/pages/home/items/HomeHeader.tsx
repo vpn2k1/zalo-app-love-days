@@ -1,20 +1,19 @@
-import { Box, Button, Icon, Text } from "@/components/zaui";
+import { Avatar, Box, Button, Icon, Text } from "@/components/zaui";
 
 type Props = {
   title: string;
   subtitle: string;
   onEditProfile: () => void;
+  avatar?: string;
 };
 
-export function HomeHeader({ title, subtitle, onEditProfile }: Props) {
+export function HomeHeader({ title, subtitle, onEditProfile, avatar }: Props) {
   return (
     <Box className="mb-[13px] flex items-center gap-2">
-      <Box
-        aria-label="Mở hồ sơ"
-        onClick={onEditProfile}
-        className="flex items-center p-2 my-2 rounded-full bg-[var(--love-primary)] text-white"
-      >
-        <Icon icon="zi-user" />
+      <Box aria-label="Mở hồ sơ" onClick={onEditProfile}>
+        <Avatar size={40} src={avatar} className="rounded-full">
+          <Icon icon="zi-user" />
+        </Avatar>
       </Box>
       <Box>
         <Text.Title

@@ -11,18 +11,24 @@ import type { HomeDisplayFormValues } from "../types/HomePageType";
 
 type Props = {
   backgroundUrl?: string | null;
+  onChangeBackground?: (url: string) => Promise<unknown>;
 };
 
-export function HomeHero({ backgroundUrl }: Props) {
+export function HomeHero({ backgroundUrl, onChangeBackground }: Props) {
   const snackbar = useAppSnackbar();
   const { setValue } = useFormContext<HomeDisplayFormValues>();
 
-  const changeBackground = async () => {
+  const changeBackground = async (e?: React.MouseEvent) => {
+    e?.stopPropagation();
     try {
       const image = await pickImagePath();
       if (!image) return;
 
-      setValue("backgroundUrl", image, { shouldDirty: true });
+      if (onChangeBackground) {
+        await onChangeBackground(image);
+      } else {
+        setValue("backgroundUrl", image, { shouldDirty: true });
+      }
     } catch (error) {
       console.error(error);
       snackbar.showError("Không thể chọn ảnh nền. Vui lòng thử lại.");
@@ -43,6 +49,13 @@ export function HomeHero({ backgroundUrl }: Props) {
         />
         <Box className="absolute inset-0 bg-gradient-to-b from-[#3c2435]/5 to-[#3c2435]/45" />
         <AppImageViewer images={[backgroundUrl]} />
+        <Box
+          className="absolute right-3 top-3 grid size-8 place-items-center rounded-full bg-black/30 text-white backdrop-blur-md"
+          role="button"
+          onClick={changeBackground}
+        >
+          <Icon icon="zi-camera" size={16} />
+        </Box>
       </Box>
     );
   }

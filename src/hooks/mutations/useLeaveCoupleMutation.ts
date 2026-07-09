@@ -3,8 +3,13 @@ import { useAppSnackbar } from "@/components/zaui";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
 import { useCoupleData } from "@/hooks/useCoupleData";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { authService } from "@/services/authService";
 import { coupleService } from "@/services/coupleService";
-import { anniversariesQueryKey, coupleQueryKey } from "@/config/queryKeys";
+import {
+  anniversariesQueryKey,
+  coupleQueryKey,
+  currentUserQueryKey,
+} from "@/config/queryKeys";
 
 export function useLeaveCoupleMutation() {
   const queryClient = useQueryClient();
@@ -15,15 +20,21 @@ export function useLeaveCoupleMutation() {
 
   return useMutation({
     mutationFn: async () => {
-      if (!coupleData) throw new Error("Không tìm thấy.");
-      await coupleService.leaveCouple(coupleData.couple.id);
+      if (!coupleData || !user) throw new Error("Không tìm thấy.");
+      if (coupleData.couple.id) {
+        await coupleService.removeMember(coupleData.couple.id, user.id);
+      }
+      await authService.deleteUser(user.id);
     },
     onSuccess: async () => {
       if (!user) return;
-      await queryClient.invalidateQueries({ queryKey: coupleQueryKey(user.id) });
+      await queryClient.invalidateQueries({
+        queryKey: coupleQueryKey(user.id),
+      });
       queryClient.removeQueries({
         queryKey: anniversariesQueryKey(coupleData?.couple.id),
       });
+      queryClient.removeQueries({ queryKey: currentUserQueryKey() });
       navigation.goPermission({ replace: true });
     },
     onError: (error) => {

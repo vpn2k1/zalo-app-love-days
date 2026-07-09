@@ -14,10 +14,11 @@ export type HomePageContentProps = {
   anniversaries: Anniversary[];
   addPartnerLoading?: boolean;
   addAnniversaryLoading?: boolean;
-  blockingLoading: boolean;
+  blockingMessage: string | null;
   onAddPartner: () => Promise<unknown>;
   onAddAnniversary: (draft: AnniversaryDraft) => Promise<unknown>;
   onEditProfile: () => void;
+  onUpdateBackground?: (url: string) => Promise<unknown>;
 };
 
 export type Person = {

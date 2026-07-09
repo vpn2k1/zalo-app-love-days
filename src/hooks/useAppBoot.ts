@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
+import {
+  restoreCurrentUser,
+  setCurrentUserCache,
+} from "@/hooks/useCurrentUser";
 import { coupleService } from "@/services/coupleService";
 import { coupleQueryKey } from "@/config/queryKeys";
 import { getInviteCodeFromUrl } from "@/utils/invite";
@@ -10,11 +13,10 @@ import type { QueryClient } from "@tanstack/react-query";
 
 async function resolveSpaceAfterBoot(
   appUser: AppUser,
-  setUser: (u: AppUser) => void,
   queryClient: QueryClient,
   navigation: ReturnType<typeof useAppNavigation>,
-) {
-  setUser(appUser);
+) {  
+  setCurrentUserCache(queryClient, appUser);
   const data = await coupleService.getCoupleByUser(appUser.id);
   queryClient.setQueryData(coupleQueryKey(appUser.id), data);
   if (!data) {
@@ -28,9 +30,6 @@ export function useAppBoot() {
   const queryClient = useQueryClient();
   const bootedRef = useRef(false);
   const inviteCode = useMemo(getInviteCodeFromUrl, []);
-  const currentUser = useCurrentUser();
-  const { refetch } = currentUser.currentUserQuery;
-  const { setUser } = currentUser;
   const navigation = useAppNavigation();
 
   useEffect(() => {
@@ -38,9 +37,9 @@ export function useAppBoot() {
     bootedRef.current = true;
 
     if (inviteCode) {
-      refetch()
-        .then((result) => {
-          if (result.data) setUser(result.data);
+      restoreCurrentUser()
+        .then((user) => {
+          if (user) setCurrentUserCache(queryClient, user);
         })
         .catch(() => undefined)
         .then(() => {
@@ -49,15 +48,18 @@ export function useAppBoot() {
       return;
     }
 
-    refetch()
-      .then((result) => {
-        if (!result.data) {
-          throw new Error("Không thể khôi phục thông tin Zalo.");
+    restoreCurrentUser()
+      .then((user) => {
+        console.log("asdasd");
+
+        if (!user) {
+          navigation.goPermission({ replace: true });
+          return;
         }
-        return resolveSpaceAfterBoot(result.data, setUser, queryClient, navigation);
+        return resolveSpaceAfterBoot(user, queryClient, navigation);
       })
       .catch(() => {
         navigation.goPermission({ replace: true });
       });
-  }, [inviteCode, navigation, queryClient, refetch, setUser]);
+  }, [inviteCode, navigation, queryClient]);
 }

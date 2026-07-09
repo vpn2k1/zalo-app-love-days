@@ -3,6 +3,20 @@ import { mockDb } from "@/services/mockDb";
 import type { AppUser, ZaloUserProfile } from "@/types/user";
 
 export const authService = {
+  async findUserByZaloId(zaloUserId: string): Promise<AppUser | null> {
+    if (isMockMode || !supabase) {
+      return mockDb.findUserByZaloId(zaloUserId);
+    }
+
+    const { data } = await supabase
+      .from("users")
+      .select("*")
+      .eq("zalo_user_id", zaloUserId)
+      .maybeSingle();
+
+    return data ?? null;
+  },
+
   async upsertZaloUser(profile: ZaloUserProfile): Promise<AppUser> {
     if (isMockMode || !supabase) {
       return mockDb.upsertUser(profile);
@@ -43,5 +57,19 @@ export const authService = {
 
     if (error) throw error;
     return data;
+  },
+
+  async deleteUser(userId: string): Promise<void> {
+    if (isMockMode || !supabase) {
+      mockDb.deleteUser(userId);
+      return;
+    }
+
+    const { error } = await supabase
+      .from("users")
+      .delete()
+      .eq("id", userId);
+
+    if (error) throw error;
   },
 };

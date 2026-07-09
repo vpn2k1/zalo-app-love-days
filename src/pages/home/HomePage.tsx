@@ -11,16 +11,21 @@ import { HomePageBody } from "./items/HomePageBody";
 import { useHomeDisplayForm } from "./modules/useHomeDisplayForm";
 import { useAnniversaryMutation } from "./modules/useAnniversaryMutation";
 import { useInvitePartnerMutation } from "./modules/useInvitePartnerMutation";
+import { useUpdateBackgroundMutation } from "@/hooks/mutations/useUpdateBackgroundMutation";
 import { HomePageProvider } from "./modules/useHomePageContext";
 import type { HomePageContentProps } from "./types/HomePageType";
 
 export function HomePage() {
   const { user } = useCurrentUser();
   const { coupleData, coupleQuery } = useCoupleData();
-  const { anniversariesQuery } = useAnniversariesData();
+  const { anniversariesQuery } = useAnniversariesData(
+    coupleData?.couple?.id ?? "",
+  );
   const addAnniversaryMutation = useAnniversaryMutation();
   const invitePartnerMutation = useInvitePartnerMutation();
   const leaveCouple = useLeaveCoupleMutation();
+  const updateBackgroundMutation = useUpdateBackgroundMutation();
+  const navigation = useAppNavigation();
 
   if (isInitialHomeLoading({ anniversariesQuery, coupleData, coupleQuery })) {
     return <HomeLoadingState />;
@@ -35,32 +40,36 @@ export function HomePage() {
       coupleData={coupleData}
       anniversaries={anniversariesQuery.data ?? []}
       addPartnerLoading={invitePartnerMutation.isPending}
-      blockingLoading={getBlockingLoading(
+      blockingMessage={getBlockingMessage(
         addAnniversaryMutation.isPending,
         invitePartnerMutation.isPending,
         leaveCouple.isPending,
+        updateBackgroundMutation.isPending,
       )}
       addAnniversaryLoading={addAnniversaryMutation.isPending}
       onAddPartner={() => invitePartnerMutation.mutateAsync()}
       onAddAnniversary={(draft) => addAnniversaryMutation.mutateAsync(draft)}
-      onEditProfile={useAppNavigation().goEdit}
+      onEditProfile={navigation.goEdit}
+      onUpdateBackground={async (url) => {
+        await updateBackgroundMutation.mutateAsync(url);
+      }}
     />
   );
 }
 
 function HomePageContent(props: HomePageContentProps) {
-  const { coupleData, anniversaries } = props;
+  const { coupleData, anniversaries, user } = props;
   const methods = useHomeDisplayForm({
     anniversaries,
     coupleData,
-    user: props.user,
+    user,
   });
   return (
     <HomePageProvider value={props}>
       <FormProvider {...methods}>
         <BlockingLoadingOverlay
-          show={props.blockingLoading}
-          message="Đang lưu thay đổi..."
+          show={!!props.blockingMessage}
+          message={props.blockingMessage || "Đang lưu thay đổi..."}
         />
         <HomePageBody />
       </FormProvider>
@@ -87,7 +96,9 @@ function HomeMissingCoupleState() {
 }
 
 type HomeQueries = {
-  anniversariesQuery: ReturnType<typeof useAnniversariesData>["anniversariesQuery"];
+  anniversariesQuery: ReturnType<
+    typeof useAnniversariesData
+  >["anniversariesQuery"];
   coupleData: ReturnType<typeof useCoupleData>["coupleData"];
   coupleQuery: ReturnType<typeof useCoupleData>["coupleQuery"];
 };
@@ -103,14 +114,16 @@ function isInitialHomeLoading({
   return false;
 }
 
-function getBlockingLoading(
+function getBlockingMessage(
   isAddingAnniversary: boolean,
   isInvitingPartner: boolean,
   isLeavingCouple: boolean,
-) {
-  if (isAddingAnniversary) return true;
-  if (isInvitingPartner) return true;
-  if (isLeavingCouple) return true;
+  isUpdatingBackground: boolean,
+): string | null {
+  if (isAddingAnniversary) return "Đang lưu ngày kỷ niệm...";
+  if (isInvitingPartner) return "Đang mời người ấy...";
+  if (isLeavingCouple) return "Đang rời không gian...";
+  if (isUpdatingBackground) return "Đang cập nhật ảnh nền...";
 
-  return false;
+  return null;
 }

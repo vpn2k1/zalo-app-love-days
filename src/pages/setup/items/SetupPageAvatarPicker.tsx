@@ -36,28 +36,24 @@ export function SetupPageAvatarPicker({ user }: Props) {
         aria-label="Chọn ảnh đại diện"
         onClick={pickAvatar}
       >
-        <Avatar size={94} src={avatarSrc}>
+        <Avatar size={80} src={avatarSrc}>
           <Icon icon="zi-user" />
         </Avatar>
         <Icon
           icon="zi-camera"
-          className="bg-gray-300 absolute rounded-lg opacity-70"
+          className="bg-gray-300 absolute rounded-full opacity-30"
           size={30}
         />
       </Box>
       <Box className="app-setup-user-copy">
-        <Box className="app-setup-name-row">
-          <NameControl
-            control={control}
-            displayName={displayName}
-            editingName={editingName}
-            setEditingName={setEditingName}
-            user={user}
-          />
-        </Box>
-        <Text className="app-opening-card-copy">
-          Lấy từ Zalo sau khi bạn cấp quyền, vẫn có thể chỉnh trước khi lưu.
-        </Text>
+        <NameControl
+          control={control}
+          displayName={displayName}
+          editingName={editingName}
+          setEditingName={setEditingName}
+          user={user}
+        />
+        <Text className="app-opening-card-copy">Bạn có thể chỉnh sửa sau.</Text>
       </Box>
     </Box>
   );

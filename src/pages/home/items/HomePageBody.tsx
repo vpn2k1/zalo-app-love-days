@@ -21,8 +21,12 @@ export function HomePageBody() {
         title="Góc nhỏ của chúng mình"
         subtitle={`Từ ngày ${formatDate(home.startDate)}`}
         onEditProfile={home.onEditProfile}
+        avatar={home.currentPerson.avatar}
       />
-      <HomeHero backgroundUrl={home.backgroundUrl} />
+      <HomeHero
+        backgroundUrl={home.backgroundUrl}
+        onChangeBackground={home.onUpdateBackground}
+      />
       <CouplePeoplePanel
         currentPerson={home.currentPerson}
         partnerPerson={home.partnerPerson}

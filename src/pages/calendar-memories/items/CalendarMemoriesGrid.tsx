@@ -1,67 +1,55 @@
 import { useMemo } from "react";
+import { useFormContext, useWatch } from "react-hook-form";
 import type { CellRenderInfo } from "zmp-ui/calendar";
-import { AppSpinner, Box, Calendar, Icon, Text } from "@/components/zaui";
-import type { Anniversary } from "@/types/anniversary";
+
+import { AppSpinner, Box, Calendar, Text } from "@/components/zaui";
+
+import type { TCalendarMemoriesPage } from "../CalendarMemoriesPage";
 import { createCalendarMemoryLookup } from "../modules/calendarMemoryLookup";
 import { useDeferredCalendarReady } from "../modules/useDeferredCalendarReady";
-
-type Props = {
-  anniversaries: Anniversary[];
-  onOpenMemory: (memoryId: string) => void;
-};
+import { CalendarDay } from "./CalendarDay";
+import { CalendarMonthYearHeader } from "./CalendarMonthYearHeader";
 
 type Lookup = ReturnType<typeof createCalendarMemoryLookup>;
 
-function renderCalendarCell(lookup: Lookup) {
+function toDateOnlyTime(date: Date): number {
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+  ).getTime();
+}
+
+function isSameDate(dateA?: Date, dateB?: Date): boolean {
+  if (!dateA || !dateB) return false;
+
+  return toDateOnlyTime(dateA) === toDateOnlyTime(dateB);
+}
+
+function renderCalendarCell({
+  lookup,
+  selectedDate,
+  onSelected,
+}: {
+  lookup: Lookup;
+  selectedDate: Date;
+  onSelected: (date: Date) => void;
+}) {
   return (date: Date, info: CellRenderInfo<Date>) => {
     if (info.type !== "date") {
       return <>{info.originNode}</>;
     }
 
     const memory = lookup.findByDate(date);
-    const dayLabel = date.getDate().toString();
-    return <CalendarDay hasMemory={Boolean(memory)} label={dayLabel} />;
-  };
-}
-
-export function CalendarMemoriesGrid({ anniversaries, onOpenMemory }: Props) {
-  const lookup = useMemo(
-    () => createCalendarMemoryLookup(anniversaries),
-    [anniversaries],
-  );
-  const calendarReady = useDeferredCalendarReady();
-
-  const openDateMemory = (date: Date) => {
-    console.log(date.getUTCDate());
-
-    const memory = lookup.findByDate(date);
-    if (!memory) return;
-
-    onOpenMemory(memory.id);
-  };
-
-  const renderDayOfWeekNameRender = (d: number) => {
-    let day = `T${d + 1}`;
-    if (!d) day = "CN";
     return (
-      <Text size="small" className="text-[var(--love-primary)]">
-        {day}
-      </Text>
+      <CalendarDay
+        date={date}
+        hasMemory={Boolean(memory)}
+        onSelected={onSelected}
+        selected={isSameDate(selectedDate, date)}
+      />
     );
   };
-
-  if (!calendarReady) return <CalendarLoadingFrame />;
-
-  return (
-    <Calendar
-      fullscreen
-      startOfWeek={1}
-      dayOfWeekNameRender={renderDayOfWeekNameRender}
-      locale="vi-VN"
-      fullCellRender={renderCalendarCell(lookup)}
-      onSelect={openDateMemory}
-    />
-  );
 }
 
 function CalendarLoadingFrame() {
@@ -69,6 +57,7 @@ function CalendarLoadingFrame() {
     <Box className="grid min-h-[420px] place-items-center rounded-[24px] bg-white/90 p-4 shadow-[0_14px_30px_rgba(201,47,103,0.08)]">
       <Box className="grid place-items-center gap-3 text-center">
         <AppSpinner />
+
         <Text className="text-sm font-bold text-[#8b6b7d]">
           Đang mở lịch kỷ niệm...
         </Text>
@@ -77,32 +66,66 @@ function CalendarLoadingFrame() {
   );
 }
 
-function CalendarDay({
-  hasMemory,
-  label,
-}: {
-  hasMemory?: boolean;
-  label: string;
-}) {
-  if (!hasMemory) {
+export function CalendarMemoriesGrid() {
+  const { setValue } = useFormContext<TCalendarMemoriesPage>();
+
+  const anniversaries = useWatch({
+    name: "anniversaries",
+    exact: true,
+  });
+
+  const selectedDate = useWatch({
+    name: "selectDate",
+    exact: true,
+  });
+  const viewDate = useWatch({
+    name: "viewDate",
+    exact: true,
+  });
+
+  const lookup = useMemo(
+    () => createCalendarMemoryLookup(anniversaries ?? []),
+    [anniversaries],
+  );
+
+  const calendarReady = useDeferredCalendarReady();
+
+  const renderDayOfWeekNameRender = (dayIndex: number) => {
+    const day = dayIndex === 0 ? "CN" : `T${dayIndex + 1}`;
+
     return (
-      <Box className="grid min-h-[70px] place-items-center">
-        <Box className="bg-[var(--love-next-tint)] min-h-[60px] w-[35px] p-2 rounded-full place-items-center">
-          <Text className="text-sm font-bold text-center">{label}</Text>
-          <Icon icon="zi-heart-solid" size={14} className=" text-white" />
-        </Box>
+      <Box className="m-1 flex w-full items-center justify-center">
+        <Text className="text-[13px] font-bold text-[#d9467e]">{day}</Text>
       </Box>
     );
+  };
+
+  if (!calendarReady) {
+    return <CalendarLoadingFrame />;
   }
 
   return (
-    <Box className="grid min-h-[70px] place-items-center">
-      <Box className="bg-[var(--love-primary)] min-h-[60px] w-[35px] p-2 rounded-full place-items-center">
-        <Text className="text-sm font-[900] text-white text-center">
-          {label}
+    <Box className="overflow-hidden rounded-[28px] border border-pink-100 bg-white shadow-[0_18px_40px_rgba(201,47,103,0.12)]">
+      <Box className="bg-white px-3 pt-3">
+        <Text className="text-center text-xs font-semibold text-[#c45a86]">
+          Chạm vào ngày để xem kỷ niệm
         </Text>
-        <Icon icon="zi-heart-solid" size={14} className=" text-white" />
       </Box>
+
+      <Calendar
+        className="overflow-hidden bg-white shadow-lg shadow-pink-200/30"
+        fullscreen
+        value={viewDate}
+        startOfWeek={1}
+        locale="vi-VN"
+        dayOfWeekNameRender={renderDayOfWeekNameRender}
+        fullCellRender={renderCalendarCell({
+          lookup,
+          selectedDate,
+          onSelected: (date: Date) => setValue("selectDate", date),
+        })}
+        headerRender={() => <CalendarMonthYearHeader />}
+      />
     </Box>
   );
 }

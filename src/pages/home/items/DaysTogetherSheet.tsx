@@ -20,6 +20,7 @@ type Props = {
   control: Control<HomeDisplayFormValues>;
   elapsed: ElapsedTime;
   loading?: boolean;
+  disabled?: boolean;
   sheetRef: RefObject<AppSheetRef>;
   startDate: string;
   onClose: () => void;
@@ -30,6 +31,7 @@ export function DaysTogetherSheet({
   control,
   elapsed,
   loading,
+  disabled,
   sheetRef,
   onClose,
   onSave,
@@ -96,7 +98,7 @@ export function DaysTogetherSheet({
           </Button>
           <Button
             fullWidth
-            disabled={loading}
+            disabled={loading || disabled}
             htmlType="button"
             loading={loading}
             variant="primary"

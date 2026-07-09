@@ -88,4 +88,30 @@ export const anniversaryService = {
     if (error) throw error;
     return data;
   },
+
+  async findOne(coupleId: string, date: Date) {
+    if (isMockMode || !supabase) {
+      return mockDb
+        .getAnniversaries(coupleId)
+        .find((item) => item.date === date.toISOString());
+    }
+
+    const { data, error } = await supabase
+      .from("anniversaries")
+      .select("*")
+      .eq("couple_id", coupleId)
+      .eq("date", toLocalDateString(date))
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
 };
+
+function toLocalDateString(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}

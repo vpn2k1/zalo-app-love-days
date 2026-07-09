@@ -20,6 +20,9 @@ export const mediaService = {
     if (!supabase || !isLocalImagePath(path)) return path;
 
     const blob = await imagePathToBlob(path);
+    if (blob.size > 50 * 1024 * 1024) {
+      throw new Error("Kích thước ảnh vượt quá giới hạn cho phép (tối đa 50MB).");
+    }
     const storagePath = `${coupleId}/${scope}/${safeFileName(fileName)}.${extensionFor(blob)}`;
     const { error } = await supabase.storage
       .from(MEDIA_BUCKET)
@@ -31,7 +34,7 @@ export const mediaService = {
     if (error) throw error;
 
     const { data } = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(storagePath);
-    return data.publicUrl;
+    return `${data.publicUrl}?t=${Date.now()}`;
   },
 };
 

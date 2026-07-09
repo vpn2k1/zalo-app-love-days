@@ -1,12 +1,17 @@
-import { useRef, useState } from "react";
+import { DayPicker } from "@daypicker/react";
+import "@daypicker/react/style.css";
+import { vi } from "@daypicker/react/locale";
+
+import { useCallback, useMemo, useState } from "react";
 import {
   Controller,
   type Control,
   type FieldValues,
   type Path,
 } from "react-hook-form";
-import { Box, Calendar, Text } from "zmp-ui";
+import { Box } from "zmp-ui";
 import type { DatePickerProps } from "zmp-ui/date-picker";
+
 import { requiredRule } from "@/components/forms/formRules";
 import { AppDatePickerTrigger } from "@/components/forms/AppDatePickerTrigger";
 import { AppModal } from "@/components/zaui";
@@ -27,56 +32,64 @@ type Props<TFormValues extends FieldValues> = Omit<
 };
 
 function parseDateValue(value: unknown): Date | undefined {
-  if (value instanceof Date) return value;
-  if (typeof value !== "string" || !value) return undefined;
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value;
+  }
+
+  if (typeof value !== "string" || !value) {
+    return undefined;
+  }
 
   const [year, month, day] = value.split("-").map(Number);
-  if (!year || !month || !day) return undefined;
 
-  return new Date(year, month - 1, day);
+  if (!year || !month || !day) {
+    return undefined;
+  }
+
+  const date = new Date(year, month - 1, day);
+
+  return Number.isNaN(date.getTime()) ? undefined : date;
 }
 
 function formatDateValue(date: Date): string {
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
+  const month = `${date.getMonth() + 1}`.padStart(2, "0");
+  const day = `${date.getDate()}`.padStart(2, "0");
 
   return `${year}-${month}-${day}`;
 }
 
 function formatDisplayValue(date: Date | undefined, locale: string): string {
-  if (!date) return "";
-
-  return date.toLocaleDateString(locale);
+  return date ? date.toLocaleDateString(locale) : "";
 }
 
-function getStatus(
-  fieldError: boolean,
-  status: DatePickerProps["status"],
-): DatePickerProps["status"] {
-  if (fieldError) return "error";
-
-  return status;
+function toDateOnlyTime(date: Date): number {
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+  ).getTime();
 }
 
-function getErrorText(
-  fieldError: string | undefined,
-  errorText: string | undefined,
-) {
-  if (fieldError) return fieldError;
+function isDateDisabled(date: Date, startDate?: Date, endDate?: Date): boolean {
+  const currentTime = toDateOnlyTime(date);
 
-  return errorText;
-}
+  if (startDate && currentTime < toDateOnlyTime(startDate)) {
+    return true;
+  }
 
-function isDateDisabled(
-  date: Date,
-  startDate: Date | undefined,
-  endDate: Date | undefined,
-) {
-  if (startDate && date < startDate) return true;
-  if (endDate && date > endDate) return true;
+  if (endDate && currentTime > toDateOnlyTime(endDate)) {
+    return true;
+  }
 
   return false;
+}
+
+function getMonthBoundary(date: Date | undefined, fallback: Date): Date {
+  return new Date(
+    date?.getFullYear() ?? fallback.getFullYear(),
+    date?.getMonth() ?? fallback.getMonth(),
+  );
 }
 
 export function AppDatePicker2<TFormValues extends FieldValues>({
@@ -93,13 +106,13 @@ export function AppDatePicker2<TFormValues extends FieldValues>({
       rules={{ required: requiredRule(required) }}
       render={({ field, fieldState }) => (
         <AppDatePickerField
+          {...datePickerProps}
           fieldValue={field.value}
+          fieldError={fieldState.error?.message}
           name={field.name}
           label={label}
-          fieldError={fieldState.error?.message}
           onBlur={field.onBlur}
           onChange={field.onChange}
-          {...datePickerProps}
         />
       )}
     />
@@ -128,6 +141,7 @@ function AppDatePickerField({
   defaultOpen = false,
   defaultValue,
   disabled,
+  startDate,
   endDate,
   errorText,
   helperText,
@@ -138,54 +152,76 @@ function AppDatePickerField({
   onVisibilityChange,
   placeholder,
   prefix,
-  startDate,
   status,
   suffix,
 }: AppDatePickerFieldProps) {
   const [visible, setVisible] = useState(defaultOpen);
-  const calendarInteractedRef = useRef(false);
-  const value = parseDateValue(fieldValue) ?? defaultValue;
-  const displayValue = formatDisplayValue(value, locale);
-  const statusValue = getStatus(Boolean(fieldError), status);
-  const errorValue = getErrorText(fieldError, errorText);
 
-  const changeVisible = (nextVisible: boolean) => {
-    setVisible(nextVisible);
-    onVisibilityChange?.(nextVisible);
-  };
+  const selectedDate = useMemo(
+    () => parseDateValue(fieldValue) ?? defaultValue,
+    [fieldValue, defaultValue],
+  );
 
-  const openCalendar = (event: React.PointerEvent<HTMLElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-    if (disabled) return;
-    calendarInteractedRef.current = false;
-    changeVisible(true);
-  };
+  const displayValue = useMemo(
+    () => formatDisplayValue(selectedDate, locale),
+    [selectedDate, locale],
+  );
 
-  const closeCalendar = () => {
+  const statusValue = fieldError ? "error" : status;
+  const errorValue = fieldError ?? errorText;
+
+  const startMonth = useMemo(
+    () => getMonthBoundary(startDate, new Date(1900, 0)),
+    [startDate],
+  );
+
+  const endMonth = useMemo(
+    () => getMonthBoundary(endDate, new Date(2100, 11)),
+    [endDate],
+  );
+
+  const changeVisible = useCallback(
+    (nextVisible: boolean) => {
+      setVisible(nextVisible);
+      onVisibilityChange?.(nextVisible);
+    },
+    [onVisibilityChange],
+  );
+
+  const openCalendar = useCallback(
+    (event: React.PointerEvent<HTMLElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (!disabled) {
+        changeVisible(true);
+      }
+    },
+    [disabled, changeVisible],
+  );
+
+  const closeCalendar = useCallback(() => {
     changeVisible(false);
     onBlur();
-  };
+  }, [changeVisible, onBlur]);
 
-  const markCalendarInteraction = (event: React.PointerEvent<HTMLElement>) => {
-    event.stopPropagation();
-    calendarInteractedRef.current = true;
-  };
+  const disabledDate = useCallback(
+    (date: Date) => isDateDisabled(date, startDate, endDate),
+    [startDate, endDate],
+  );
 
-  const selectDate = (date: Date) => {
-    if (!calendarInteractedRef.current) return;
-    onChange(formatDateValue(date));
-    closeCalendar();
-  };
-  const renderDayOfWeekNameRender = (d: number) => {
-    let day = `T${d + 1}`;
-    if (!d) day = "CN";
-    return (
-      <Text size="small" className="text-[var(--love-primary)]">
-        {day}
-      </Text>
-    );
-  };
+  const selectDate = useCallback(
+    (date?: Date) => {
+      if (!date || disabledDate(date)) {
+        return;
+      }
+
+      onChange(formatDateValue(date));
+      closeCalendar();
+    },
+    [onChange, closeCalendar, disabledDate],
+  );
+
   return (
     <Box>
       <AppDatePickerTrigger
@@ -203,6 +239,7 @@ function AppDatePickerField({
         suffix={suffix}
         onOpen={openCalendar}
       />
+
       <AppModal
         title={title}
         mask={mask}
@@ -210,15 +247,21 @@ function AppDatePickerField({
         visible={visible}
         onClose={closeCalendar}
       >
-        <Box onPointerDown={markCalendarInteraction}>
-          <Calendar
-            autoHeight
-            value={value}
-            defaultValue={defaultValue}
-            locale={locale}
-            startOfWeek={1}
-            dayOfWeekNameRender={renderDayOfWeekNameRender}
-            disabledDate={(date) => isDateDisabled(date, startDate, endDate)}
+        <Box
+          className="app-day-picker"
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          <DayPicker
+            mode="single"
+            weekStartsOn={1}
+            selected={selectedDate}
+            defaultMonth={selectedDate ?? defaultValue ?? new Date()}
+            captionLayout="dropdown"
+            navLayout="after"
+            locale={vi}
+            startMonth={startMonth}
+            endMonth={endMonth}
+            disabled={disabledDate}
             onSelect={selectDate}
           />
         </Box>

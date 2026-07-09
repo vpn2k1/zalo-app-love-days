@@ -151,6 +151,60 @@ export const coupleService = {
     return data as Couple;
   },
 
+  async updateCouple(
+    coupleId: string,
+    payload: { startDate?: string; backgroundUrl?: string | null },
+  ): Promise<Couple> {
+    if (isMockMode || !supabase) {
+      return mockDb.updateCouple(coupleId, payload);
+    }
+
+    const updateData: any = {};
+    if (payload.startDate !== undefined) {
+      updateData.start_date = payload.startDate;
+    }
+    if (payload.backgroundUrl !== undefined) {
+      updateData.background_url = payload.backgroundUrl;
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      const { data, error } = await supabase
+        .from("couples")
+        .select("*")
+        .eq("id", coupleId)
+        .single();
+      if (error) throw error;
+      return data as Couple;
+    }
+
+    updateData.updated_at = new Date().toISOString();
+    const { data, error } = await supabase
+      .from("couples")
+      .update(updateData)
+      .eq("id", coupleId)
+      .select("*")
+      .single();
+
+    if (error) throw error;
+    return data as Couple;
+  },
+
+
+  async removeMember(coupleId: string, userId: string): Promise<void> {
+    if (isMockMode || !supabase) {
+      mockDb.removeMember(coupleId, userId);
+      return;
+    }
+
+    const { error } = await supabase
+      .from("couple_members")
+      .delete()
+      .eq("couple_id", coupleId)
+      .eq("user_id", userId);
+
+    if (error) throw error;
+  },
+
   async leaveCouple(coupleId: string): Promise<void> {
     if (isMockMode || !supabase) {
       mockDb.leaveCouple(coupleId);

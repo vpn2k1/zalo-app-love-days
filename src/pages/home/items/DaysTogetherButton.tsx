@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { Box, Text } from "@/components/zaui";
 import type { AppSheetRef } from "@/components/zaui";
-import { useUpdateBackgroundMutation } from "@/hooks/mutations/useUpdateBackgroundMutation";
-import { useUpdateStartDateMutation } from "@/hooks/mutations/useUpdateStartDateMutation";
+import { useUpdateCoupleMutation } from "@/hooks/mutations/useUpdateCoupleMutation";
+import { useCoupleData } from "@/hooks/useCoupleData";
 import { DaysTogetherSheet } from "./DaysTogetherSheet";
 import type { HomeDisplayFormValues } from "../types/HomePageType";
 
@@ -15,10 +15,20 @@ type ElapsedTime = {
 };
 
 export function DaysTogetherButton() {
-  const { control, handleSubmit } = useFormContext<HomeDisplayFormValues>();
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { isDirty },
+  } = useFormContext<HomeDisplayFormValues>();
   const startDate = useWatch<HomeDisplayFormValues, "startDate">({
     control,
     name: "startDate",
+    exact: true,
+  });
+  const backgroundUrl = useWatch<HomeDisplayFormValues, "backgroundUrl">({
+    control,
+    name: "backgroundUrl",
     exact: true,
   });
   const sheetRef = useRef<AppSheetRef>(null);
@@ -28,9 +38,10 @@ export function DaysTogetherButton() {
     minutes: 0,
     seconds: 0,
   });
-  const updateBackground = useUpdateBackgroundMutation();
-  const updateStartDate = useUpdateStartDateMutation();
-  const loading = updateBackground.isPending || updateStartDate.isPending;
+
+  const { coupleData } = useCoupleData();
+  const updateCouple = useUpdateCoupleMutation();
+  const loading = updateCouple.isPending;
 
   const startTime = useMemo(() => {
     if (!startDate) return null;
@@ -72,8 +83,27 @@ export function DaysTogetherButton() {
   };
 
   const saveDisplayInfo = handleSubmit(async (values) => {
-    await updateBackground.mutateAsync(values.backgroundUrl || null);
-    await updateStartDate.mutateAsync(values.startDate);
+    if (!isDirty || !coupleData) {
+      closeSheet();
+      return;
+    }
+
+    const payload: { startDate?: string; backgroundUrl?: string | null } = {};
+    if (values.startDate !== coupleData.couple.start_date) {
+      payload.startDate = values.startDate;
+    }
+    if (
+      (values.backgroundUrl || "") !== (coupleData.couple.background_url || "")
+    ) {
+      payload.backgroundUrl = values.backgroundUrl || null;
+    }
+
+    const updatedCouple = await updateCouple.mutateAsync(payload);
+    reset({
+      ...values,
+      startDate: updatedCouple.start_date,
+      backgroundUrl: updatedCouple.background_url || "",
+    });
     closeSheet();
   });
 
@@ -116,6 +146,7 @@ export function DaysTogetherButton() {
         control={control}
         elapsed={elapsed}
         loading={loading}
+        disabled={!isDirty}
         sheetRef={sheetRef}
         startDate={startDate}
         onClose={closeSheet}

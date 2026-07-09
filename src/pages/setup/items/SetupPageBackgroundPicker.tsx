@@ -32,12 +32,14 @@ export function SetupPageBackgroundPicker() {
           <Icon icon="zi-members" size={60} className="text-white" />
         )}
       </Box>
-      <Box className="app-setup-user-copy">
+      <Box className="app-setup-user-copy min-w-0">
         <Text className="app-opening-card-title">Ảnh cặp đôi</Text>
-        <Text className="app-opening-card-copy">
+
+        <Text className="app-opening-card-copy break-words">
           Có thể thêm sau, nhưng một tấm ảnh sẽ làm màn chính ngọt hơn.
         </Text>
-        <Button className="" onClick={pickBackground}>
+
+        <Button className="!w-fit !min-w-0 px-4" onClick={pickBackground}>
           <Text>+ Ảnh</Text>
         </Button>
       </Box>

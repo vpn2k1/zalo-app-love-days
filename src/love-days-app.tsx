@@ -18,7 +18,7 @@ export function LoveDaysApp() {
 
   return (
     <AnimationRoutes>
-      <Route path={appPaths.booting} element={<BootRoute />} />
+      {/* <Route path={appPaths.booting} element={<BootRoute />} /> */}
       <Route path={appPaths.invite} element={<InviteAcceptPage />} />
       <Route path={appPaths.permission} element={<PermissionGate />} />
       <Route path={appPaths.blocked} element={<PermissionGate blocked />} />
@@ -35,10 +35,10 @@ export function LoveDaysApp() {
 }
 
 function BootRoute() {
-  useAppBoot();
-  return (
-    <Box className="boot-screen">
-      <AppSpinner />
-    </Box>
-  );
+  // useAppBoot();
+  // return (
+  //   <Box className="boot-screen">
+  //     <AppSpinner />
+  //   </Box>
+  // );
 }

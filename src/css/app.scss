@@ -84,6 +84,41 @@ textarea,
   height: 100%;
 }
 
+.zaui-calendar-header {
+  border-radius: 22px 22px 0 0;
+  background: #ffffff;
+}
+
+.zaui-calendar-header-title {
+  color: var(--love-primary);
+  font-weight: 800;
+  :hover {
+    text-decoration: underline;
+    color: var(--love-primary);
+  }
+}
+
+.zaui-calendar-header button {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  color: #d9467e;
+}
+
+.zaui-calendar-header button:active {
+  transform: scale(0.94);
+}
+
+.zaui-calendar-week {
+  padding: 8px 8px 4px;
+  background: #fff7fb;
+
+}
+
+.zaui-calendar { 
+  padding: 8px 8px 4px;
+}
+
 .zaui-routes .zaui-routes-item {
   min-height: 100dvh;
   max-height: none;

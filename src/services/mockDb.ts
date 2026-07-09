@@ -9,6 +9,13 @@ import { mockInviteDb } from "./mockInviteDb";
 import { now, readState, uid, writeState } from "./mockDbState";
 
 export const mockDb = {
+  findUserByZaloId(zaloUserId: string): AppUser | null {
+    const state = readState();
+    return state.users.find((user) => user.zalo_user_id === zaloUserId)
+      ?? state.users[0]
+      ?? null;
+  },
+
   upsertUser(profile: ZaloUserProfile): AppUser {
     const state = readState();
     const existing = state.users.find((user) => user.zalo_user_id === profile.id);
@@ -55,6 +62,12 @@ export const mockDb = {
     writeState(state);
     if (!updated) throw new Error("Không tìm thấy user.");
     return updated;
+  },
+
+  deleteUser(userId: string): void {
+    const state = readState();
+    state.users = state.users.filter((user) => user.id !== userId);
+    writeState(state);
   },
 
   getCoupleByUser(userId: string): CoupleWithMembers | null {
@@ -137,6 +150,34 @@ export const mockDb = {
     couple.updated_at = now();
     writeState(state);
     return couple;
+  },
+
+  updateCouple(
+    coupleId: string,
+    payload: { startDate?: string; backgroundUrl?: string | null },
+  ): Couple {
+    const state = readState();
+    const couple = state.couples.find((item) => item.id === coupleId);
+    if (!couple) throw new Error("Không tìm thấy Yêu.");
+
+    if (payload.startDate !== undefined) {
+      couple.start_date = payload.startDate;
+    }
+    if (payload.backgroundUrl !== undefined) {
+      couple.background_url = payload.backgroundUrl;
+    }
+    couple.updated_at = now();
+    writeState(state);
+    return couple;
+  },
+
+
+  removeMember(coupleId: string, userId: string): void {
+    const state = readState();
+    state.members = state.members.filter(
+      (item) => !(item.couple_id === coupleId && item.user_id === userId),
+    );
+    writeState(state);
   },
 
   leaveCouple(coupleId: string): void {

@@ -1,4 +1,4 @@
-import { authorize, getAccessToken, getUserInfo, openShareSheet } from "zmp-sdk";
+import { authorize, getAccessToken, getUserID, getUserInfo, openShareSheet } from "zmp-sdk";
 import { supabase } from "@/services/supabaseClient";
 import type { ZaloUserProfile } from "@/types/user";
 
@@ -56,8 +56,21 @@ const getCurrentUserWithProof = async (): Promise<ZaloUserProfile> => {
 };
 
 export const zaloService = {
+  async getZaloUserId(): Promise<string> {
+    const userID = await getUserID();    
+    return userID;
+  },
+
   async requestUserInfoPermission() {
     await authorize({ scopes: ["scope.userInfo"] });
+  },
+
+  async tryGetUserProfile(): Promise<ZaloUserProfile | null> {
+    try {
+      return await this.getCurrentUser();
+    } catch {
+      return null;
+    }
   },
 
   async getCurrentUser(): Promise<ZaloUserProfile> {

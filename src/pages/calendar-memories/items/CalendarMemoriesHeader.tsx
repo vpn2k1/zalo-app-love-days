@@ -1,11 +1,9 @@
 import { Box, Button, Icon, Text } from "@/components/zaui";
+import { useAppNavigation } from "@/hooks/useAppNavigation";
 
-type Props = {
-  totalCount: number;
-  onBack: () => void;
-};
+export function CalendarMemoriesHeader() {
+  const navigation = useAppNavigation();
 
-export function CalendarMemoriesHeader({ totalCount, onBack }: Props) {
   return (
     <Box className="flex items-center gap-2">
       <Button
@@ -13,7 +11,7 @@ export function CalendarMemoriesHeader({ totalCount, onBack }: Props) {
         htmlType="button"
         icon={<Icon icon="zi-chevron-left" />}
         variant="tertiary"
-        onClick={onBack}
+        onClick={() => navigation.goHome()}
       />
       <Text.Title size="small" className="font-serif text-[#2f1d2a]">
         Lịch kỷ niệm

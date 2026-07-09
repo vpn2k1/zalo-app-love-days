@@ -71,7 +71,7 @@ export function EditProfilePage() {
         />
         <BlockingLoadingOverlay
           show={saveProfile.isPending || leaveCouple.isPending}
-          message="Đang lưu thay đổi..."
+          message={leaveCouple.isPending ? "Đang rời không gian..." : "Đang lưu thay đổi..."}
         />
       </Page>
     </FormProvider>

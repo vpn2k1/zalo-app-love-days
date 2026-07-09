@@ -6,7 +6,7 @@ import {
 import { currentUserQueryKey } from "@/config/queryKeys";
 import { authService } from "@/services/authService";
 import { zaloService } from "@/services/zaloService";
-import type { AppUser } from "@/types/user";
+import type { AppUser, ZaloUserProfile } from "@/types/user";
 
 type Options = {
   restore?: boolean;
@@ -43,15 +43,33 @@ export function useCurrentUserActions() {
   };
 }
 
+const DEFAULT_USER_NAME = "Người dùng Zalo";
+
 export async function authorizeCurrentUser() {
-  await zaloService.requestUserInfoPermission();
-  return restoreCurrentUser();
+  try {
+    await zaloService.requestUserInfoPermission();
+  } catch {
+    // User denied — continue with defaults
+  }
+  return resolveZaloUser();
 }
 
-export async function restoreCurrentUser() {
-  const zaloUser = await zaloService.getCurrentUser();
-  return authService.upsertZaloUser(zaloUser);
+export async function restoreCurrentUser(): Promise<AppUser | null> {
+  const zaloUserId = await zaloService.getZaloUserId();
+  return authService.findUserByZaloId(zaloUserId);
 }
+
+async function resolveZaloUser() {
+  const zaloUserId = await zaloService.getZaloUserId();
+  const profile = await zaloService.tryGetUserProfile();
+  const zaloProfile: ZaloUserProfile = profile ?? {
+    id: zaloUserId,
+    name: DEFAULT_USER_NAME,
+    avatar: undefined,
+  };
+  return authService.upsertZaloUser(zaloProfile);
+}
+
 
 export function setCurrentUserCache(
   queryClient: QueryClient,

@@ -13,7 +13,6 @@ export function SetupPageHeader() {
       <Text className="app-opening-copy">
         Xác nhận thông tin của bạn, ngày bắt đầu và vài kỷ niệm đầu tiên.
       </Text>
-      <Icon icon="zi-heart" className="app-setup-spark" />
     </Box>
   );
 }
