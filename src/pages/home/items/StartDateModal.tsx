@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { AppDatePicker } from "@/components/forms";
+import { AppCalendarPicker } from "@/components/forms";
 import { AppModal } from "@/components/zaui";
 
 type Props = {
@@ -60,7 +60,7 @@ export function StartDateModal({
         },
       ]}
     >
-      <AppDatePicker
+      <AppCalendarPicker
         control={control}
         name="startDate"
         label="Ngày bắt đầu"

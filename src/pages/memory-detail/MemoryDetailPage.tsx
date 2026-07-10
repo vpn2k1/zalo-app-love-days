@@ -1,5 +1,5 @@
 import { AppStatusBar } from "@/components/AppStatusBar";
-import { AppImageViewer, Page, useSearchParams } from "@/components/zaui";
+import { AppImageViewer, Box, Page, useSearchParams } from "@/components/zaui";
 import { useAnniversariesData } from "@/hooks/useAnniversariesData";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
 import { useCoupleData } from "@/hooks/useCoupleData";
@@ -24,26 +24,25 @@ export function MemoryDetailPage() {
   const [searchParams] = useSearchParams();
   const memoryId = searchParams.get("id");
   const navigation = useAppNavigation();
-  const { user } = useCurrentUser();
   const { coupleData, coupleQuery } = useCoupleData();
-  const { anniversariesQuery } = useAnniversariesData();
+  const { anniversariesQuery } = useAnniversariesData(
+    coupleData?.couple.id ?? "",
+  );
   const memory = findMemory(anniversariesQuery.data, memoryId);
-
-  if (!user) return null;
 
   if (coupleQuery.isPending || anniversariesQuery.isPending) {
     return <MemoryDetailLoadingState />;
   }
 
   if (!coupleData || !memory) {
-    return <MemoryDetailMissingState onBack={navigation.goAnniversaries} />;
+    return <MemoryDetailMissingState onBack={navigation.goBack} />;
   }
 
   return (
     <MemoryDetailContent
       coupleId={coupleData.couple.id}
       memory={memory}
-      onBack={navigation.goAnniversaries}
+      onBack={navigation.goBack}
     />
   );
 }
@@ -90,11 +89,13 @@ function MemoryDetailContent({
 
   return (
     <FormProvider {...methods}>
-      <Page className="mx-auto min-h-screen w-[min(100%,430px)] bg-[#fff4f8] px-[18px] pb-[calc(96px+env(safe-area-inset-bottom))] pt-4 text-[#3c2435]">
+      <Page className="mx-auto min-h-screen w-[min(100%,430px)] bg-[#fff4f8] px-[18px] pb-[calc(112px+env(safe-area-inset-bottom))] pt-4 text-[#3c2435] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <AppStatusBar />
         <MemoryDetailHeader memory={memory} onBack={onBack} />
-        <MemoryImagePreview imageUrl={imageUrl} onOpen={openViewer} />
-        <MemoryDetailFields />
+        <Box className="grid gap-3">
+          <MemoryImagePreview imageUrl={imageUrl} onOpen={openViewer} />
+          <MemoryDetailFields />
+        </Box>
         <MemoryDetailFooter
           canUpdate={canUpdate}
           loading={updateMutation.isPending}

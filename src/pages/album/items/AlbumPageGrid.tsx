@@ -1,8 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
+import { AppImageViewer } from "@/components/zaui";
 import { Box, Text } from "@/components/zaui";
 import type { Anniversary } from "@/types/anniversary";
-import { formatDate } from "@/utils/date";
+
+import { AlbumCard } from "./AlbumCard";
 
 type Props = {
   canLoadMore: boolean;
@@ -25,6 +27,9 @@ export function AlbumPageGrid({
 }: Props) {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const touchStartRef = useRef<number | null>(null);
+  const [viewerIndex, setViewerIndex] = useState(0);
+  const [viewerVisible, setViewerVisible] = useState(false);
+  const albumImages = getAlbumImages(items);
 
   useEffect(() => {
     if (!canLoadMore) return;
@@ -62,6 +67,18 @@ export function AlbumPageGrid({
 
     onRefresh();
   };
+  const openImage = (item: Anniversary) => {
+    if (!item.image_url) return;
+
+    const imageIndex = albumImages.findIndex((image) => image.id === item.id);
+    if (imageIndex < 0) return;
+
+    setViewerIndex(imageIndex);
+    setViewerVisible(true);
+  };
+  const closeViewer = () => {
+    setViewerVisible(false);
+  };
 
   if (items.length === 0) return <AlbumEmptyState />;
 
@@ -77,6 +94,7 @@ export function AlbumPageGrid({
           <AlbumCard
             item={item}
             key={item.id}
+            onOpenImage={openImage}
             onOpenMemory={onOpenMemory}
           />
         ))}
@@ -88,43 +106,26 @@ export function AlbumPageGrid({
           </Text>
         </div>
       )}
+      {albumImages.length > 0 && (
+        <AppImageViewer
+          activeIndex={viewerIndex}
+          images={albumImages}
+          visible={viewerVisible}
+          onClose={closeViewer}
+        />
+      )}
     </Box>
   );
 }
 
-function AlbumCard({
-  item,
-  onOpenMemory,
-}: {
-  item: Anniversary;
-  onOpenMemory: (memoryId: string) => void;
-}) {
-  const openMemory = () => {
-    onOpenMemory(item.id);
-  };
-
-  return (
-    <Box
-      className="min-w-0 overflow-hidden rounded-[18px] bg-white/90"
-      role="button"
-      tabIndex={0}
-      onClick={openMemory}
-    >
-      <img
-        alt={item.title}
-        className="aspect-square w-full object-cover"
-        src={item.image_url ?? ""}
-      />
-      <Box className="p-2.5">
-        <Text className="text-[11px] font-bold leading-[1.25] text-[#8b6b7d]">
-          {formatDate(item.date)}
-        </Text>
-        <Text className="mt-1 line-clamp-2 min-h-[34px] text-sm font-[850] leading-[1.2] text-[#3a2232]">
-          {item.title}
-        </Text>
-      </Box>
-    </Box>
-  );
+function getAlbumImages(items: Anniversary[]) {
+  return items
+    .filter((item) => Boolean(item.image_url))
+    .map((item) => ({
+      alt: item.title,
+      id: item.id,
+      src: item.image_url ?? "",
+    }));
 }
 
 function AlbumEmptyState() {

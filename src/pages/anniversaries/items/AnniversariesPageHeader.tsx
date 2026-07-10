@@ -1,5 +1,8 @@
 import { Input } from "zmp-ui";
-import { Box, Button, Icon, Text } from "@/components/zaui";
+
+import { AppPageHeader } from "@/components/AppPageHeader";
+import { Box, Button } from "@/components/zaui";
+
 import type { AnniversaryFilter } from "../types/AnniversariesPageType";
 
 type Props = {
@@ -29,18 +32,11 @@ export function AnniversariesPageHeader({
 }: Props) {
   return (
     <Box>
-      <Box className="mb-3 flex items-center gap-2">
-        <Button
-          className="min-h-10 min-w-10 p-0 text-[#d9467e]"
-          htmlType="button"
-          icon={<Icon icon="zi-chevron-left" />}
-          variant="tertiary"
-          onClick={onBack}
-        />
-        <Text.Title size="small" className="font-serif text-[#2f1d2a]">
-          Tất cả kỷ niệm
-        </Text.Title>
-      </Box>
+      <AppPageHeader
+        title="Tất cả kỷ niệm"
+        subtitle={`${filteredCount}/${totalCount} ngày đáng nhớ`}
+        onBack={onBack}
+      />
       <Input.Search
         label="Tìm kiếm"
         placeholder="Tên hoặc ghi chú kỷ niệm"

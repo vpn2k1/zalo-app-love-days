@@ -14,7 +14,7 @@ import { useAlbumPage } from "./modules/useAlbumPage";
 export function AlbumPage() {
   const { user } = useCurrentUser();
   const { coupleData, coupleQuery } = useCoupleData();
-  const { anniversariesQuery } = useAnniversariesData();
+  const { anniversariesQuery } = useAnniversariesData(coupleData?.couple.id ?? '');
 
   if (!user) return null;
 
@@ -52,7 +52,7 @@ function AlbumPageContent({
         setSortOrder={page.setSortOrder}
         sortOrder={page.sortOrder}
         totalCount={page.totalCount}
-        onBack={navigation.goHome}
+        onBack={navigation.goBack}
       />
       <AlbumPageGrid
         canLoadMore={page.canLoadMore}

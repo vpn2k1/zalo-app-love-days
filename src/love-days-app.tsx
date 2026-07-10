@@ -2,7 +2,7 @@ import { AnimationRoutes, AppSpinner, Box, Route } from "@/components/zaui";
 import { appPaths } from "@/hooks/useAppNavigation";
 import { useAppBoot } from "@/hooks/useAppBoot";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { usePhysicalBackGuard } from "@/hooks/usePhysicalBackGuard";
 import { AlbumPage } from "@/pages/album/AlbumPage";
 import { AnniversariesPage } from "@/pages/anniversaries/AnniversariesPage";
 import { CalendarMemoriesPage } from "@/pages/calendar-memories/CalendarMemoriesPage";
@@ -15,10 +15,11 @@ import { SetupPage } from "@/pages/setup/SetupPage";
 
 export function LoveDaysApp() {
   useAuthGuard();
+  usePhysicalBackGuard();
 
   return (
     <AnimationRoutes>
-      {/* <Route path={appPaths.booting} element={<BootRoute />} /> */}
+      <Route path={appPaths.booting} element={<BootRoute />} />
       <Route path={appPaths.invite} element={<InviteAcceptPage />} />
       <Route path={appPaths.permission} element={<PermissionGate />} />
       <Route path={appPaths.blocked} element={<PermissionGate blocked />} />
@@ -35,10 +36,10 @@ export function LoveDaysApp() {
 }
 
 function BootRoute() {
-  // useAppBoot();
-  // return (
-  //   <Box className="boot-screen">
-  //     <AppSpinner />
-  //   </Box>
-  // );
+  useAppBoot();
+  return (
+    <Box className="boot-screen">
+      <AppSpinner />
+    </Box>
+  );
 }

@@ -1,6 +1,7 @@
+import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import {
-  AppDatePicker,
+  AppCalendarPicker,
   AppImagePicker,
   AppSelect,
   AppTextArea,
@@ -10,25 +11,41 @@ import { Box, Button, Text } from "@/components/zaui";
 import type { AnniversaryDraft } from "@/types/anniversary";
 
 type Props = {
-  onAdd: (draft: AnniversaryDraft) => void | Promise<void>;
+  onAdd: (draft: AnniversaryDraft) => void | Promise<unknown>;
   loading?: boolean;
   close?: () => void;
+  defaultDate?: string;
+  lockDate?: boolean;
 };
 
-export function AnniversaryForm({ onAdd, loading, close }: Props) {
+function getDefaultValues(defaultDate = ""): AnniversaryDraft {
+  return {
+    title: "",
+    date: defaultDate,
+    repeat_type: "yearly",
+    note: "",
+    image_url: "",
+  };
+}
+
+export function AnniversaryForm({
+  onAdd,
+  loading,
+  close,
+  defaultDate,
+  lockDate,
+}: Props) {
   const methods = useForm<AnniversaryDraft>({
-    defaultValues: {
-      title: "",
-      date: "",
-      repeat_type: "yearly",
-      note: "",
-      image_url: "",
-    },
+    defaultValues: getDefaultValues(defaultDate),
   });
   const { control, handleSubmit, reset, watch } = methods;
   const title = watch("title");
   const date = watch("date");
   const canAdd = Boolean(title.trim() && date);
+
+  useEffect(() => {
+    reset(getDefaultValues(defaultDate));
+  }, [defaultDate, reset]);
 
   const submit = async (values: AnniversaryDraft) => {
     if (!values.title.trim() || !values.date) return;
@@ -38,13 +55,7 @@ export function AnniversaryForm({ onAdd, loading, close }: Props) {
       note: values.note?.trim(),
       image_url: values.image_url?.trim(),
     });
-    reset({
-      title: "",
-      date: "",
-      repeat_type: values.repeat_type,
-      note: "",
-      image_url: "",
-    });
+    reset({ ...getDefaultValues(defaultDate), repeat_type: values.repeat_type });
     close?.();
   };
 
@@ -57,7 +68,13 @@ export function AnniversaryForm({ onAdd, loading, close }: Props) {
           label="Tên kỷ niệm"
           placeholder="Ví dụ: Lần đầu gặp nhau"
         />
-        <AppDatePicker control={control} name="date" label="Ngày" required />
+        <AppCalendarPicker
+          control={control}
+          name="date"
+          label="Ngày"
+          required
+          disabled={lockDate}
+        />
         <AppImagePicker
           control={control}
           name="image_url"

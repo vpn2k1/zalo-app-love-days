@@ -114,7 +114,7 @@ function WheelColumn<T extends number | string>({
       <Box className="pointer-events-none absolute inset-x-0 top-0 z-20 h-16 bg-gradient-to-b from-white via-white/90 to-transparent" />
       <Box className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-16 bg-gradient-to-t from-white via-white/90 to-transparent" />
 
-      <Box
+      <div
         ref={scrollRef}
         className="relative z-30 h-full overflow-y-auto snap-y snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         style={{
@@ -143,7 +143,7 @@ function WheelColumn<T extends number | string>({
             </button>
           );
         })}
-      </Box>
+      </div>
     </Box>
   );
 }

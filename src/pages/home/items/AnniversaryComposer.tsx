@@ -3,13 +3,17 @@ import { AppSheet, Box, Text } from "@/components/zaui";
 import type { AnniversaryDraft } from "@/types/anniversary";
 
 type Props = {
+  defaultDate?: string;
+  lockDate?: boolean;
   loading?: boolean;
   visible: boolean;
-  onAdd: (draft: AnniversaryDraft) => Promise<void>;
+  onAdd: (draft: AnniversaryDraft) => Promise<unknown>;
   onClose: () => void;
 };
 
 export function AnniversaryComposer({
+  defaultDate,
+  lockDate,
   loading,
   visible,
   onAdd,
@@ -31,7 +35,13 @@ export function AnniversaryComposer({
             Lưu một ngày đáng nhớ
           </Text>
         </Box>
-        <AnniversaryForm loading={loading} onAdd={onAdd} />
+        <AnniversaryForm
+          defaultDate={defaultDate}
+          lockDate={lockDate}
+          loading={loading}
+          close={onClose}
+          onAdd={onAdd}
+        />
       </Box>
     </AppSheet>
   );

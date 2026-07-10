@@ -89,7 +89,10 @@ export const anniversaryService = {
     return data;
   },
 
-  async findOne(coupleId: string, date: Date) {
+  async findOne(
+    coupleId: string,
+    date: Date,
+  ): Promise<Anniversary | undefined> {
     if (isMockMode || !supabase) {
       return mockDb
         .getAnniversaries(coupleId)

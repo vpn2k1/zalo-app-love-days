@@ -1,21 +1,15 @@
-import { Box, Button, Icon, Text } from "@/components/zaui";
-import { useAppNavigation } from "@/hooks/useAppNavigation";
+import { AppPageHeader } from "@/components/AppPageHeader";
 
-export function CalendarMemoriesHeader() {
-  const navigation = useAppNavigation();
+type Props = {
+  onBack: () => void;
+};
 
+export function CalendarMemoriesHeader({ onBack }: Props) {
   return (
-    <Box className="flex items-center gap-2">
-      <Button
-        className="min-h-10 min-w-10 p-0 text-[#d9467e]"
-        htmlType="button"
-        icon={<Icon icon="zi-chevron-left" />}
-        variant="tertiary"
-        onClick={() => navigation.goHome()}
-      />
-      <Text.Title size="small" className="font-serif text-[#2f1d2a]">
-        Lịch kỷ niệm
-      </Text.Title>
-    </Box>
+    <AppPageHeader
+      title="Lịch kỷ niệm"
+      subtitle="Chạm vào một ngày để xem chi tiết"
+      onBack={onBack}
+    />
   );
 }

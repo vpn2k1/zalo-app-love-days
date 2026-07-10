@@ -1,7 +1,7 @@
 import type { RefObject } from "react";
 import type { Control } from "react-hook-form";
 import {
-  AppDatePicker,
+  AppCalendarPicker,
   AppImagePicker,
   AppTextInput,
 } from "@/components/forms";
@@ -76,7 +76,7 @@ export function DaysTogetherSheet({
           />
         </Box>
 
-        <AppDatePicker
+        <AppCalendarPicker
           control={control}
           name="startDate"
           label="Ngày bắt đầu"

@@ -23,6 +23,7 @@ export function useAppNavigation() {
 
   return {
     goBoot: () => navigate(appPaths.booting, { replace: true }),
+    goBack: () => navigate(-1),
     goAlbum: () => navigate(appPaths.album),
     goAnniversaries: () => navigate(appPaths.anniversaries),
     goCalendar: () => navigate(appPaths.calendar),

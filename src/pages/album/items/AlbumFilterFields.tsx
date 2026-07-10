@@ -1,7 +1,7 @@
 import { Controller, type Control } from "react-hook-form";
 import { Input } from "zmp-ui";
 
-import { AppDatePicker } from "@/components/forms";
+import { AppCalendarPicker } from "@/components/forms";
 import { Box } from "@/components/zaui";
 import { keepDigits } from "./albumFilterHelpers";
 import type {
@@ -18,7 +18,7 @@ export function AlbumFilterFields({ control, mode }: Props) {
   if (mode === "day") {
     return (
       <Box className="mt-3">
-        <AppDatePicker
+        <AppCalendarPicker
           control={control}
           name="date"
           label="Ngày"
@@ -31,13 +31,13 @@ export function AlbumFilterFields({ control, mode }: Props) {
   if (mode === "range") {
     return (
       <Box className="mt-3 gap-2">
-        <AppDatePicker
+        <AppCalendarPicker
           control={control}
           name="startDate"
           label="Từ ngày"
           placeholder="Bắt đầu"
         />
-        <AppDatePicker
+        <AppCalendarPicker
           control={control}
           name="endDate"
           label="Đến ngày"

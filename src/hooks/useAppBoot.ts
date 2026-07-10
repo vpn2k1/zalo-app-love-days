@@ -15,12 +15,12 @@ async function resolveSpaceAfterBoot(
   appUser: AppUser,
   queryClient: QueryClient,
   navigation: ReturnType<typeof useAppNavigation>,
-) {  
+) {
   setCurrentUserCache(queryClient, appUser);
   const data = await coupleService.getCoupleByUser(appUser.id);
   queryClient.setQueryData(coupleQueryKey(appUser.id), data);
   if (!data) {
-    navigation.goSetup({ replace: true });
+    navigation.goPermission({ replace: true });
     return;
   }
   navigation.goHome({ replace: true });
@@ -50,8 +50,6 @@ export function useAppBoot() {
 
     restoreCurrentUser()
       .then((user) => {
-        console.log("asdasd");
-
         if (!user) {
           navigation.goPermission({ replace: true });
           return;

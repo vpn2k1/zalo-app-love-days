@@ -21,6 +21,9 @@ export function useAnniversaryMutation() {
       await queryClient.invalidateQueries({
         queryKey: anniversariesQueryKey(coupleData?.couple.id),
       });
+      await queryClient.invalidateQueries({
+        queryKey: ["memory"],
+      });
     },
     onError: (error) => {
       console.error(error);

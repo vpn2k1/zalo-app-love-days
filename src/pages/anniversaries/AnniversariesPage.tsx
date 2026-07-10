@@ -13,7 +13,7 @@ import { useAnniversariesPage } from "./modules/useAnniversariesPage";
 export function AnniversariesPage() {
   const { user } = useCurrentUser();
   const { coupleData, coupleQuery } = useCoupleData();
-  const { anniversariesQuery } = useAnniversariesData();
+  const { anniversariesQuery } = useAnniversariesData(coupleData?.couple.id ?? '');
 
   if (!user) return null;
 
@@ -48,7 +48,7 @@ function AnniversariesPageContent({
         setFilter={page.setFilter}
         setQuery={page.setQuery}
         totalCount={page.totalCount}
-        onBack={navigation.goHome}
+        onBack={navigation.goBack}
       />
       <AnniversariesPageList
         canLoadMore={page.canLoadMore}

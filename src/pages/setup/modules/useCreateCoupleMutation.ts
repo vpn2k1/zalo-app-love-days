@@ -3,6 +3,7 @@ import { useAppSnackbar } from "@/components/zaui";
 import { anniversariesQueryKey, coupleQueryKey } from "@/config/queryKeys";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
 import { useCurrentUserActions } from "@/hooks/useCurrentUser";
+import { authService } from "@/services/authService";
 import { coupleService } from "@/services/coupleService";
 import type { CoupleWithMembers, SetupCoupleInput } from "@/types/couple";
 import type { AppUser } from "@/types/user";
@@ -18,24 +19,25 @@ export function useCreateCoupleMutation({ user }: Input) {
   const navigation = useAppNavigation();
   const createCoupleMutation = useMutation({
     mutationKey: ["createCouple"],
-    mutationFn: (input: SetupCoupleInput) => {
+    mutationFn: async (input: SetupCoupleInput) => {
       if (!user) throw new Error("Bạn cần cấp quyền Zalo trước.");
-      return coupleService.createCouple(user, input);
+      const appUser = await ensureSavedUser(user);
+      const coupleData = await coupleService.createCouple(appUser, input);
+      return { appUser, coupleData };
     },
-    onSuccess: async (data, input) => {
-      if (!user?.id) return;
-      const owner = data.members.find(
-        (member) => member.user_id === user?.id,
+    onSuccess: async ({ appUser, coupleData }, input) => {
+      const owner = coupleData.members.find(
+        (member) => member.user_id === appUser.id,
       )?.user;
-      let nextUser: AppUser = { ...user, display_name: input.displayName };
+      let nextUser: AppUser = { ...appUser, display_name: input.displayName };
       if (owner) nextUser = owner;
       setUser(nextUser);
       queryClient.setQueryData<CoupleWithMembers>(
-        coupleQueryKey(user.id),
-        data,
+        coupleQueryKey(appUser.id),
+        coupleData,
       );
       await queryClient.invalidateQueries({
-        queryKey: anniversariesQueryKey(data.couple.id),
+        queryKey: anniversariesQueryKey(coupleData.couple.id),
       });
       navigation.goHome({ replace: true });
     },
@@ -48,4 +50,12 @@ export function useCreateCoupleMutation({ user }: Input) {
   });
 
   return { createCoupleMutation };
+}
+
+function ensureSavedUser(user: AppUser) {
+  return authService.upsertZaloUser({
+    id: user.zalo_user_id,
+    name: user.name,
+    avatar: user.avatar_url || undefined,
+  });
 }

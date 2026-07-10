@@ -50,7 +50,7 @@ export function EditProfilePage() {
     <FormProvider {...methods}>
       <Page className="app-setup-page">
         <AppStatusBar />
-        <EditProfileHeader />
+        <EditProfileHeader onBack={navigation.goBack} />
         <EditProfilePhoto />
         <EditProfileFields />
         <EditProfileDangerZone
@@ -59,7 +59,7 @@ export function EditProfilePage() {
         />
         <EditProfileActions
           loading={saveProfile.isPending}
-          onBack={navigation.goHome}
+          onBack={navigation.goBack}
           onSave={methods.handleSubmit(submit)}
         />
 

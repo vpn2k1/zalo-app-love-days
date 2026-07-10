@@ -9,6 +9,7 @@ import { inviteService } from "@/services/inviteService";
 import type { CoupleWithMembers } from "@/types/couple";
 import { getInviteCodeFromUrl } from "@/utils/invite";
 import { anniversariesQueryKey, coupleQueryKey } from "@/config/queryKeys";
+import type { AppUser } from "@/types/user";
 
 export function useInviteAcceptance() {
   const [inviteConflict, setInviteConflict] = useState("");
@@ -21,7 +22,7 @@ export function useInviteAcceptance() {
   const acceptInviteMutation = useMutation({
     mutationFn: async () => {
       if (!inviteCode) throw new Error("Thiếu mã lời mời.");
-      const appUser = getUser() ?? (await authorizeCurrentUser());
+      const appUser = await getSavedInviteUser(getUser());
       setUser(appUser);
       const existingCouple = await coupleService.getCoupleByUser(appUser.id);
       if (existingCouple) {
@@ -69,4 +70,10 @@ export function useInviteAcceptance() {
   };
 
   return { acceptInviteMutation, closeInviteConflict, inviteConflict };
+}
+
+function getSavedInviteUser(user: AppUser | null) {
+  if (user?.id) return Promise.resolve(user);
+
+  return authorizeCurrentUser();
 }

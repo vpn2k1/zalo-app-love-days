@@ -1,11 +1,15 @@
-import { Box, Icon, Text } from "@/components/zaui";
+import { AppPageHeader } from "@/components/AppPageHeader";
 
-export function EditProfileHeader() {
+type Props = {
+  onBack: () => void;
+};
+
+export function EditProfileHeader({ onBack }: Props) {
   return (
-    <Box>
-      <Text className="app-opening-copy">
-        Cập nhật tên và ảnh đại diện sẽ hiện trên trang kỷ niệm.
-      </Text>
-    </Box>
+    <AppPageHeader
+      title="Hồ sơ của bạn"
+      subtitle="Cập nhật tên và ảnh đại diện trên trang kỷ niệm"
+      onBack={onBack}
+    />
   );
 }

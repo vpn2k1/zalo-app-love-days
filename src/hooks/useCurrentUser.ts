@@ -46,12 +46,32 @@ export function useCurrentUserActions() {
 const DEFAULT_USER_NAME = "Người dùng Zalo";
 
 export async function authorizeCurrentUser() {
+  const zaloProfile = await authorizeZaloUserProfile();
+  return authService.upsertZaloUser(zaloProfile);
+}
+
+export async function authorizePendingCurrentUser(): Promise<AppUser> {
+  const profile = await authorizeZaloUserProfile();
+  return {
+    id: "",
+    zalo_user_id: profile.id,
+    name: profile.name,
+    avatar_url: profile.avatar,
+    display_name: profile.name,
+  };
+}
+
+async function authorizeZaloUserProfile(): Promise<ZaloUserProfile> {
   try {
     await zaloService.requestUserInfoPermission();
   } catch {
-    // User denied — continue with defaults
+    return getDefaultZaloProfile();
   }
-  return resolveZaloUser();
+
+  const profile = await zaloService.tryGetUserProfile();
+  if (!profile) return getDefaultZaloProfile();
+
+  return profile;
 }
 
 export async function restoreCurrentUser(): Promise<AppUser | null> {
@@ -59,15 +79,13 @@ export async function restoreCurrentUser(): Promise<AppUser | null> {
   return authService.findUserByZaloId(zaloUserId);
 }
 
-async function resolveZaloUser() {
+async function getDefaultZaloProfile(): Promise<ZaloUserProfile> {
   const zaloUserId = await zaloService.getZaloUserId();
-  const profile = await zaloService.tryGetUserProfile();
-  const zaloProfile: ZaloUserProfile = profile ?? {
+  return {
     id: zaloUserId,
     name: DEFAULT_USER_NAME,
     avatar: undefined,
   };
-  return authService.upsertZaloUser(zaloProfile);
 }
 
 
