@@ -9,12 +9,24 @@ import {
 import { Box, Text } from "@/components/zaui";
 
 import type { MemoryDetailFormValues } from "../types/MemoryDetailPageType";
+import { SyntheticEvent } from "react";
 
 export function MemoryDetailFields() {
   const { control } = useFormContext<MemoryDetailFormValues>();
-
+  const stopSheetEvent = (event: SyntheticEvent) => {
+    event.stopPropagation();
+  };
   return (
-    <Box className="rounded-[28px] border border-pink-100 bg-white/90 p-4 shadow-[0_14px_32px_rgba(201,47,103,0.08)]">
+    <Box
+      className="rounded-[28px] border border-pink-100 bg-white/90 p-4 shadow-[0_14px_32px_rgba(201,47,103,0.08)]"
+      style={{
+        scrollbarWidth: "none",
+        msOverflowStyle: "none",
+      }}
+      onClick={stopSheetEvent}
+      onPointerDown={stopSheetEvent}
+      onTouchStart={stopSheetEvent}
+    >
       <Box className="mb-4">
         <Text className="text-xs font-bold uppercase text-[#c45a86]">
           Thông tin chỉnh sửa
@@ -24,7 +36,12 @@ export function MemoryDetailFields() {
         </Text>
       </Box>
 
-      <Box className="grid gap-4">
+      <Box
+        className="grid gap-4"
+        onClick={stopSheetEvent}
+        onPointerDown={stopSheetEvent}
+        onTouchStart={stopSheetEvent}
+      >
         <AppTextInput
           control={control}
           name="title"

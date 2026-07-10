@@ -94,9 +94,9 @@ export function DaysTogetherButton() {
       payload.startDate = values.startDate;
     }
     if (
-      (values.backgroundUrl || "") !== (coupleData.couple.background_url || "")
+      (values.background || "") !== (coupleData.couple.background_url || "")
     ) {
-      payload.backgroundUrl = values.backgroundUrl || null;
+      payload.backgroundUrl = values.background || null;
     }
 
     const updatedCouple = await updateCouple.mutateAsync(payload);
