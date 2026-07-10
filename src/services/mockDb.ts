@@ -7,6 +7,12 @@ import type { Couple, CoupleMember, CoupleWithMembers, SetupCoupleInput } from "
 import type { AppUser, ZaloUserProfile } from "@/types/user";
 import { mockInviteDb } from "./mockInviteDb";
 import { now, readState, uid, writeState } from "./mockDbState";
+import {
+  createStartDateAnniversaryDraft,
+  isStartDateAnniversary,
+  isStartDateAnniversaryDraft,
+  START_DATE_ANNIVERSARY_NOTE,
+} from "./startDateAnniversary";
 
 export const mockDb = {
   findUserByZaloId(zaloUserId: string): AppUser | null {
@@ -76,6 +82,8 @@ export const mockDb = {
     if (!membership) return null;
     const couple = state.couples.find((item) => item.id === membership.couple_id);
     if (!couple) return null;
+    syncStartDateAnniversary(state.anniversaries, couple);
+    writeState(state);
     const members = state.members
       .filter((member) => member.couple_id === couple.id)
       .map((member) => ({
@@ -122,7 +130,12 @@ export const mockDb = {
       joined_at: now(),
       user: updatedUser,
     };
-    const anniversaries = input.anniversaries.map((draft) =>
+    const anniversaries = [
+      createStartDateAnniversaryDraft(input.startDate),
+      ...input.anniversaries.filter((draft) => {
+        return !isStartDateAnniversaryDraft(draft);
+      }),
+    ].map((draft) =>
       createAnniversary(couple.id, user.id, draft),
     );
     state.couples.push(couple);
@@ -138,6 +151,7 @@ export const mockDb = {
     if (!couple) throw new Error("Không tìm thấy Yêu.");
     couple.start_date = startDate;
     couple.updated_at = now();
+    syncStartDateAnniversary(state.anniversaries, couple);
     writeState(state);
     return couple;
   },
@@ -162,6 +176,7 @@ export const mockDb = {
 
     if (payload.startDate !== undefined) {
       couple.start_date = payload.startDate;
+      syncStartDateAnniversary(state.anniversaries, couple);
     }
     if (payload.backgroundUrl !== undefined) {
       couple.background_url = payload.backgroundUrl;
@@ -256,3 +271,27 @@ const createAnniversary = (
   created_by: userId,
   created_at: now(),
 });
+
+function syncStartDateAnniversary(
+  anniversaries: Anniversary[],
+  couple: Couple,
+) {
+  const existing = anniversaries.find((item) => {
+    return isStartDateAnniversary(item, couple.id);
+  });
+
+  if (existing) {
+    existing.date = couple.start_date;
+    existing.repeat_type = "yearly";
+    existing.note = existing.note || START_DATE_ANNIVERSARY_NOTE;
+    return;
+  }
+
+  anniversaries.push(
+    createAnniversary(
+      couple.id,
+      couple.created_by,
+      createStartDateAnniversaryDraft(couple.start_date),
+    ),
+  );
+}

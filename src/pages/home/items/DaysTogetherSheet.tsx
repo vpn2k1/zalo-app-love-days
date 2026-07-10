@@ -1,5 +1,7 @@
-import type { RefObject } from "react";
+import type { RefObject, SyntheticEvent } from "react";
 import type { Control } from "react-hook-form";
+
+import { BlockingLoadingOverlay } from "@/components/BlockingLoadingOverlay";
 import {
   AppCalendarPicker,
   AppImagePicker,
@@ -36,6 +38,10 @@ export function DaysTogetherSheet({
   onClose,
   onSave,
 }: Props) {
+  const stopSheetEvent = (event: SyntheticEvent) => {
+    event.stopPropagation();
+  };
+
   return (
     <AppSheet ref={sheetRef}>
       <Box
@@ -44,7 +50,14 @@ export function DaysTogetherSheet({
           scrollbarWidth: "none",
           msOverflowStyle: "none",
         }}
+        onClick={stopSheetEvent}
+        onPointerDown={stopSheetEvent}
+        onTouchStart={stopSheetEvent}
       >
+        <BlockingLoadingOverlay
+          show={Boolean(loading)}
+          message="Đang lưu thông tin không gian..."
+        />
         <Box className="mb-5 text-center">
           <Text className="mt-2 text-[13px] leading-5 text-[#716773]">
             Thay đổi thông tin không gian
@@ -54,7 +67,7 @@ export function DaysTogetherSheet({
         <Box className="rounded-[22px] border border-[rgba(134,97,124,0.18)] bg-white/70 p-3 shadow-[0_10px_28px_rgba(84,49,72,0.08)]">
           <AppImagePicker
             control={control}
-            name="backgroundUrl"
+            name="background"
             label="Ảnh nền"
             optional
           />
@@ -80,6 +93,8 @@ export function DaysTogetherSheet({
           control={control}
           name="startDate"
           label="Ngày bắt đầu"
+          endDate={new Date()}
+          maskClosable={false}
           required
         />
 

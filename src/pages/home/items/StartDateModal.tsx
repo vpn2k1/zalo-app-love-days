@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import { BlockingLoadingOverlay } from "@/components/BlockingLoadingOverlay";
 import { AppCalendarPicker } from "@/components/forms";
 import { AppModal } from "@/components/zaui";
 
@@ -60,10 +61,15 @@ export function StartDateModal({
         },
       ]}
     >
+      <BlockingLoadingOverlay
+        show={Boolean(loading)}
+        message="Đang lưu ngày kỷ niệm..."
+      />
       <AppCalendarPicker
         control={control}
         name="startDate"
         label="Ngày bắt đầu"
+        endDate={new Date()}
         required
       />
     </AppModal>

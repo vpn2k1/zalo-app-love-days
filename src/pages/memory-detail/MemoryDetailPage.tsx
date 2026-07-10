@@ -7,6 +7,7 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
 import type { Anniversary } from "@/types/anniversary";
 import { useState } from "react";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
+import { BlockingLoadingOverlay } from "@/components/BlockingLoadingOverlay";
 import { MemoryDetailFields } from "./items/MemoryDetailFields";
 import { MemoryDetailFooter } from "./items/MemoryDetailFooter";
 import { MemoryDetailHeader } from "./items/MemoryDetailHeader";
@@ -101,6 +102,10 @@ function MemoryDetailContent({
           loading={updateMutation.isPending}
           onBack={onBack}
           onSubmit={submit}
+        />
+        <BlockingLoadingOverlay
+          show={updateMutation.isPending}
+          message="Đang lưu kỷ niệm..."
         />
         {imageUrl && (
           <AppImageViewer

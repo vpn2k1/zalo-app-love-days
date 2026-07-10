@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
+import { BlockingLoadingOverlay } from "@/components/BlockingLoadingOverlay";
 import { Box, Text } from "@/components/zaui";
 import type { AppSheetRef } from "@/components/zaui";
 import { useUpdateCoupleMutation } from "@/hooks/mutations/useUpdateCoupleMutation";
@@ -99,10 +100,12 @@ export function DaysTogetherButton() {
     }
 
     const updatedCouple = await updateCouple.mutateAsync(payload);
+    if (!updatedCouple) return;
     reset({
       ...values,
       startDate: updatedCouple.start_date,
       backgroundUrl: updatedCouple.background_url || "",
+      background: updatedCouple.background_url || "",
     });
     closeSheet();
   });
@@ -151,6 +154,10 @@ export function DaysTogetherButton() {
         startDate={startDate}
         onClose={closeSheet}
         onSave={saveDisplayInfo}
+      />
+      <BlockingLoadingOverlay
+        show={loading}
+        message="Đang lưu thông tin không gian..."
       />
     </Box>
   );

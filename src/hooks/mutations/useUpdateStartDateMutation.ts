@@ -3,7 +3,7 @@ import { useAppSnackbar } from "@/components/zaui";
 import { useCoupleData } from "@/hooks/useCoupleData";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { coupleService } from "@/services/coupleService";
-import { coupleQueryKey } from "@/config/queryKeys";
+import { anniversariesQueryKey, coupleQueryKey } from "@/config/queryKeys";
 
 export function useUpdateStartDateMutation() {
   const queryClient = useQueryClient();
@@ -18,7 +18,13 @@ export function useUpdateStartDateMutation() {
     },
     onSuccess: async () => {
       if (!user) return;
+      if (!coupleData) return;
+
       await queryClient.invalidateQueries({ queryKey: coupleQueryKey(user.id) });
+      await queryClient.invalidateQueries({
+        queryKey: anniversariesQueryKey(coupleData.couple.id),
+      });
+      await queryClient.invalidateQueries({ queryKey: ["memory"] });
     },
     onError: (error) => {
       console.error(error);

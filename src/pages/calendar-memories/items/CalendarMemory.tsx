@@ -4,6 +4,8 @@ import type { Anniversary } from "@/types/anniversary";
 import { formatDate } from "@/utils/date";
 
 import { useGetMemory } from "../modules/useGetMemory";
+import { useWatch } from "react-hook-form";
+import { TCalendarMemoriesPage } from "../CalendarMemoriesPage";
 
 type Props = {
   onCreate: () => void;
@@ -12,6 +14,11 @@ type Props = {
 export function CalendarMemory({ onCreate }: Props) {
   const navigation = useAppNavigation();
   const memoryQuery = useGetMemory();
+  const date = useWatch<TCalendarMemoriesPage, "selectDate">({
+    name: "selectDate",
+    exact: true,
+  });
+  if (!date) return null;
 
   if (memoryQuery.isPending) {
     return <CalendarMemoryLoading />;

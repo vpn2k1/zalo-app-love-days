@@ -150,6 +150,16 @@ textarea,
   overscroll-behavior: contain;
 }
 
+.app-image-picker-sheet-host .zaui-sheet-content,
+.app-image-picker-sheet-host .zaui-sheet-content-main,
+.app-image-picker-sheet-host .zaui-sheet-content-handler-wrapper {
+  background: transparent;
+}
+
+.app-image-picker-sheet-host .zaui-sheet-content-handler-wrapper {
+  display: none;
+}
+
 .zaui-sidebar,
 [class*="zaui-sidebar"],
 [class*="zmp-sidebar"] {

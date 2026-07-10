@@ -23,10 +23,7 @@ export function HomePageBody() {
         onEditProfile={home.onEditProfile}
         avatar={home.currentPerson.avatar}
       />
-      <HomeHero
-        backgroundUrl={home.backgroundUrl}
-        onChangeBackground={home.onUpdateBackground}
-      />
+      <HomeHero backgroundUrl={home.backgroundUrl} />
       <CouplePeoplePanel
         currentPerson={home.currentPerson}
         partnerPerson={home.partnerPerson}

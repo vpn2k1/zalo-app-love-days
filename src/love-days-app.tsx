@@ -2,7 +2,7 @@ import { AnimationRoutes, AppSpinner, Box, Route } from "@/components/zaui";
 import { appPaths } from "@/hooks/useAppNavigation";
 import { useAppBoot } from "@/hooks/useAppBoot";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
-import { usePhysicalBackGuard } from "@/hooks/usePhysicalBackGuard";
+import { useRouteScrollReset } from "@/hooks/useRouteScrollReset";
 import { AlbumPage } from "@/pages/album/AlbumPage";
 import { AnniversariesPage } from "@/pages/anniversaries/AnniversariesPage";
 import { CalendarMemoriesPage } from "@/pages/calendar-memories/CalendarMemoriesPage";
@@ -15,7 +15,7 @@ import { SetupPage } from "@/pages/setup/SetupPage";
 
 export function LoveDaysApp() {
   useAuthGuard();
-  usePhysicalBackGuard();
+  useRouteScrollReset();
 
   return (
     <AnimationRoutes>

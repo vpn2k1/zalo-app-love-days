@@ -54,6 +54,7 @@ function getHomeDisplayFormValues({
     partnerName: partner?.display_name || partner?.name || "",
     startDate: coupleData.couple.start_date,
     coupleId: coupleData.couple.id,
+    background: coupleData.couple.background_url || "",
   };
 }
 

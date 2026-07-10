@@ -1,4 +1,4 @@
-import { useCallback, useMemo, type PointerEvent } from "react";
+import { useCallback, useMemo, type PointerEvent, type SyntheticEvent } from "react";
 import {
   Controller,
   type Control,
@@ -124,6 +124,9 @@ function AppDatePickerField<TFormValues extends FieldValues>({
     changeVisible(false);
     onBlur();
   }, [changeVisible, onBlur]);
+  const stopPickerEvent = useCallback((event: SyntheticEvent) => {
+    event.stopPropagation();
+  }, []);
 
   const selectDate = useCallback(
     (date: Date) => {
@@ -136,8 +139,8 @@ function AppDatePickerField<TFormValues extends FieldValues>({
   );
 
   return (
-    <Box>
-      <Box onPointerDown={openCalendar}>
+    <Box onClick={stopPickerEvent} onTouchStart={stopPickerEvent}>
+      <Box onClick={stopPickerEvent} onPointerDown={openCalendar}>
         <AppTextInput
           control={control}
           disabled={disabled}
@@ -160,7 +163,9 @@ function AppDatePickerField<TFormValues extends FieldValues>({
       >
         <Box
           className="app-day-picker"
+          onClick={stopPickerEvent}
           onPointerDown={(event) => event.stopPropagation()}
+          onTouchStart={stopPickerEvent}
         >
           <AppCalendarPickerCalendar
             selectedDate={selectedDate}

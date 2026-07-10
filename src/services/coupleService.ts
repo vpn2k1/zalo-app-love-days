@@ -1,6 +1,11 @@
 import { mockDb } from "@/services/mockDb";
 import { isMockMode, supabase } from "@/services/supabaseClient";
 import { mediaService } from "@/services/mediaService";
+import {
+  createStartDateAnniversaryDraft,
+  isStartDateAnniversaryDraft,
+  syncSupabaseStartDateAnniversary,
+} from "@/services/startDateAnniversary";
 import type { Anniversary } from "@/types/anniversary";
 import type { Couple, CoupleMember, CoupleWithMembers, SetupCoupleInput } from "@/types/couple";
 import type { AppUser } from "@/types/user";
@@ -38,7 +43,11 @@ export const coupleService = {
       return mockDb.getCoupleByUser(userId);
     }
 
-    return getSupabaseCoupleByUser(userId);
+    const coupleData = await getSupabaseCoupleByUser(userId);
+    if (!coupleData) return null;
+
+    await syncSupabaseStartDateAnniversary(coupleData.couple);
+    return coupleData;
   },
 
   async createCouple(
@@ -109,9 +118,15 @@ export const coupleService = {
       .single();
     if (memberError) throw memberError;
 
-    if (input.anniversaries.length > 0) {
+    const anniversaryDrafts = [
+      createStartDateAnniversaryDraft(input.startDate),
+      ...input.anniversaries.filter((item) => {
+        return !isStartDateAnniversaryDraft(item);
+      }),
+    ];
+    if (anniversaryDrafts.length > 0) {
       const anniversaries = await Promise.all(
-        input.anniversaries.map(async (item, index) => ({
+        anniversaryDrafts.map(async (item, index) => ({
           couple_id: couple.id,
           title: item.title,
           date: item.date,
@@ -148,6 +163,7 @@ export const coupleService = {
       .single();
 
     if (error) throw error;
+    await syncSupabaseStartDateAnniversary(data as Couple);
     return data as Couple;
   },
 
@@ -186,6 +202,9 @@ export const coupleService = {
       .single();
 
     if (error) throw error;
+    if (payload.startDate !== undefined) {
+      await syncSupabaseStartDateAnniversary(data as Couple);
+    }
     return data as Couple;
   },
 

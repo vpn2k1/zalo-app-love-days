@@ -15,7 +15,7 @@ const queryClient = new QueryClient({
 const Layout = () => {
   return (
     <App theme="light">
-      <ZMPRouter memoryRouter>
+      <ZMPRouter>
         <QueryClientProvider client={queryClient}>
           <AppSnackbarProvider>
             <LoveDaysApp />

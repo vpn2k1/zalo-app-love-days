@@ -1,13 +1,17 @@
 import { chooseImage } from "zmp-sdk";
 
 export type ImageSourceType = "album" | "camera";
+export type ImageCameraType = "back" | "front";
 
-export async function pickImagePath(sourceType?: ImageSourceType) {
+export async function pickImagePath(
+  sourceType?: ImageSourceType,
+  cameraType: ImageCameraType = "back",
+) {
   const sources = getImageSources(sourceType);
   const result = await chooseImage({
     count: 1,
     sourceType: sources,
-    cameraType: "back",
+    cameraType,
   });
   return result.filePaths[0] || result.tempFiles[0]?.path || "";
 }

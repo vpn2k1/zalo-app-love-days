@@ -1,38 +1,19 @@
-import { useFormContext } from "react-hook-form";
-import {
-  AppImageViewer,
-  Box,
-  Icon,
-  Text,
-  useAppSnackbar,
-} from "@/components/zaui";
-import { pickImagePath } from "@/utils/imagePicker";
-import type { HomeDisplayFormValues } from "../types/HomePageType";
+import { useState } from "react";
+
+import { AppImageViewer, Box, Icon, Text } from "@/components/zaui";
 
 type Props = {
   backgroundUrl?: string | null;
-  onChangeBackground?: (url: string) => Promise<unknown>;
 };
 
-export function HomeHero({ backgroundUrl, onChangeBackground }: Props) {
-  const snackbar = useAppSnackbar();
-  const { setValue } = useFormContext<HomeDisplayFormValues>();
+export function HomeHero({ backgroundUrl }: Props) {
+  const [viewerVisible, setViewerVisible] = useState(false);
 
-  const changeBackground = async (e?: React.MouseEvent) => {
-    e?.stopPropagation();
-    try {
-      const image = await pickImagePath();
-      if (!image) return;
-
-      if (onChangeBackground) {
-        await onChangeBackground(image);
-      } else {
-        setValue("backgroundUrl", image, { shouldDirty: true });
-      }
-    } catch (error) {
-      console.error(error);
-      snackbar.showError("Không thể chọn ảnh nền. Vui lòng thử lại.");
-    }
+  const openViewer = () => {
+    setViewerVisible(true);
+  };
+  const closeViewer = () => {
+    setViewerVisible(false);
   };
 
   if (backgroundUrl) {
@@ -41,6 +22,7 @@ export function HomeHero({ backgroundUrl, onChangeBackground }: Props) {
         className="relative mb-3.5 flex min-h-44 cursor-pointer flex-col justify-end overflow-hidden rounded-[18px] px-[22px] pb-[22px] pt-[55px]"
         role="button"
         tabIndex={0}
+        onClick={openViewer}
       >
         <img
           alt=""
@@ -48,14 +30,11 @@ export function HomeHero({ backgroundUrl, onChangeBackground }: Props) {
           src={backgroundUrl}
         />
         <Box className="absolute inset-0 bg-gradient-to-b from-[#3c2435]/5 to-[#3c2435]/45" />
-        <AppImageViewer images={[backgroundUrl]} />
-        <Box
-          className="absolute right-3 top-3 grid size-8 place-items-center rounded-full bg-black/30 text-white backdrop-blur-md"
-          role="button"
-          onClick={changeBackground}
-        >
-          <Icon icon="zi-camera" size={16} />
-        </Box>
+        <AppImageViewer
+          images={[backgroundUrl]}
+          visible={viewerVisible}
+          onClose={closeViewer}
+        />
       </Box>
     );
   }
@@ -65,7 +44,6 @@ export function HomeHero({ backgroundUrl, onChangeBackground }: Props) {
       className="mb-3.5 min-h-44 overflow-hidden rounded-[18px] bg-[radial-gradient(circle_at_3%_86%,#fff0da_0_15%,transparent_28%),radial-gradient(circle_at_97%_12%,#ffc9df_0_18%,transparent_30%),linear-gradient(132deg,#f2d7ff_0%,#ead9ff_48%,#ffddea_100%)] px-[22px] pb-[22px] pt-[55px]"
       role="button"
       tabIndex={0}
-      onClick={changeBackground}
     >
       <Box className="mx-auto mb-2.5 grid size-[50px] place-items-center text-[32px] text-white">
         <Icon icon="zi-user" />

@@ -10,6 +10,7 @@ export function SetupPageDatePicker() {
         control={control}
         name="startDate"
         label="Ngày bắt đầu"
+        endDate={new Date()}
         required
       />
     </Box>

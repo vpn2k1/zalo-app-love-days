@@ -28,6 +28,7 @@ export type Person = {
 
 export type HomeDisplayFormValues = {
   backgroundUrl: string;
+  background: string;
   currentAvatar: string;
   currentName: string;
   memories: Anniversary[];

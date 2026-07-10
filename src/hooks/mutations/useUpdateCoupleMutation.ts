@@ -4,7 +4,7 @@ import { useCoupleData } from "@/hooks/useCoupleData";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { coupleService } from "@/services/coupleService";
 import { mediaService } from "@/services/mediaService";
-import { coupleQueryKey } from "@/config/queryKeys";
+import { anniversariesQueryKey, coupleQueryKey } from "@/config/queryKeys";
 
 export type UpdateCouplePayload = {
   startDate?: string;
@@ -47,7 +47,13 @@ export function useUpdateCoupleMutation() {
     },
     onSuccess: async () => {
       if (!user) return;
+      if (!coupleData) return;
+
       await queryClient.invalidateQueries({ queryKey: coupleQueryKey(user.id) });
+      await queryClient.invalidateQueries({
+        queryKey: anniversariesQueryKey(coupleData.couple.id),
+      });
+      await queryClient.invalidateQueries({ queryKey: ["memory"] });
     },
     onError: (error) => {
       console.error(error);

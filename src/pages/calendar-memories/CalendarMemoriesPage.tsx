@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 
 import { AppStatusBar } from "@/components/AppStatusBar";
+import { BlockingLoadingOverlay } from "@/components/BlockingLoadingOverlay";
 import { Page } from "@/components/zaui";
 import { useAnniversariesData } from "@/hooks/useAnniversariesData";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
@@ -33,7 +34,7 @@ export function CalendarMemoriesPage() {
   const addAnniversaryMutation = useAnniversaryMutation();
   const method = useForm<TCalendarMemoriesPage>({
     defaultValues: {
-      selectDate: new Date(),
+      selectDate: null,
       viewDate: new Date(),
       anniversaries: [],
     },
@@ -70,6 +71,10 @@ export function CalendarMemoriesPage() {
           visible={composerVisible}
           onAdd={(draft) => addAnniversaryMutation.mutateAsync(draft)}
           onClose={closeComposer}
+        />
+        <BlockingLoadingOverlay
+          show={addAnniversaryMutation.isPending}
+          message="Đang lưu kỷ niệm..."
         />
       </Page>
     </FormProvider>

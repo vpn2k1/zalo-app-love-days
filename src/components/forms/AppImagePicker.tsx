@@ -1,7 +1,10 @@
 import { requiredRule } from "@/components/forms/formRules";
-import { AppActionSheet, Box, Button, Icon, Text } from "@/components/zaui";
+import { AppSheet, Box } from "@/components/zaui";
 import { pickImagePath, type ImageSourceType } from "@/utils/imagePicker";
 import { ReactNode, useState } from "react";
+import { AppCameraCapture } from "./AppCameraCapture";
+import { AppImagePickerPreview } from "./AppImagePickerPreview";
+import { AppImagePickerSheet } from "./AppImagePickerSheet";
 import {
   Controller,
   type Control,
@@ -62,6 +65,7 @@ function AppImagePickerField<TFormValues extends FieldValues>({
   customs,
 }: AppImagePickerFieldProps<TFormValues>) {
   const [error, setError] = useState("");
+  const [cameraVisible, setCameraVisible] = useState(false);
   const [sheetVisible, setSheetVisible] = useState(false);
   const value = String(field.value ?? "");
   const errorText = error || fieldState.error?.message;
@@ -95,80 +99,57 @@ function AppImagePickerField<TFormValues extends FieldValues>({
       setError("Không thể chọn ảnh. Vui lòng thử lại.");
     }
   };
+  const openCamera = async () => {
+    setSheetVisible(false);
+    setError("");
+    await waitForSheetDismiss();
+    setCameraVisible(true);
+  };
+  const closeCamera = () => {
+    setCameraVisible(false);
+  };
+  const captureImage = (imageUrl: string) => {
+    field.onChange(imageUrl);
+    field.onBlur();
+    closeCamera();
+  };
 
   return (
     <Box>
       {!customs && (
-        <Box className="app-image-picker">
-          <Text className="form-label">{labelText}</Text>
-          <Box className="app-image-picker-frame">
-            <Box
-              className="app-image-picker-trigger"
-              aria-label={getPickerAriaLabel(value)}
-              onClick={openSheet}
-            >
-              <ImagePickerContent label={label} value={value} />
-            </Box>
-            {value && (
-              <Button
-                className="app-image-picker-clear"
-                htmlType="button"
-                aria-label="Xóa ảnh"
-                icon={<Icon icon="zi-close" />}
-                variant="tertiary"
-                onClick={clearImage}
-              />
-            )}
-          </Box>
-
-          {errorText && <Text className="app-error-text">{errorText}</Text>}
-        </Box>
+        <AppImagePickerPreview
+          errorText={errorText}
+          label={label}
+          labelText={labelText}
+          value={value}
+          onClear={clearImage}
+          onOpen={openSheet}
+        />
       )}
       {!!customs && (
-        <Box aria-label={getPickerAriaLabel(value)} onClick={openSheet}>
+        <Box aria-label={getCustomPickerAriaLabel(value)} onClick={openSheet}>
           {customs}
         </Box>
       )}
-      <AppActionSheet
-        actions={[
-          {
-            key: "album",
-            text: "Chọn ảnh",
-            close: true,
-            onClick: () => pickImage("album"),
-          },
-          {
-            key: "camera",
-            text: "Chụp ảnh",
-            close: true,
-            onClick: () => pickImage("camera"),
-          },
-        ]}
+      <AppSheet
+        className="app-image-picker-sheet-host"
         visible={sheetVisible}
         unmountOnClose={false}
         onClose={closeSheet}
+      >
+        <AppImagePickerSheet
+          onClose={closeSheet}
+          onPickAlbum={() => pickImage("album")}
+          onOpenCamera={openCamera}
+        />
+      </AppSheet>
+      <AppCameraCapture
+        visible={cameraVisible}
+        onCapture={captureImage}
+        onClose={closeCamera}
       />
     </Box>
   );
-}
-
-type ImagePickerContentProps = {
-  label: string;
-  value: string;
-};
-
-function ImagePickerContent({ label, value }: ImagePickerContentProps) {
-  if (!value) {
-    return (
-      <Box className="app-image-picker-empty">
-        <Box className="app-image-picker-plus">
-          <Icon icon="zi-plus" />
-        </Box>
-      </Box>
-    );
-  }
-
-  return <img alt={label} className="app-image-picker-image" src={value} />;
 }
 
 function getLabelText(label: string, optional?: boolean) {
@@ -177,7 +158,7 @@ function getLabelText(label: string, optional?: boolean) {
   return `${label} (không bắt buộc)`;
 }
 
-function getPickerAriaLabel(value: string) {
+function getCustomPickerAriaLabel(value: string) {
   if (!value) return "Chọn ảnh";
 
   return "Đổi ảnh";
