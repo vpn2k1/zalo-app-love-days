@@ -2,12 +2,14 @@ import { Box, Icon, Text } from "@/components/zaui";
 import type { ZmpIconName } from "../types/HomePageType";
 
 type Props = {
+  onQuickAddMemory: () => void;
   onOpenCalendar: () => void;
   onViewAlbums: () => void;
   onViewMemories: () => void;
 };
 
 export function QuickActionGrid({
+  onQuickAddMemory,
   onOpenCalendar,
   onViewAlbums,
   onViewMemories,
@@ -17,13 +19,14 @@ export function QuickActionGrid({
     label: string;
     onClick: () => void | Promise<unknown>;
   }> = [
-    { icon: "zi-note", label: "Kỷ niệm", onClick: onViewMemories },
+    { icon: "zi-camera", label: "Thêm", onClick: onQuickAddMemory },
+    { icon: "zi-favorite-list", label: "Kỷ niệm", onClick: onViewMemories },
     { icon: "zi-calendar", label: "Lịch", onClick: onOpenCalendar },
-    { icon: "zi-camera", label: "Bộ ảnh", onClick: onViewAlbums },
+    { icon: "zi-gallery", label: "Bộ ảnh", onClick: onViewAlbums },
   ];
 
   return (
-    <Box className="mb-4 grid grid-cols-3 gap-2.5">
+    <Box className="mb-4 grid grid-cols-4 gap-2">
       {actions.map((action, index) => (
         <Box
           key={action.label}
@@ -45,13 +48,11 @@ export function QuickActionGrid({
 }
 
 function getActionClassName(index: number) {
-  if (index === 1) {
-    return "grid h-[88px] min-w-0 place-items-center rounded-[22px] border border-white/70 bg-[radial-gradient(circle_at_3%_86%,#fff0da_0_15%,transparent_28%)] bg-[#efe6ff] px-2 py-3 text-[#7d62d8] shadow-[0_12px_28px_rgba(84,49,72,0.08)]";
-  }
+  const base =
+    "grid h-[88px] min-w-0 place-items-center rounded-[22px] border border-white/70 bg-[radial-gradient(circle_at_3%_86%,#fff0da_0_15%,transparent_28%)] px-2 py-3 shadow-[0_12px_28px_rgba(84,49,72,0.08)]";
+  if (index === 1) return `${base} bg-white/90 text-[#d9467e]`;
+  if (index === 2) return `${base} bg-[#efe6ff] text-[#7d62d8]`;
+  if (index === 3) return `${base} bg-[#fff7eb] text-[#d77a32]`;
 
-  if (index === 2) {
-    return "grid h-[88px] min-w-0 place-items-center rounded-[22px] border border-white/70 bg-[radial-gradient(circle_at_3%_86%,#fff0da_0_15%,transparent_28%)] bg-[#fff7eb] px-2 py-3 text-[#d77a32] shadow-[0_12px_28px_rgba(84,49,72,0.08)]";
-  }
-
-  return "grid h-[88px] min-w-0 place-items-center rounded-[22px] border border-white/70 bg-[radial-gradient(circle_at_3%_86%,#fff0da_0_15%,transparent_28%)] bg-white/90 px-2 py-3 text-[#d9467e] shadow-[0_12px_28px_rgba(84,49,72,0.08)]";
+  return `${base} bg-[#ffe4ef] text-[#d9467e]`;
 }

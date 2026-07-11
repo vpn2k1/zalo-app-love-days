@@ -13,6 +13,7 @@ type Props = {
   setQuery: (query: string) => void;
   totalCount: number;
   onBack: () => void;
+  onCreateMemory: () => void;
 };
 
 const FILTERS: Array<{ label: string; value: AnniversaryFilter }> = [
@@ -29,6 +30,7 @@ export function AnniversariesPageHeader({
   setQuery,
   totalCount,
   onBack,
+  onCreateMemory,
 }: Props) {
   return (
     <Box>
@@ -37,6 +39,14 @@ export function AnniversariesPageHeader({
         subtitle={`${filteredCount}/${totalCount} ngày đáng nhớ`}
         onBack={onBack}
       />
+      <Button
+        className="mb-3 min-h-11 w-full rounded-2xl border-none font-[850]"
+        htmlType="button"
+        variant="primary"
+        onClick={onCreateMemory}
+      >
+        Tạo kỷ niệm mới
+      </Button>
       <Input.Search
         label="Tìm kiếm"
         placeholder="Tên hoặc ghi chú kỷ niệm"

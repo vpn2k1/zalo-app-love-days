@@ -2,6 +2,7 @@ import type { ComponentProps } from "react";
 import { Icon } from "@/components/zaui";
 import type { Anniversary, AnniversaryDraft } from "@/types/anniversary";
 import type { CoupleWithMembers } from "@/types/couple";
+import type { CalendarDateValue } from "@/types/date";
 import type { AppUser } from "@/types/user";
 
 export type HomePageProps = {
@@ -36,6 +37,18 @@ export type HomeDisplayFormValues = {
   partnerName: string;
   startDate: string;
   coupleId: string;
+};
+
+export type DaysTogetherFormValues = {
+  background: string;
+  startDate: CalendarDateValue;
+};
+
+export type ElapsedTime = {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
 };
 
 export type ZmpIconName = ComponentProps<typeof Icon>["icon"];

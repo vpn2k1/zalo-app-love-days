@@ -126,6 +126,8 @@ textarea,
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  padding-bottom: var(--app-keyboard-height, 0px);
+  transition: padding-bottom 160ms ease-out;
 }
 
 .zaui-routes .zaui-routes-item::-webkit-scrollbar {
@@ -868,6 +870,21 @@ textarea,
 .app-setup-action .zaui-btn:disabled {
   opacity: 0.5;
   box-shadow: none;
+}
+
+.app-edit-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 16px;
+  padding-bottom: max(0px, env(safe-area-inset-bottom));
+}
+
+.app-edit-actions .zaui-btn:first-child {
+  background: #fff7fb;
+  color: #d3457d;
+  box-shadow: 0 10px 22px rgba(105, 62, 86, 0.12);
 }
 
 .app-image-picker {

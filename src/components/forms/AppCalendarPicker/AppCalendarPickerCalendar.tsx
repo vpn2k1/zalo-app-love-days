@@ -55,7 +55,6 @@ export function AppCalendarPickerCalendar({
   return (
     <Box>
       <Calendar
-        fullscreen
         value={viewDate}
         startOfWeek={1}
         locale="vi-VN"

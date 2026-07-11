@@ -49,6 +49,7 @@ function AnniversariesPageContent({
         setQuery={page.setQuery}
         totalCount={page.totalCount}
         onBack={navigation.goBack}
+        onCreateMemory={navigation.goCreateMemory}
       />
       <AnniversariesPageList
         canLoadMore={page.canLoadMore}

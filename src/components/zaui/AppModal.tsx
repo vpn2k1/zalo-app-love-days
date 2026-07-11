@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import { Modal } from "zmp-ui";
 import type { ModalProps } from "zmp-ui/modal";
 
@@ -12,12 +13,13 @@ export function AppModal({
   unmountOnClose = true,
   ...modalProps
 }: Props) {
-  return (
+  return createPortal(
     <Modal
       {...modalProps}
       mask={mask}
       maskClosable={maskClosable}
       unmountOnClose={unmountOnClose}
-    />
+    />,
+    document.body,
   );
 }

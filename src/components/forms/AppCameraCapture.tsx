@@ -28,7 +28,6 @@ type Props = {
   onCapture: (imageUrl: string) => void;
   onClose: () => void;
 };
-
 const DEFAULT_ZOOM_RANGE: CameraZoomRange = { max: 1, min: 1, step: 0.1 };
 
 export function AppCameraCapture({ visible, onCapture, onClose }: Props) {
@@ -149,7 +148,6 @@ export function AppCameraCapture({ visible, onCapture, onClose }: Props) {
       setError("Không thể chụp ảnh. Vui lòng thử lại.");
       return;
     }
-
     onCapture(frame.data);
     close();
   };
@@ -163,28 +161,34 @@ export function AppCameraCapture({ visible, onCapture, onClose }: Props) {
   };
   return createPortal(
     <Box
-      className="fixed inset-0 z-[9999] overflow-hidden bg-[#4b4b4b] text-white"
+      className="fixed inset-0 z-[9999] overflow-hidden bg-[#fff4f8] text-[#3c2435]"
       role="dialog"
       aria-modal="true"
       onClick={(event) => event.stopPropagation()}
       onPointerDown={(event) => event.stopPropagation()}
     >
-      <Box className="flex h-full min-h-0 flex-col px-4 pb-[calc(22px+env(safe-area-inset-bottom))] pt-[max(34px,calc(20px+env(safe-area-inset-top)))] [@media(max-height:680px)]:px-3 [@media(max-height:680px)]:pb-[calc(12px+env(safe-area-inset-bottom))] [@media(max-height:680px)]:pt-[max(16px,env(safe-area-inset-top))]">
+      <Box className="mx-auto flex h-full w-[min(100%,430px)] flex-col px-5 pb-[calc(26px+env(safe-area-inset-bottom))] pt-[max(22px,calc(14px+env(safe-area-inset-top)))]">
         <AppCameraCaptureHeader onClick={close} />
 
-        <AppCameraPreview error={error} loading={loading} ready={ready} videoRef={videoRef} />
-
-        <AppCameraCaptureControls
+        <AppCameraPreview
+          error={error}
+          loading={loading}
           ready={ready}
-          torchOn={torchOn}
-          torchSupported={torchSupported}
-          zoom={zoom}
-          zoomSupported={zoomSupported}
-          onCapture={capture}
-          onFlip={flipCamera}
-          onToggleTorch={toggleTorch}
-          onZoomChange={changeZoom}
+          videoRef={videoRef}
         />
+        <Box className="grid flex-1 content-center gap-6">
+          <AppCameraCaptureControls
+            ready={ready}
+            torchOn={torchOn}
+            torchSupported={torchSupported}
+            zoom={zoom}
+            zoomSupported={zoomSupported}
+            onCapture={capture}
+            onFlip={flipCamera}
+            onToggleTorch={toggleTorch}
+            onZoomChange={changeZoom}
+          />
+        </Box>
       </Box>
     </Box>,
     document.body,

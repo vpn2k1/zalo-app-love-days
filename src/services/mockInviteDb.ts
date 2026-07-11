@@ -21,6 +21,14 @@ export const mockInviteDb = {
       throw new Error("Yêu này đã có đối tác, không thể tạo thêm lời mời.");
     }
 
+    const pendingInvite = state.invites.find((invite) => {
+      if (invite.couple_id !== coupleId) return false;
+      if (invite.status !== "pending") return false;
+
+      return new Date(invite.expires_at).getTime() >= Date.now();
+    });
+    if (pendingInvite) return pendingInvite;
+
     const invite: PartnerInvite = {
       id: uid("invite"),
       couple_id: coupleId,
@@ -44,9 +52,10 @@ export const mockInviteDb = {
   ): CoupleWithMembers {
     const state = readState();
     const invite = state.invites.find((item) => item.invite_code === inviteCode);
-    const existingCouple = getCoupleByUser(user.id);
-    if (existingCouple) return acceptExistingCouple(existingCouple, invite);
     validateInvite(invite);
+
+    const existingCouple = getCoupleByUser(user.id);
+    if (existingCouple?.couple.id === invite.couple_id) return existingCouple;
 
     const roomMembers = state.members.filter((member) => member.couple_id === invite.couple_id);
     const hasPartner = roomMembers.some(
@@ -56,6 +65,10 @@ export const mockInviteDb = {
       state.invites = cancelPendingInvites(state.invites, invite.couple_id);
       writeState(state);
       throw new Error(inviteConflictMessages.targetMatchedOther);
+    }
+
+    if (existingCouple) {
+      removeSingleMemberCouple(state, existingCouple);
     }
 
     state.members.push({
@@ -84,14 +97,19 @@ export const mockInviteDb = {
   },
 };
 
-function acceptExistingCouple(
+function removeSingleMemberCouple(
+  state: ReturnType<typeof readState>,
   existingCouple: CoupleWithMembers,
-  invite?: PartnerInvite,
 ) {
-  if (invite && existingCouple.couple.id === invite.couple_id) {
-    return existingCouple;
+  if (existingCouple.members.length >= 2) {
+    throw new Error(inviteConflictMessages.currentUserMatchedOther);
   }
-  throw new Error(inviteConflictMessages.currentUserMatchedOther);
+
+  const coupleId = existingCouple.couple.id;
+  state.anniversaries = state.anniversaries.filter((item) => item.couple_id !== coupleId);
+  state.invites = state.invites.filter((item) => item.couple_id !== coupleId);
+  state.members = state.members.filter((item) => item.couple_id !== coupleId);
+  state.couples = state.couples.filter((item) => item.id !== coupleId);
 }
 
 function validateInvite(invite?: PartnerInvite): asserts invite is PartnerInvite {

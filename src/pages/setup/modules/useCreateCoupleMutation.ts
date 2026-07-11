@@ -5,6 +5,7 @@ import { useAppNavigation } from "@/hooks/useAppNavigation";
 import { useCurrentUserActions } from "@/hooks/useCurrentUser";
 import { authService } from "@/services/authService";
 import { coupleService } from "@/services/coupleService";
+import { inviteService } from "@/services/inviteService";
 import type { CoupleWithMembers, SetupCoupleInput } from "@/types/couple";
 import type { AppUser } from "@/types/user";
 
@@ -23,6 +24,7 @@ export function useCreateCoupleMutation({ user }: Input) {
       if (!user) throw new Error("Bạn cần cấp quyền Zalo trước.");
       const appUser = await ensureSavedUser(user);
       const coupleData = await coupleService.createCouple(appUser, input);
+      await inviteService.createInvite(coupleData.couple.id, appUser.id);
       return { appUser, coupleData };
     },
     onSuccess: async ({ appUser, coupleData }, input) => {

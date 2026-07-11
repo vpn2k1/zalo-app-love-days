@@ -1408,8 +1408,11 @@
 
 .app-edit-actions {
   display: grid;
-  grid-template-columns: 0.8fr 1.2fr;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
+  margin-top: auto;
+  padding-top: 16px;
+  padding-bottom: max(0px, env(safe-area-inset-bottom));
 }
 
 .app-edit-actions .zaui-btn:first-child {
@@ -1665,7 +1668,7 @@
 
 .app-popup-actions {
   display: grid;
-  grid-template-columns: 0.9fr 1.1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
   margin-top: 16px;
 }

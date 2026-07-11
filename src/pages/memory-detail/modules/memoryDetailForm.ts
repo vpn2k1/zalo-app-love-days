@@ -1,5 +1,18 @@
 import type { Anniversary } from "@/types/anniversary";
+import { todayDateString } from "@/utils/date";
 import type { MemoryDetailFormValues } from "../types/MemoryDetailPageType";
+
+export function getCreateMemoryDetailDefaultValues(
+  imageUrl = "",
+): MemoryDetailFormValues {
+  return {
+    date: todayDateString(),
+    image_url: imageUrl,
+    note: "",
+    repeat_type: "yearly",
+    title: "",
+  };
+}
 
 export function getMemoryDetailDefaultValues(
   memory: Anniversary,
@@ -33,6 +46,13 @@ export function getCanUpdate(
   if (loading) return false;
   if (!isValid) return false;
   if (!isDirty) return false;
+
+  return true;
+}
+
+export function getCanCreate(isValid: boolean, loading: boolean) {
+  if (loading) return false;
+  if (!isValid) return false;
 
   return true;
 }

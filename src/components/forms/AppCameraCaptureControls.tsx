@@ -1,4 +1,5 @@
 import { Box, Button, Icon } from "@/components/zaui";
+import { AppCameraZoomControls } from "./AppCameraZoomControls";
 
 type Props = {
   ready: boolean;
@@ -14,19 +15,19 @@ type Props = {
 
 type ClickProps = { onClick: () => void };
 
-const ZOOM_PRESETS = [0.5, 1, 2];
-
 export function AppCameraCaptureHeader({ onClick }: ClickProps) {
   return (
-    <Box className="mb-4 flex items-center justify-between px-2 [@media(max-height:680px)]:mb-2">
-      <Button
-        htmlType="button"
-        variant="tertiary"
-        className="!size-12 !min-h-12 !min-w-12 rounded-full bg-white/12 p-0 text-white backdrop-blur-md [@media(max-height:680px)]:!size-10 [@media(max-height:680px)]:!min-h-10 [@media(max-height:680px)]:!min-w-10"
-        icon={<Icon icon="zi-close" />}
-        aria-label="Đóng camera"
+    <Box className="flex-1 flex items-center">
+      <Box
         onClick={onClick}
-      />
+        className="size-12 min-h-12 min-w-12 flex items-center justify-center rounded-2xl bg-white p-0 shadow-[0_12px_24px_rgba(84,49,72,0.12)]"
+      >
+        <Icon
+          icon="zi-close-circle-solid"
+          size={30}
+          className="text-[var(--love-primary)]"
+        />
+      </Box>
     </Box>
   );
 }
@@ -43,93 +44,48 @@ export function AppCameraCaptureControls({
   onZoomChange,
 }: Props) {
   return (
-    <>
-      <CameraZoomSlider
+    <Box className="grid gap-4">
+      <AppCameraZoomControls
         ready={ready}
         zoom={zoom}
         zoomSupported={zoomSupported}
         onZoomChange={onZoomChange}
       />
-      <Box className="grid grid-cols-3 place-items-center items-center pt-10 justify-between w-full">
-        <Box
-          className="size-14 min-h-14 min-w-14 rounded-full flex items-center justify-center"
-          // disabled={!ready || !torchSupported}
-          // onClick={onToggleTorch}
-        >
-          {/* <Icon icon="zi-radio-unchecked" /> */}
-        </Box>
-
-        <Box
-          onClick={onCapture}
-          className="size-14 min-h-14 min-w-14 bg-slate-50 rounded-full flex items-center justify-center"
-        >
-          <Box className="h-[50px] w-[50px] bg-[var(--love-primary)] rounded-full" />
-        </Box>
-
-        <Box
-          onClick={onFlip}
-          className="size-14 min-h-14 min-w-14 rounded-full flex items-center justify-center"
-        >
-          <Icon icon="zi-auto-solid" />
+      <Box className="rounded-[28px] bg-white/90 p-4 shadow-[0_14px_32px_rgba(201,47,103,0.1)]">
+        <Box className="flex flex-col-3 items-center justify-around">
+          <TorchButton
+            active={torchOn}
+            disabled={!ready || !torchSupported}
+            onClick={onToggleTorch}
+          />
+          <CaptureButton ready={ready} onClick={onCapture} />
+          <IconButton
+            icon="zi-auto-solid"
+            label="Đổi camera"
+            onClick={onFlip}
+          />
         </Box>
       </Box>
-    </>
-  );
-}
-
-type ZoomProps = {
-  ready: boolean;
-  zoom: number;
-  zoomSupported: boolean;
-  onZoomChange: (value: number) => void;
-};
-
-function CameraZoomSlider({
-  ready,
-  zoom,
-  zoomSupported,
-  onZoomChange,
-}: ZoomProps) {
-  if (!zoomSupported) {
-    return <CameraZoomPlaceholder />;
-  }
-
-  if (!ready) {
-    return <CameraZoomPlaceholder />;
-  }
-
-  return (
-    <Box className="mx-auto mt-5 grid w-full max-w-[240px] grid-cols-3 gap-2 rounded-full bg-white/12 p-1.5 backdrop-blur-md [@media(max-height:680px)]:mt-2">
-      {ZOOM_PRESETS.map((value) => (
-        <ZoomPresetButton
-          key={value}
-          active={isActiveZoom(zoom, value)}
-          value={value}
-          onClick={onZoomChange}
-        />
-      ))}
     </Box>
   );
 }
 
-function ZoomPresetButton({
-  active,
-  value,
-  onClick,
-}: {
-  active: boolean;
-  value: number;
-  onClick: (value: number) => void;
-}) {
+function CaptureButton({ ready, onClick }: { ready: boolean } & ClickProps) {
+  const capture = () => {
+    if (!ready) return;
+
+    onClick();
+  };
+
   return (
-    <Button
-      htmlType="button"
-      variant="tertiary"
-      className={getZoomPresetClassName(active)}
-      onClick={() => onClick(value)}
+    <Box
+      aria-disabled={!ready}
+      aria-label="Chụp ảnh"
+      className="!size-16 !min-h-16 !min-w-16 rounded-full bg-white p-1 shadow-[0_10px_22px_rgba(217,70,126,0.24)]"
+      onClick={capture}
     >
-      {formatZoom(value)}x
-    </Button>
+      <Box className="size-full rounded-full bg-[#d9467e]" />
+    </Box>
   );
 }
 
@@ -141,51 +97,58 @@ function TorchButton({
   active: boolean;
   disabled: boolean;
 } & ClickProps) {
+  const toggle = () => {
+    if (disabled) return;
+
+    onClick();
+  };
+
   return (
-    <Button
-      htmlType="button"
-      disabled={disabled}
-      variant="tertiary"
-      className={getTorchButtonClassName(active)}
+    <Box
+      aria-disabled={disabled}
       aria-label={getTorchAriaLabel(active)}
-      onClick={onClick}
+      onClick={toggle}
     >
-      Đèn
-    </Button>
+      <Box className={getTorchButtonClassName(active)}>
+        <Icon icon={getTorchIcon(active)} />
+      </Box>
+    </Box>
+  );
+}
+
+function IconButton({
+  icon,
+  label,
+  onClick,
+}: {
+  icon: "zi-auto-solid";
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <Box aria-label={label} onClick={onClick}>
+      <Box className="mx-auto grid size-12 place-items-center rounded-full bg-[#fff0f6] text-[#d9467e]">
+        <Icon icon={icon} />
+      </Box>
+    </Box>
   );
 }
 
 function getTorchButtonClassName(active: boolean) {
-  const base =
-    "!size-14 !min-h-14 !min-w-14 rounded-full p-0 text-xs font-bold backdrop-blur-md [@media(max-height:680px)]:!size-12 [@media(max-height:680px)]:!min-h-12 [@media(max-height:680px)]:!min-w-12";
-  if (active) return `${base} bg-[#ffc400] text-[#3c2435]`;
+  const base = "mx-auto grid size-12 place-items-center rounded-full";
+  if (active) return `${base} bg-[#d9467e] text-white`;
 
-  return `${base} bg-white/12 text-white`;
+  return `${base} bg-[#fff0f6] text-[#d9467e]`;
 }
 
-function formatZoom(value: number) {
-  return Number(value.toFixed(1)).toString();
-}
+function getTorchIcon(active: boolean) {
+  if (active) return "zi-radio-checked";
 
-function getZoomPresetClassName(active: boolean) {
-  const base = "!h-8 rounded-full p-0 text-xs font-bold";
-  if (active) return `${base} bg-white text-[#3c2435]`;
-
-  return `${base} bg-transparent text-white`;
-}
-
-function isActiveZoom(current: number, value: number) {
-  return Math.abs(current - value) < 0.01;
+  return "zi-radio-unchecked";
 }
 
 function getTorchAriaLabel(active: boolean) {
   if (active) return "Tắt đèn";
 
   return "Bật đèn";
-}
-
-function CameraZoomPlaceholder() {
-  return (
-    <Box className="mx-auto mt-5 h-10 w-full max-w-[320px] rounded-full bg-white/10 px-4 [@media(max-height:680px)]:mt-2 [@media(max-height:680px)]:h-8" />
-  );
 }

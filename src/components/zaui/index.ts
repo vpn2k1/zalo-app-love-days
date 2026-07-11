@@ -1,3 +1,8 @@
+import { createElement, useLayoutEffect, type ComponentProps } from "react";
+import { Page as ZmpPage } from "zmp-ui";
+
+import { scheduleRouteScrollReset } from "@/utils/scroll";
+
 export {
   App,
   AnimationRoutes,
@@ -6,7 +11,6 @@ export {
   Button,
   Calendar,
   Icon,
-  Page,
   Route,
   SnackbarProvider,
   Text,
@@ -24,3 +28,11 @@ export { AppSnackbarProvider } from "@/components/zaui/AppSnackbarProvider";
 export { AppSpinner } from "@/components/zaui/AppSpinner";
 export { AppSwiper } from "@/components/zaui/AppSwiper";
 export { useAppSnackbar } from "@/components/zaui/useAppSnackbar";
+
+export function Page(props: ComponentProps<typeof ZmpPage>) {
+  useLayoutEffect(() => {
+    return scheduleRouteScrollReset();
+  }, []);
+
+  return createElement(ZmpPage, props);
+}

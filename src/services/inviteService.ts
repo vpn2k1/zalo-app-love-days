@@ -3,10 +3,7 @@ import { isMockMode, supabase } from "@/services/supabaseClient";
 import { inviteConfig } from "@/config/invite";
 import { buildInvitePath, buildInviteUrl } from "@/utils/invite";
 import { coupleService } from "@/services/coupleService";
-import {
-  getInviteErrorMessage,
-  inviteConflictMessages,
-} from "@/services/inviteErrors";
+import { getInviteErrorMessage, inviteConflictMessages } from "@/services/inviteErrors";
 import { zaloService } from "@/services/zaloService";
 import type { Couple, CoupleMember, CoupleWithMembers } from "@/types/couple";
 import type { PartnerInvite } from "@/types/invite";
@@ -24,10 +21,7 @@ const getCoupleMembers = async (coupleId: string): Promise<CoupleMember[]> => {
   if (error) throw error;
   return (data ?? []) as CoupleMember[];
 };
-
-const getCoupleWithMembers = async (
-  coupleId: string,
-): Promise<CoupleWithMembers> => {
+const getCoupleWithMembers = async (coupleId: string): Promise<CoupleWithMembers> => {
   if (!supabase) throw new Error("Supabase chưa được cấu hình.");
 
   const { data: couple, error: coupleError } = await supabase
@@ -43,7 +37,10 @@ const getCoupleWithMembers = async (
   };
 };
 
-const cancelPendingInvitesForCouple = async (coupleId: string, exceptInviteId?: string) => {
+const cancelPendingInvitesForCouple = async (
+  coupleId: string,
+  exceptInviteId?: string,
+) => {
   if (!supabase) return;
 
   let query = supabase
@@ -76,6 +73,18 @@ export const inviteService = {
     }
 
     await ensureCoupleCanInvite(coupleId);
+
+    const { data: existingInvite, error: existingInviteError } = await supabase
+      .from("partner_invites")
+      .select("*")
+      .eq("couple_id", coupleId)
+      .eq("status", "pending")
+      .gte("expires_at", new Date().toISOString())
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (existingInviteError) throw existingInviteError;
+    if (existingInvite) return existingInvite as PartnerInvite;
 
     const inviteCode = crypto.randomUUID().split("-").join("").slice(0, 12);
     const { data, error } = await supabase
@@ -132,15 +141,6 @@ export const inviteService = {
       .eq("invite_code", inviteCode)
       .maybeSingle();
     if (inviteError) throw inviteError;
-
-    const existingCouple = await coupleService.getCoupleByUser(user.id);
-    if (existingCouple) {
-      if (invite && existingCouple.couple.id === invite.couple_id) {
-        return existingCouple;
-      }
-      throw new Error(inviteConflictMessages.currentUserMatchedOther);
-    }
-
     if (!invite || invite.status !== "pending") {
       throw new Error(getInviteErrorMessage(invite as PartnerInvite | null));
     }
@@ -153,13 +153,22 @@ export const inviteService = {
       throw new Error("Lời mời đã hết hạn.");
     }
 
+    const existingCouple = await coupleService.getCoupleByUser(user.id);
+    if (existingCouple && existingCouple.couple.id === invite.couple_id) {
+      return existingCouple;
+    }
     const members = await getCoupleMembers(invite.couple_id);
     const hasPartner = members.some((member) => member.role === "partner" || member.side === "right");
     if (hasPartner || members.length >= 2) {
       await cancelPendingInvitesForCouple(invite.couple_id);
       throw new Error(inviteConflictMessages.targetMatchedOther);
     }
-
+    if (existingCouple && existingCouple.members.length >= 2) {
+      throw new Error(inviteConflictMessages.currentUserMatchedOther);
+    }
+    if (existingCouple) {
+      await coupleService.leaveCouple(existingCouple.couple.id);
+    }
     const { error: memberError } = await supabase
       .from("couple_members")
       .insert({

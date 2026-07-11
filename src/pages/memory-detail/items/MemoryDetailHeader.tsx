@@ -2,12 +2,29 @@ import { AppPageHeader } from "@/components/AppPageHeader";
 
 import type { MemoryDetailFormProps } from "../types/MemoryDetailPageType";
 
-export function MemoryDetailHeader({ memory, onBack }: MemoryDetailFormProps) {
+export function MemoryDetailHeader({
+  memory,
+  mode,
+  onBack,
+}: MemoryDetailFormProps) {
   return (
     <AppPageHeader
-      title="Chi tiết kỷ niệm"
-      subtitle={memory.title}
+      title={getTitle(mode)}
+      subtitle={getSubtitle(mode, memory?.title)}
       onBack={onBack}
     />
   );
+}
+
+function getTitle(mode: MemoryDetailFormProps["mode"]) {
+  if (mode === "create") return "Tạo kỷ niệm";
+
+  return "Chi tiết kỷ niệm";
+}
+
+function getSubtitle(mode: MemoryDetailFormProps["mode"], title?: string) {
+  if (mode === "create") return "Lưu lại một ngày đáng nhớ của hai bạn";
+  if (title) return title;
+
+  return "Kỷ niệm của hai bạn";
 }

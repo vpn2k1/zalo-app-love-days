@@ -11,7 +11,7 @@ type Props = {
 
 export function AppCameraPreview({ error, loading, ready, videoRef }: Props) {
   return (
-    <Box className="relative mx-auto min-h-0 w-full max-w-[430px] flex-1 overflow-hidden rounded-[44px] bg-black [@media(max-height:680px)]:rounded-[30px]">
+    <Box className="relative aspect-square w-full overflow-hidden rounded-3xl bg-black shadow-[0_18px_42px_rgba(84,49,72,0.16)]">
       <video
         ref={videoRef}
         autoPlay
@@ -22,7 +22,7 @@ export function AppCameraPreview({ error, loading, ready, videoRef }: Props) {
       {(loading || error) && (
         <Box className="absolute inset-0 z-10 grid place-items-center bg-black/45 px-6 text-center">
           {loading && <AppSpinner />}
-          {error && <Text className="mt-3 text-sm text-white">{error}</Text>}
+          {error && <Text className="text-sm font-bold text-white">{error}</Text>}
         </Box>
       )}
     </Box>

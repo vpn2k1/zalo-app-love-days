@@ -115,7 +115,7 @@ function AppDatePickerField<TFormValues extends FieldValues>({
       event.stopPropagation();
       if (disabled) return;
 
-      changeVisible(true);
+      requestAnimationFrame(() => changeVisible(true));
     },
     [disabled, changeVisible],
   );

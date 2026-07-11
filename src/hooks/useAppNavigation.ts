@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 import { useNavigate } from "@/components/zaui";
 
 export const appPaths = {
@@ -14,6 +16,8 @@ export const appPaths = {
   setup: "/setup",
 } as const;
 
+export const quickMemoryImageStorageKey = "love-days.quick-memory-image";
+
 type NavigateOptions = {
   replace?: boolean;
 };
@@ -21,7 +25,7 @@ type NavigateOptions = {
 export function useAppNavigation() {
   const navigate = useNavigate();
 
-  return {
+  return useMemo(() => ({
     goBoot: () => navigate(appPaths.booting, { replace: true }),
     goBack: () => navigate(-1),
     goAlbum: () => navigate(appPaths.album),
@@ -29,11 +33,22 @@ export function useAppNavigation() {
     goCalendar: () => navigate(appPaths.calendar),
     goEdit: () => navigate(appPaths.edit),
     goHome: (options?: NavigateOptions) => navigate(appPaths.home, options),
-    goMemory: (memoryId: string) =>
-      navigate(`${appPaths.memory}?id=${encodeURIComponent(memoryId)}`),
+    goCreateMemory: (imageUrl?: string) => {
+      if (imageUrl) {
+        sessionStorage.setItem(quickMemoryImageStorageKey, imageUrl);
+        navigate(`${appPaths.memory}?type=create&quickImage=1`);
+        return;
+      }
+
+      navigate(`${appPaths.memory}?type=create`);
+    },
+    goMemory: (memoryId: string) => {
+      navigate(`${appPaths.memory}?type=update&id=${encodeURIComponent(memoryId)}`);
+    },
     goInvite: (options?: NavigateOptions) => navigate(appPaths.invite, options),
-    goPermission: (options?: NavigateOptions) =>
-      navigate(appPaths.permission, options),
+    goPermission: (options?: NavigateOptions) => {
+      navigate(appPaths.permission, options);
+    },
     goSetup: (options?: NavigateOptions) => navigate(appPaths.setup, options),
-  };
+  }), [navigate]);
 }

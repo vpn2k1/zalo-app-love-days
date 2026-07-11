@@ -1,6 +1,8 @@
 import { useCallback, useState } from "react";
 import type { DatePickerProps } from "zmp-ui/date-picker";
 
+import type { CalendarDateValue } from "@/types/date";
+
 export function useModalVisible(
   defaultOpen: boolean,
   onVisibilityChange?: (visible: boolean) => void,
@@ -33,12 +35,12 @@ export function parseDateValue(value: unknown): Date | undefined {
   return date;
 }
 
-export function formatDateValue(date: Date): string {
+export function formatDateValue(date: Date): CalendarDateValue {
   const year = date.getFullYear();
   const month = `${date.getMonth() + 1}`.padStart(2, "0");
   const day = `${date.getDate()}`.padStart(2, "0");
 
-  return `${year}-${month}-${day}`;
+  return `${year}-${month}-${day}` as CalendarDateValue;
 }
 
 export function formatDisplayValue(

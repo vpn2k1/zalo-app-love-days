@@ -1,7 +1,10 @@
+import { memo } from "react";
+
 import { AnimationRoutes, AppSpinner, Box, Route } from "@/components/zaui";
 import { appPaths } from "@/hooks/useAppNavigation";
 import { useAppBoot } from "@/hooks/useAppBoot";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
+import { useKeyboardViewport } from "@/hooks/useKeyboardViewport";
 import { useRouteScrollReset } from "@/hooks/useRouteScrollReset";
 import { AlbumPage } from "@/pages/album/AlbumPage";
 import { AnniversariesPage } from "@/pages/anniversaries/AnniversariesPage";
@@ -15,6 +18,7 @@ import { SetupPage } from "@/pages/setup/SetupPage";
 
 export function LoveDaysApp() {
   useAuthGuard();
+  useKeyboardViewport();
   useRouteScrollReset();
 
   return (
@@ -35,11 +39,12 @@ export function LoveDaysApp() {
   );
 }
 
-function BootRoute() {
+const BootRoute = memo(function BootRoute() {
   useAppBoot();
+
   return (
     <Box className="boot-screen">
       <AppSpinner />
     </Box>
   );
-}
+});

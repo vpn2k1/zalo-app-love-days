@@ -1,3 +1,4 @@
+import { type SyntheticEvent } from "react";
 import { useFormContext } from "react-hook-form";
 
 import {
@@ -9,13 +10,17 @@ import {
 import { Box, Text } from "@/components/zaui";
 
 import type { MemoryDetailFormValues } from "../types/MemoryDetailPageType";
-import { SyntheticEvent } from "react";
 
-export function MemoryDetailFields() {
+type Props = {
+  dateDisabled: boolean;
+};
+
+export function MemoryDetailFields({ dateDisabled }: Props) {
   const { control } = useFormContext<MemoryDetailFormValues>();
   const stopSheetEvent = (event: SyntheticEvent) => {
     event.stopPropagation();
   };
+
   return (
     <Box
       className="rounded-[28px] border border-pink-100 bg-white/90 p-4 shadow-[0_14px_32px_rgba(201,47,103,0.08)]"
@@ -52,6 +57,7 @@ export function MemoryDetailFields() {
         <Box className="grid grid-cols-1 gap-4">
           <AppCalendarPicker
             control={control}
+            disabled={dateDisabled}
             name="date"
             label="Ngày"
             required

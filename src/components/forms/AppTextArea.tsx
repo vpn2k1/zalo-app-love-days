@@ -1,6 +1,7 @@
 import { Controller, type Control, type FieldValues, type Path } from "react-hook-form";
 import { Input } from "zmp-ui";
 import type { TextAreaProps } from "zmp-ui/input";
+import { hideKeyboard } from "zmp-sdk";
 
 import { requiredRule } from "@/components/forms/formRules";
 
@@ -19,6 +20,11 @@ export function AppTextArea<TFormValues extends FieldValues>({
   required,
   ...textAreaProps
 }: Props<TFormValues>) {
+  const handleBlur = (onBlur: () => void) => {
+    onBlur();
+    void hideKeyboard().catch(() => undefined);
+  };
+
   return (
     <Controller
       control={control}
@@ -34,7 +40,7 @@ export function AppTextArea<TFormValues extends FieldValues>({
             name={field.name}
             value={(field.value ?? "") as string}
             onChange={field.onChange}
-            onBlur={field.onBlur}
+            onBlur={() => handleBlur(field.onBlur)}
             status={status}
             errorText={fieldState.error?.message ?? textAreaProps.errorText}
           />

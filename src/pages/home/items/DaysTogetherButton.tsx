@@ -1,123 +1,18 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useFormContext, useWatch } from "react-hook-form";
 import { BlockingLoadingOverlay } from "@/components/BlockingLoadingOverlay";
 import { Box, Text } from "@/components/zaui";
-import type { AppSheetRef } from "@/components/zaui";
-import { useUpdateCoupleMutation } from "@/hooks/mutations/useUpdateCoupleMutation";
-import { useCoupleData } from "@/hooks/useCoupleData";
-import { DaysTogetherSheet } from "./DaysTogetherSheet";
-import type { HomeDisplayFormValues } from "../types/HomePageType";
 
-type ElapsedTime = {
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-};
+import { useDaysTogether } from "../modules/useDaysTogether";
+import { DaysTogetherSheet } from "./DaysTogetherSheet";
 
 export function DaysTogetherButton() {
-  const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { isDirty },
-  } = useFormContext<HomeDisplayFormValues>();
-  const startDate = useWatch<HomeDisplayFormValues, "startDate">({
-    control,
-    name: "startDate",
-    exact: true,
-  });
-  const backgroundUrl = useWatch<HomeDisplayFormValues, "backgroundUrl">({
-    control,
-    name: "backgroundUrl",
-    exact: true,
-  });
-  const sheetRef = useRef<AppSheetRef>(null);
-  const [elapsed, setElapsed] = useState<ElapsedTime>({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
-
-  const { coupleData } = useCoupleData();
-  const updateCouple = useUpdateCoupleMutation();
-  const loading = updateCouple.isPending;
-
-  const startTime = useMemo(() => {
-    if (!startDate) return null;
-
-    const [y, m, d] = startDate.split("-").map(Number);
-    return new Date(y, m - 1, d).getTime();
-  }, [startDate]);
-
-  useEffect(() => {
-    if (!startTime) return;
-
-    const tick = () => {
-      const diff = Math.max(0, Date.now() - startTime);
-
-      const days = Math.floor(diff / (24 * 60 * 60 * 1000));
-      const rem = diff % (24 * 60 * 60 * 1000);
-
-      const hours = Math.floor(rem / (60 * 60 * 1000));
-      const rem2 = rem % (60 * 60 * 1000);
-
-      const minutes = Math.floor(rem2 / (60 * 1000));
-      const seconds = Math.floor((rem2 % (60 * 1000)) / 1000);
-
-      setElapsed({ days, hours, minutes, seconds });
-    };
-
-    tick();
-
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, [startTime]);
-
-  const openSheet = () => {
-    sheetRef.current?.open();
-  };
-
-  const closeSheet = () => {
-    sheetRef.current?.close();
-  };
-
-  const saveDisplayInfo = handleSubmit(async (values) => {
-    if (!isDirty || !coupleData) {
-      closeSheet();
-      return;
-    }
-
-    const payload: { startDate?: string; backgroundUrl?: string | null } = {};
-    if (values.startDate !== coupleData.couple.start_date) {
-      payload.startDate = values.startDate;
-    }
-    if (
-      (values.background || "") !== (coupleData.couple.background_url || "")
-    ) {
-      payload.backgroundUrl = values.background || null;
-    }
-
-    const updatedCouple = await updateCouple.mutateAsync(payload);
-    if (!updatedCouple) return;
-    reset({
-      ...values,
-      startDate: updatedCouple.start_date,
-      backgroundUrl: updatedCouple.background_url || "",
-      background: updatedCouple.background_url || "",
-    });
-    closeSheet();
-  });
-
-  if (!startDate) return null;
+  const daysTogether = useDaysTogether();
+  if (!daysTogether.startDate) return null;
 
   return (
     <Box
-      onClick={openSheet}
-      className="relative mb-3.5 w-full overflow-hidden rounded-[28px] bg-gradient-to-br from-[#fff7fb] via-white to-[#ffe4ef] px-5 py-6 text-center shadow-[0_18px_40px_rgba(217,70,126,0.18)] border border-white/80"
+      onClick={daysTogether.openSheet}
+      className="relative mb-3.5 w-full overflow-hidden rounded-[28px] border border-white/80 bg-gradient-to-br from-[#fff7fb] via-white to-[#ffe4ef] px-5 py-6 text-center shadow-[0_18px_40px_rgba(217,70,126,0.18)]"
     >
-      {/* Decorative blur circles */}
       <Box className="pointer-events-none absolute -left-8 -top-8 h-24 w-24 rounded-full bg-[#ffd1e3] opacity-60 blur-2xl" />
       <Box className="pointer-events-none absolute -bottom-10 -right-8 h-28 w-28 rounded-full bg-[#f9a8d4] opacity-40 blur-2xl" />
 
@@ -128,7 +23,7 @@ export function DaysTogetherButton() {
 
         <Box className="mt-3 flex min-w-0 flex-wrap items-end justify-center gap-2">
           <Text className="min-w-0 font-serif text-[clamp(40px,15vw,56px)] font-bold leading-none text-[#d9467e] drop-shadow-sm">
-            {elapsed.days.toLocaleString()}
+            {daysTogether.elapsed.days.toLocaleString()}
           </Text>
           <Text className="mb-1 text-[18px] font-semibold text-[#9b6b82]">
             ngày
@@ -136,27 +31,26 @@ export function DaysTogetherButton() {
         </Box>
 
         <Box className="mt-5 grid grid-cols-3 gap-1.5">
-          <TimeBox value={elapsed.hours} label="Giờ" />
-          <TimeBox value={elapsed.minutes} label="Phút" />
-          <TimeBox value={elapsed.seconds} label="Giây" />
+          <TimeBox value={daysTogether.elapsed.hours} label="Giờ" />
+          <TimeBox value={daysTogether.elapsed.minutes} label="Phút" />
+          <TimeBox value={daysTogether.elapsed.seconds} label="Giây" />
         </Box>
 
         <Text className="mt-4 text-[13px] font-medium text-[#a18495]">
-          Từ ngày {formatDate(startDate)}
+          Từ ngày {formatDate(daysTogether.startDate)}
         </Text>
       </Box>
       <DaysTogetherSheet
-        control={control}
-        elapsed={elapsed}
-        loading={loading}
-        disabled={!isDirty}
-        sheetRef={sheetRef}
-        startDate={startDate}
-        onClose={closeSheet}
-        onSave={saveDisplayInfo}
+        control={daysTogether.control}
+        elapsed={daysTogether.elapsed}
+        loading={daysTogether.loading}
+        disabled={daysTogether.disabled}
+        sheetRef={daysTogether.sheetRef}
+        onClose={daysTogether.closeSheet}
+        onSave={daysTogether.save}
       />
       <BlockingLoadingOverlay
-        show={loading}
+        show={daysTogether.loading}
         message="Đang lưu thông tin không gian..."
       />
     </Box>
@@ -177,6 +71,6 @@ function TimeBox({ value, label }: { value: number; label: string }) {
 }
 
 function formatDate(value: string) {
-  const [y, m, d] = value.split("-");
-  return `${d}/${m}/${y}`;
+  const [year, month, day] = value.split("-");
+  return `${day}/${month}/${year}`;
 }

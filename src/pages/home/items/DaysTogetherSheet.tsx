@@ -5,11 +5,10 @@ import { BlockingLoadingOverlay } from "@/components/BlockingLoadingOverlay";
 import {
   AppCalendarPicker,
   AppImagePicker,
-  AppTextInput,
 } from "@/components/forms";
 import { AppSheet, Box, Button, Text } from "@/components/zaui";
 import type { AppSheetRef } from "@/components/zaui";
-import type { HomeDisplayFormValues } from "../types/HomePageType";
+import type { DaysTogetherFormValues } from "../types/HomePageType";
 
 type ElapsedTime = {
   days: number;
@@ -19,12 +18,11 @@ type ElapsedTime = {
 };
 
 type Props = {
-  control: Control<HomeDisplayFormValues>;
+  control: Control<DaysTogetherFormValues>;
   elapsed: ElapsedTime;
   loading?: boolean;
   disabled?: boolean;
   sheetRef: RefObject<AppSheetRef>;
-  startDate: string;
   onClose: () => void;
   onSave: () => Promise<void>;
 };
@@ -42,10 +40,16 @@ export function DaysTogetherSheet({
     event.stopPropagation();
   };
 
+  const close = (event: SyntheticEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    onClose();
+  };
+
   return (
     <AppSheet ref={sheetRef}>
       <Box
-        className="px-5 pb-5 pt-2 overflow-y-auto overflow-x-hidden"
+        className="flex h-full min-h-0 flex-col overflow-hidden"
         style={{
           scrollbarWidth: "none",
           msOverflowStyle: "none",
@@ -58,56 +62,54 @@ export function DaysTogetherSheet({
           show={Boolean(loading)}
           message="Đang lưu thông tin không gian..."
         />
-        <Box className="mb-5 text-center">
-          <Text className="mt-2 text-[13px] leading-5 text-[#716773]">
-            Thay đổi thông tin không gian
-          </Text>
-        </Box>
+        <Box className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-5 pb-4 pt-2">
+          <Box className="mb-5 text-center">
+            <Text className="mt-2 text-[13px] leading-5 text-[#716773]">
+              Thay đổi thông tin không gian
+            </Text>
+          </Box>
 
-        <Box className="rounded-[22px] border border-[rgba(134,97,124,0.18)] bg-white/70 p-3 shadow-[0_10px_28px_rgba(84,49,72,0.08)]">
-          <AppImagePicker
+          <Box className="rounded-[22px] border border-[rgba(134,97,124,0.18)] bg-white/70 p-3 shadow-[0_10px_28px_rgba(84,49,72,0.08)]">
+            <AppImagePicker
+              control={control}
+              name="background"
+              label="Ảnh nền"
+              optional
+            />
+          </Box>
+
+          <Box className="my-5 grid grid-cols-2 gap-2 text-center min-[360px]:grid-cols-4">
+            <TimePill value={elapsed.days.toLocaleString()} label="Ngày" />
+            <TimePill
+              value={String(elapsed.hours).padStart(2, "0")}
+              label="Giờ"
+            />
+            <TimePill
+              value={String(elapsed.minutes).padStart(2, "0")}
+              label="Phút"
+            />
+            <TimePill
+              value={String(elapsed.seconds).padStart(2, "0")}
+              label="Giây"
+            />
+          </Box>
+
+          <AppCalendarPicker
             control={control}
-            name="background"
-            label="Ảnh nền"
-            optional
+            name="startDate"
+            defaultValue={new Date()}
+            label="Ngày bắt đầu"
+            maskClosable
+            required
           />
         </Box>
 
-        <Box className="my-5 grid grid-cols-2 gap-2 text-center min-[360px]:grid-cols-4">
-          <TimePill value={elapsed.days.toLocaleString()} label="Ngày" />
-          <TimePill
-            value={String(elapsed.hours).padStart(2, "0")}
-            label="Giờ"
-          />
-          <TimePill
-            value={String(elapsed.minutes).padStart(2, "0")}
-            label="Phút"
-          />
-          <TimePill
-            value={String(elapsed.seconds).padStart(2, "0")}
-            label="Giây"
-          />
-        </Box>
-
-        <AppCalendarPicker
-          control={control}
-          name="startDate"
-          label="Ngày bắt đầu"
-          endDate={new Date()}
-          maskClosable={false}
-          required
-        />
-
-        <Box className="mt-5 grid grid-cols-2 gap-3">
+        <Box className="grid flex-none grid-cols-2 gap-3 border-t border-pink-100 bg-white/80 px-5 pb-[calc(18px+env(safe-area-inset-bottom))] pt-3 backdrop-blur-md">
           <Button
             fullWidth
             htmlType="button"
             variant="secondary"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onClose();
-            }}
+            onClick={close}
           >
             Đóng
           </Button>
@@ -138,9 +140,4 @@ function TimePill({ value, label }: { value: string; label: string }) {
       </Text>
     </Box>
   );
-}
-
-function formatDate(value: string) {
-  const [y, m, d] = value.split("-");
-  return `${d}/${m}/${y}`;
 }

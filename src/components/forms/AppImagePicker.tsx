@@ -133,6 +133,7 @@ function AppImagePickerField<TFormValues extends FieldValues>({
       )}
       <AppSheet
         className="app-image-picker-sheet-host"
+        autoHeight
         visible={sheetVisible}
         unmountOnClose={false}
         onClose={closeSheet}

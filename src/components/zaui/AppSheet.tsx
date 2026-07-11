@@ -1,14 +1,12 @@
-import {
-  forwardRef,
-  useCallback,
-  useImperativeHandle,
-  useState,
-} from "react";
+import { forwardRef, useCallback, useImperativeHandle, useState } from "react";
 import type { SyntheticEvent } from "react";
 import { Sheet } from "zmp-ui";
 import type { SheetProps } from "zmp-ui/sheet";
 
-type Props = Omit<SheetProps, "autoHeight" | "mask" | "maskClosable" | "ref"> & {
+type Props = Omit<
+  SheetProps,
+  "autoHeight" | "mask" | "maskClosable" | "ref"
+> & {
   autoHeight?: SheetProps["autoHeight"];
   mask?: SheetProps["mask"];
   maskClosable?: SheetProps["maskClosable"];
@@ -19,16 +17,18 @@ export type AppSheetRef = {
   open: () => void;
 };
 
-export const AppSheet = forwardRef<AppSheetRef, Props>(function AppSheet({
-  autoHeight = true,
-  mask = true,
-  maskClosable = true,
-  swipeToClose = false,
-  unmountOnClose = true,
-  visible,
-  onClose,
-  ...sheetProps
-}: Props, ref) {
+export const AppSheet = forwardRef<AppSheetRef, Props>(function AppSheet(
+  {
+    mask = true,
+    maskClosable = true,
+    swipeToClose = false,
+    unmountOnClose = true,
+    visible,
+    onClose,
+    ...sheetProps
+  }: Props,
+  ref,
+) {
   const [internalVisible, setInternalVisible] = useState(false);
   const isControlled = visible !== undefined;
   const currentVisible = visible ?? internalVisible;
@@ -56,10 +56,10 @@ export const AppSheet = forwardRef<AppSheetRef, Props>(function AppSheet({
 
   return (
     <Sheet
-      {...sheetProps}
+    {...sheetProps}
       visible={currentVisible}
       onClose={handleClose}
-      autoHeight={autoHeight}
+      height={sheetProps.autoHeight ? undefined: "90dvh"}
       mask={mask}
       maskClosable={maskClosable}
       swipeToClose={swipeToClose}

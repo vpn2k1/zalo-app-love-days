@@ -1,18 +1,19 @@
 import type { Anniversary, UpcomingAnniversary } from "@/types/anniversary";
 import type { Couple } from "@/types/couple";
+import type { CalendarDateValue } from "@/types/date";
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
-export const todayDateString = () => {
+export const todayDateString = (): CalendarDateValue => {
   const now = new Date();
   return toDateInputValue(now);
 };
 
-export const toDateInputValue = (date: Date) => {
+export const toDateInputValue = (date: Date): CalendarDateValue => {
   const year = date.getFullYear();
   const month = `${date.getMonth() + 1}`.padStart(2, "0");
   const day = `${date.getDate()}`.padStart(2, "0");
-  return `${year}-${month}-${day}`;
+  return `${year}-${month}-${day}` as CalendarDateValue;
 };
 
 export const parseLocalDate = (value: string) => {

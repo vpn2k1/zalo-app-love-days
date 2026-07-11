@@ -119,6 +119,9 @@ export function CalendarMemoriesGrid() {
         startOfWeek={1}
         locale="vi-VN"
         dayOfWeekNameRender={renderDayOfWeekNameRender}
+        onPanelChange={(date) => {
+          setValue("viewDate", date);
+        }}
         fullCellRender={renderCalendarCell({
           lookup,
           selectedDate,
