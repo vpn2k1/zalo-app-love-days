@@ -62,7 +62,10 @@ export function CalendarMemoriesPage() {
         <AppStatusBar />
         <CalendarMemoriesHeader onBack={navigation.goBack} />
         <CalendarMemoriesGrid />
-        <CalendarMemory onCreate={openComposer} />
+        <CalendarMemory
+          loading={anniversariesQuery.isPending}
+          onCreate={openComposer}
+        />
         <CalendarSheet />
         <AnniversaryComposer
           defaultDate={selectedDateValue}

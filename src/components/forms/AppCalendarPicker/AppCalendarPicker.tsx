@@ -1,4 +1,4 @@
-import { useCallback, useMemo, type PointerEvent, type SyntheticEvent } from "react";
+import { useCallback, useMemo, type SyntheticEvent } from "react";
 import {
   Controller,
   type Control,
@@ -110,21 +110,25 @@ function AppDatePickerField<TFormValues extends FieldValues>({
   );
 
   const openCalendar = useCallback(
-    (event: PointerEvent<HTMLElement>) => {
+    (event: SyntheticEvent) => {
       event.preventDefault();
       event.stopPropagation();
       if (disabled) return;
 
-      requestAnimationFrame(() => changeVisible(true));
+      changeVisible(true);
     },
     [disabled, changeVisible],
   );
 
-  const closeCalendar = useCallback(() => {
+  const closeCalendar = useCallback((event?: SyntheticEvent) => {
+    event?.stopPropagation();
     changeVisible(false);
     onBlur();
   }, [changeVisible, onBlur]);
   const stopPickerEvent = useCallback((event: SyntheticEvent) => {
+    event.stopPropagation();
+  }, []);
+  const stopPickerPointerEvent = useCallback((event: SyntheticEvent) => {
     event.stopPropagation();
   }, []);
 
@@ -140,7 +144,7 @@ function AppDatePickerField<TFormValues extends FieldValues>({
 
   return (
     <Box onClick={stopPickerEvent} onTouchStart={stopPickerEvent}>
-      <Box onClick={stopPickerEvent} onPointerDown={openCalendar}>
+      <Box onClick={openCalendar} onPointerDown={stopPickerPointerEvent}>
         <AppTextInput
           control={control}
           disabled={disabled}

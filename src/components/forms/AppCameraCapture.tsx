@@ -13,7 +13,7 @@ type Props = {
   visible: boolean;
   onCapture: (imageUrl: string) => void;
   onClose: () => void;
-  onPickAlbum?: () => Promise<string>;
+  onPickAlbum: () => Promise<string>;
 };
 
 export function AppCameraCapture({
@@ -48,17 +48,15 @@ export function AppCameraCapture({
             loading={camera.loading}
             ready={camera.ready}
             videoRef={camera.videoRef}
+            zoom={camera.zoom}
           />
           <AppCameraCaptureControls
             ready={camera.ready}
-            torchOn={camera.torchOn}
-            torchSupported={camera.torchSupported}
             zoom={camera.zoom}
             zoomSupported={camera.zoomSupported}
             onCapture={camera.capture}
             onFlip={camera.flipCamera}
             onPickAlbum={camera.pickAlbum}
-            onToggleTorch={camera.toggleTorch}
             onZoomChange={camera.changeZoom}
           />
         </Box>

@@ -105,6 +105,9 @@ function AppImagePickerField<TFormValues extends FieldValues>({
     await waitForSheetDismiss();
     setCameraVisible(true);
   };
+  const pickAlbumFromCamera = () => {
+    return pickImagePath("album");
+  };
   const closeCamera = () => {
     setCameraVisible(false);
   };
@@ -148,6 +151,7 @@ function AppImagePickerField<TFormValues extends FieldValues>({
         visible={cameraVisible}
         onCapture={captureImage}
         onClose={closeCamera}
+        onPickAlbum={pickAlbumFromCamera}
       />
     </Box>
   );

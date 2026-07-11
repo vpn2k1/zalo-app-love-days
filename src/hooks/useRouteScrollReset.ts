@@ -17,5 +17,5 @@ export function useRouteScrollReset() {
 
   useLayoutEffect(() => {
     return scheduleRouteScrollReset();
-  }, [location.pathname, location.search]);
+  }, [location.hash, location.key, location.pathname, location.search]);
 }

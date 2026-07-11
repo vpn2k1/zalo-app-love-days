@@ -1,5 +1,3 @@
-import { memo } from "react";
-
 import { AnimationRoutes, AppSpinner, Box, Route } from "@/components/zaui";
 import { appPaths } from "@/hooks/useAppNavigation";
 import { useAppBoot } from "@/hooks/useAppBoot";
@@ -39,12 +37,11 @@ export function LoveDaysApp() {
   );
 }
 
-const BootRoute = memo(function BootRoute() {
+function BootRoute() {
   useAppBoot();
-
   return (
     <Box className="boot-screen">
       <AppSpinner />
     </Box>
   );
-});
+}

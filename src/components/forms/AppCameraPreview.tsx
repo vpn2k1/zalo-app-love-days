@@ -7,9 +7,16 @@ type Props = {
   loading: boolean;
   ready: boolean;
   videoRef: RefObject<HTMLVideoElement>;
+  zoom: number;
 };
 
-export function AppCameraPreview({ error, loading, ready, videoRef }: Props) {
+export function AppCameraPreview({
+  error,
+  loading,
+  ready,
+  videoRef,
+  zoom,
+}: Props) {
   return (
     <Box className="mb-5 relative aspect-square w-full overflow-hidden rounded-3xl bg-black shadow-[0_18px_42px_rgba(84,49,72,0.16)]">
       <video
@@ -18,6 +25,7 @@ export function AppCameraPreview({ error, loading, ready, videoRef }: Props) {
         className={getVideoClassName(ready)}
         muted
         playsInline
+        style={{ transform: `scale(${getPreviewZoom(zoom)})` }}
       />
       {(loading || error) && (
         <Box className="absolute inset-0 z-10 grid place-items-center bg-black/45 px-6 text-center">
@@ -27,6 +35,12 @@ export function AppCameraPreview({ error, loading, ready, videoRef }: Props) {
       )}
     </Box>
   );
+}
+
+function getPreviewZoom(zoom: number) {
+  if (zoom < 1) return 1;
+
+  return zoom;
 }
 
 function getVideoClassName(ready: boolean) {

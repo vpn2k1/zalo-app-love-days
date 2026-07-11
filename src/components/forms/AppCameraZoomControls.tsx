@@ -1,7 +1,7 @@
 import { Slider } from "zmp-ui";
 
 import { Box } from "@/components/zaui";
-import { CAMERA_ZOOM_RANGE } from "./cameraTorch";
+import { CAMERA_ZOOM_RANGE } from "./cameraZoom";
 
 type Props = {
   ready: boolean;
@@ -10,16 +10,14 @@ type Props = {
   onZoomChange: (value: number) => void;
 };
 
-const ZOOM_PRESETS = [0.5, 1, 1.5];
-
 export function AppCameraZoomControls({
   ready,
   zoom,
   zoomSupported,
   onZoomChange,
 }: Props) {
-  if (!zoomSupported) return;
-  if (!ready) return
+  if (!zoomSupported || !ready)
+    return <Box className="mx-auto w-full rounded-2xl py-4" />;
 
   return (
     <Box className="mx-auto w-full rounded-2xl py-4">
@@ -28,8 +26,8 @@ export function AppCameraZoomControls({
         min={CAMERA_ZOOM_RANGE.min}
         step={CAMERA_ZOOM_RANGE.step}
         value={zoom}
-        prefix={0.5}
-        suffix={1}
+        prefix={CAMERA_ZOOM_RANGE.min}
+        suffix={CAMERA_ZOOM_RANGE.max}
         onChange={handleSliderChange(onZoomChange)}
       />
     </Box>
@@ -42,14 +40,4 @@ function handleSliderChange(onZoomChange: (value: number) => void) {
 
     onZoomChange(value);
   };
-}
-
-function formatZoom(value: number) {
-  return Number(value.toFixed(1)).toString();
-}
-
-function CameraZoomPlaceholder() {
-  return (
-    <Box className="mx-auto h-[78px] w-full max-w-[300px] rounded-2xl bg-white/40 px-4" />
-  );
 }

@@ -1,4 +1,10 @@
-import { forwardRef, useCallback, useImperativeHandle, useState } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from "react";
 import type { SyntheticEvent } from "react";
 import { Sheet } from "zmp-ui";
 import type { SheetProps } from "zmp-ui/sheet";
@@ -33,6 +39,12 @@ export const AppSheet = forwardRef<AppSheetRef, Props>(function AppSheet(
   const isControlled = visible !== undefined;
   const currentVisible = visible ?? internalVisible;
 
+  useEffect(() => {
+    if (!currentVisible) return;
+
+    return lockBackgroundScroll();
+  }, [currentVisible]);
+
   const open = useCallback(() => {
     setInternalVisible(true);
   }, []);
@@ -56,10 +68,10 @@ export const AppSheet = forwardRef<AppSheetRef, Props>(function AppSheet(
 
   return (
     <Sheet
-    {...sheetProps}
+      {...sheetProps}
       visible={currentVisible}
       onClose={handleClose}
-      height={sheetProps.autoHeight ? undefined: "90dvh"}
+      height={getSheetHeight(sheetProps.autoHeight)}
       mask={mask}
       maskClosable={maskClosable}
       swipeToClose={swipeToClose}
@@ -67,3 +79,32 @@ export const AppSheet = forwardRef<AppSheetRef, Props>(function AppSheet(
     />
   );
 });
+
+function getSheetHeight(autoHeight?: SheetProps["autoHeight"]) {
+  if (autoHeight) return undefined;
+
+  return "90dvh";
+}
+
+function lockBackgroundScroll() {
+  const preventBackgroundScroll = (event: Event) => {
+    if (isSheetEvent(event)) return;
+
+    event.preventDefault();
+  };
+  const options = { passive: false };
+  document.addEventListener("touchmove", preventBackgroundScroll, options);
+  document.addEventListener("wheel", preventBackgroundScroll, options);
+
+  return () => {
+    document.removeEventListener("touchmove", preventBackgroundScroll);
+    document.removeEventListener("wheel", preventBackgroundScroll);
+  };
+}
+
+function isSheetEvent(event: Event) {
+  const target = event.target;
+  if (!(target instanceof Element)) return false;
+
+  return Boolean(target.closest(".zaui-sheet-content"));
+}

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createCameraContext, PhotoFormat, PhotoQuality } from "zmp-sdk";
 
+import { getPickAlbumAction } from "./cameraAlbumAction";
 import {
   getFacingMode,
   getNextFacing,
@@ -11,15 +12,16 @@ import {
 import {
   CAMERA_DEFAULT_ZOOM,
   CAMERA_ZOOM_RANGE,
-  canUseTorch,
   clampCameraZoom,
-  getCameraZoomRange,
-  setCameraZoom,
-  setTorchEnabled,
-} from "./cameraTorch";
+  cropImageDataToZoom,
+} from "./cameraZoom";
+
+const CAMERA_CAPTURE_HEIGHT = 1440;
+const CAMERA_CAPTURE_WIDTH = 1080;
 
 type Input = {
-  visible: boolean; onCapture: (imageUrl: string) => void; onClose: () => void; onPickAlbum?: () => Promise<string>;
+  visible: boolean; onCapture: (imageUrl: string) => void;
+  onClose: () => void; onPickAlbum: () => Promise<string>;
 };
 
 export function useAppCameraCapture({
@@ -34,10 +36,7 @@ export function useAppCameraCapture({
   const [facing, setFacing] = useState<CameraFacing>("back");
   const [loading, setLoading] = useState(false);
   const [ready, setReady] = useState(false);
-  const [torchOn, setTorchOn] = useState(false);
-  const [torchSupported, setTorchSupported] = useState(false);
   const [zoom, setZoom] = useState(CAMERA_DEFAULT_ZOOM);
-  const [zoomRange, setZoomRange] = useState(CAMERA_ZOOM_RANGE);
   const [zoomSupported, setZoomSupported] = useState(false);
 
   useEffect(() => {
@@ -54,10 +53,10 @@ export function useAppCameraCapture({
         mediaConstraints: {
           audio: false,
           facingMode: getFacingMode(facing),
-          height: 960,
+          height: CAMERA_CAPTURE_HEIGHT,
           mirrored: isFrontCamera(facing),
           video: true,
-          width: 720,
+          width: CAMERA_CAPTURE_WIDTH,
         },
       });
       cameraRef.current = camera;
@@ -69,8 +68,7 @@ export function useAppCameraCapture({
           return;
         }
         setReady(true);
-        setTorchSupported(canUseTorch(videoElement));
-        syncZoomRange(videoElement);
+        setZoomSupported(true);
       } catch (cameraError) {
         console.error(cameraError);
         setError("Không thể mở camera. Vui lòng kiểm tra quyền camera.");
@@ -89,35 +87,17 @@ export function useAppCameraCapture({
   }, [facing, visible]);
 
   const close = () => {
-    void setTorchEnabled(videoRef.current, false);
     stopCamera(cameraRef.current);
     cameraRef.current = null;
     onClose();
   };
 
   const flipCamera = () => {
-    void setTorchEnabled(videoRef.current, false);
-    setTorchOn(false);
     setZoom(CAMERA_DEFAULT_ZOOM);
     setFacing(getNextFacing);
   };
 
-  const toggleTorch = async () => {
-    if (!torchSupported) return;
-
-    try {
-      const nextTorchOn = !torchOn;
-      await setTorchEnabled(videoRef.current, nextTorchOn);
-      setTorchOn(nextTorchOn);
-    } catch (torchError) {
-      console.error(torchError);
-      setTorchOn(false);
-      setTorchSupported(false);
-      setError("Thiết bị này không hỗ trợ bật đèn.");
-    }
-  };
-
-  const capture = () => {
+  const capture = async () => {
     const camera = cameraRef.current;
     if (!camera) return;
 
@@ -130,71 +110,42 @@ export function useAppCameraCapture({
       setError("Không thể chụp ảnh. Vui lòng thử lại.");
       return;
     }
-    onCapture(frame.data);
-    close();
+
+    await captureZoomedFrame(frame.data);
   };
 
-  const pickAlbum = getPickAlbumAction({ close, onCapture, onPickAlbum, setError });
+  const pickAlbum = getPickAlbumAction({
+    close,
+    onCapture,
+    onPickAlbum,
+    setError,
+  });
   const changeZoom = (value: number) => {
-    const nextZoom = clampCameraZoom(value, zoomRange);
+    const nextZoom = clampCameraZoom(value, CAMERA_ZOOM_RANGE);
     setZoom(nextZoom);
-    void setCameraZoom(videoRef.current, nextZoom).catch((zoomError) => {
-      console.error(zoomError);
-      setZoomSupported(false);
-    });
   };
 
   const resetCameraState = () => {
     setError("");
     setLoading(true);
     setReady(false);
-    setTorchOn(false);
-    setTorchSupported(false);
     setZoom(CAMERA_DEFAULT_ZOOM);
-    setZoomRange(CAMERA_ZOOM_RANGE);
     setZoomSupported(false);
   };
 
-  const syncZoomRange = (videoElement: HTMLVideoElement) => {
-    const range = getCameraZoomRange(videoElement);
-    if (!range) return;
-
-    setZoomRange(range);
-    setZoom(CAMERA_DEFAULT_ZOOM);
-    setZoomSupported(true);
-    void setCameraZoom(
-      videoElement,
-      clampCameraZoom(CAMERA_DEFAULT_ZOOM, range),
-    );
+  const captureZoomedFrame = async (imageData: string) => {
+    try {
+      onCapture(await cropImageDataToZoom(imageData, zoom));
+      close();
+    } catch (cropError) {
+      console.error(cropError);
+      onCapture(imageData);
+      close();
+    }
   };
 
   return {
-    capture, changeZoom, close, error, flipCamera, loading, pickAlbum, ready, toggleTorch, torchOn, torchSupported, videoRef, zoom, zoomSupported,
-  };
-}
-
-function getPickAlbumAction({
-  close,
-  onCapture,
-  onPickAlbum,
-  setError,
-}: {
-  close: () => void; onCapture: (imageUrl: string) => void;
-  onPickAlbum?: () => Promise<string>; setError: (error: string) => void;
-}) {
-  if (!onPickAlbum) return undefined;
-
-  return async () => {
-    setError("");
-    try {
-      const image = await onPickAlbum();
-      if (!image) return;
-
-      onCapture(image);
-      close();
-    } catch (pickerError) {
-      console.error(pickerError);
-      setError("Không thể chọn ảnh. Vui lòng thử lại.");
-    }
+    capture, changeZoom, close, error, flipCamera, loading, pickAlbum, ready,
+    videoRef, zoom, zoomSupported,
   };
 }

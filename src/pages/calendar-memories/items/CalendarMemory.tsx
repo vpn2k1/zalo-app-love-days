@@ -1,34 +1,39 @@
+import { useWatch } from "react-hook-form";
+
 import { AppSpinner, Box, Button, Icon, Text } from "@/components/zaui";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
 import type { Anniversary } from "@/types/anniversary";
 import { formatDate } from "@/utils/date";
 
-import { useGetMemory } from "../modules/useGetMemory";
-import { useWatch } from "react-hook-form";
-import { TCalendarMemoriesPage } from "../CalendarMemoriesPage";
+import type { TCalendarMemoriesPage } from "../CalendarMemoriesPage";
+import { createCalendarMemoryLookup } from "../modules/calendarMemoryLookup";
 
 type Props = {
+  loading: boolean;
   onCreate: () => void;
 };
 
-export function CalendarMemory({ onCreate }: Props) {
+export function CalendarMemory({ loading, onCreate }: Props) {
   const navigation = useAppNavigation();
-  const memoryQuery = useGetMemory();
   const date = useWatch<TCalendarMemoriesPage, "selectDate">({
     name: "selectDate",
     exact: true,
   });
+  const anniversaries = useWatch<TCalendarMemoriesPage, "anniversaries">({
+    name: "anniversaries",
+    exact: true,
+  });
   if (!date) return null;
 
-  if (memoryQuery.isPending) {
+  if (loading) {
     return <CalendarMemoryLoading />;
   }
 
-  if (!memoryQuery.data) {
+  const memory = createCalendarMemoryLookup(anniversaries ?? []).findByDate(date);
+  if (!memory) {
     return <EmptyCalendarMemory onCreate={onCreate} />;
   }
 
-  const memory = memoryQuery.data;
   const openDetail = () => {
     navigation.goMemory(memory.id);
   };
@@ -80,7 +85,7 @@ function CalendarMemoryLoading() {
   );
 }
 
-function EmptyCalendarMemory({ onCreate }: Props) {
+function EmptyCalendarMemory({ onCreate }: Pick<Props, "onCreate">) {
   return (
     <Box className="mt-4 rounded-[24px] border border-[var(--love-border)] bg-white/85 p-4 text-center shadow-[0_14px_30px_rgba(201,47,103,0.08)]">
       <Text className="text-xs font-bold uppercase text-[#c45a86]">
