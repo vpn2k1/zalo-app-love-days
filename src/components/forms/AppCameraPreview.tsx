@@ -11,7 +11,7 @@ type Props = {
 
 export function AppCameraPreview({ error, loading, ready, videoRef }: Props) {
   return (
-    <Box className="relative aspect-square w-full overflow-hidden rounded-3xl bg-black shadow-[0_18px_42px_rgba(84,49,72,0.16)]">
+    <Box className="mb-5 relative aspect-square w-full overflow-hidden rounded-3xl bg-black shadow-[0_18px_42px_rgba(84,49,72,0.16)]">
       <video
         ref={videoRef}
         autoPlay

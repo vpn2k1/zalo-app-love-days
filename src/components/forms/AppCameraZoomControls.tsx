@@ -1,4 +1,7 @@
-import { Box, Button } from "@/components/zaui";
+import { Slider } from "zmp-ui";
+
+import { Box } from "@/components/zaui";
+import { CAMERA_ZOOM_RANGE } from "./cameraTorch";
 
 type Props = {
   ready: boolean;
@@ -7,7 +10,7 @@ type Props = {
   onZoomChange: (value: number) => void;
 };
 
-const ZOOM_PRESETS = [0.5, 1, 2];
+const ZOOM_PRESETS = [0.5, 1, 1.5];
 
 export function AppCameraZoomControls({
   ready,
@@ -15,61 +18,38 @@ export function AppCameraZoomControls({
   zoomSupported,
   onZoomChange,
 }: Props) {
-  if (!zoomSupported) return <CameraZoomPlaceholder />;
-  if (!ready) return <CameraZoomPlaceholder />;
+  if (!zoomSupported) return;
+  if (!ready) return
 
   return (
-    <Box className="mx-auto grid w-full max-w-[240px] grid-cols-3 gap-2 rounded-full bg-white/80 p-1.5 shadow-[0_10px_22px_rgba(84,49,72,0.08)]">
-      {ZOOM_PRESETS.map((value) => (
-        <ZoomPresetButton
-          key={value}
-          active={isActiveZoom(zoom, value)}
-          value={value}
-          onClick={onZoomChange}
-        />
-      ))}
+    <Box className="mx-auto w-full rounded-2xl py-4">
+      <Slider
+        max={CAMERA_ZOOM_RANGE.max}
+        min={CAMERA_ZOOM_RANGE.min}
+        step={CAMERA_ZOOM_RANGE.step}
+        value={zoom}
+        prefix={0.5}
+        suffix={1}
+        onChange={handleSliderChange(onZoomChange)}
+      />
     </Box>
   );
 }
 
-function ZoomPresetButton({
-  active,
-  value,
-  onClick,
-}: {
-  active: boolean;
-  value: number;
-  onClick: (value: number) => void;
-}) {
-  return (
-    <Button
-      htmlType="button"
-      variant="tertiary"
-      className={getZoomPresetClassName(active)}
-      onClick={() => onClick(value)}
-    >
-      {formatZoom(value)}x
-    </Button>
-  );
+function handleSliderChange(onZoomChange: (value: number) => void) {
+  return (value: number | [number, number]) => {
+    if (Array.isArray(value)) return;
+
+    onZoomChange(value);
+  };
 }
 
 function formatZoom(value: number) {
   return Number(value.toFixed(1)).toString();
 }
 
-function getZoomPresetClassName(active: boolean) {
-  const base = "!h-8 rounded-full p-0 text-xs font-bold";
-  if (active) return `${base} bg-[#d9467e] text-white`;
-
-  return `${base} bg-transparent text-[#6f5264]`;
-}
-
-function isActiveZoom(current: number, value: number) {
-  return Math.abs(current - value) < 0.01;
-}
-
 function CameraZoomPlaceholder() {
   return (
-    <Box className="mx-auto h-10 w-full max-w-[240px] rounded-full bg-white/40 px-4" />
+    <Box className="mx-auto h-[78px] w-full max-w-[300px] rounded-2xl bg-white/40 px-4" />
   );
 }

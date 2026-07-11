@@ -24,7 +24,7 @@ export function SetupPageAvatarPicker({ user }: Props) {
         name="customAvatarUrl"
         label="áº¢nh Ä‘áº¡i diá»‡n"
         optional
-        customs={(
+        customs={
           <Box className="relative flex items-center justify-center">
             <Avatar size={80} src={getAvatarSrc(avatarUrl)}>
               <Icon icon="zi-user" />
@@ -35,7 +35,7 @@ export function SetupPageAvatarPicker({ user }: Props) {
               size={30}
             />
           </Box>
-        )}
+        }
       />
       <Box className="app-setup-user-copy">
         <NameControl
@@ -45,7 +45,9 @@ export function SetupPageAvatarPicker({ user }: Props) {
           setEditingName={setEditingName}
           user={user}
         />
-        <Text className="app-opening-card-copy">Báº¡n cÃ³ thá»ƒ chá»‰nh sá»­a sau.</Text>
+        <Text className="app-opening-card-copy">
+          Bạn có thể cập nhật lại sau.
+        </Text>
       </Box>
     </Box>
   );

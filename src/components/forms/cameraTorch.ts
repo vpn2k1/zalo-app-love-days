@@ -30,6 +30,16 @@ export type CameraZoomRange = {
   step: number;
 };
 
+export const CAMERA_DEFAULT_ZOOM = 1;
+export const CAMERA_ZOOM_RANGE: CameraZoomRange = { max: 1.5, min: 0.5, step: 0.1 };
+
+export function clampCameraZoom(value: number, range: CameraZoomRange) {
+  if (value < range.min) return range.min;
+  if (value > range.max) return range.max;
+
+  return value;
+}
+
 export function getCameraZoomRange(
   videoElement: HTMLVideoElement,
 ): CameraZoomRange | null {

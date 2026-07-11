@@ -1,4 +1,5 @@
-import { Box, Button, Icon } from "@/components/zaui";
+import { Box, Icon } from "@/components/zaui";
+
 import { AppCameraZoomControls } from "./AppCameraZoomControls";
 
 type Props = {
@@ -9,6 +10,7 @@ type Props = {
   zoomSupported: boolean;
   onCapture: () => void;
   onFlip: () => void;
+  onPickAlbum?: () => void;
   onToggleTorch: () => void;
   onZoomChange: (value: number) => void;
 };
@@ -17,7 +19,7 @@ type ClickProps = { onClick: () => void };
 
 export function AppCameraCaptureHeader({ onClick }: ClickProps) {
   return (
-    <Box className="flex-1 flex items-center">
+    <Box className="flex items-center my-10">
       <Box
         onClick={onClick}
         className="size-12 min-h-12 min-w-12 flex items-center justify-center rounded-2xl bg-white p-0 shadow-[0_12px_24px_rgba(84,49,72,0.12)]"
@@ -40,6 +42,7 @@ export function AppCameraCaptureControls({
   zoomSupported,
   onCapture,
   onFlip,
+  onPickAlbum,
   onToggleTorch,
   onZoomChange,
 }: Props) {
@@ -53,10 +56,12 @@ export function AppCameraCaptureControls({
       />
       <Box className="rounded-[28px] bg-white/90 p-4 shadow-[0_14px_32px_rgba(201,47,103,0.1)]">
         <Box className="flex flex-col-3 items-center justify-around">
-          <TorchButton
-            active={torchOn}
-            disabled={!ready || !torchSupported}
-            onClick={onToggleTorch}
+          <LeftControlButton
+            ready={ready}
+            torchOn={torchOn}
+            torchSupported={torchSupported}
+            onPickAlbum={onPickAlbum}
+            onToggleTorch={onToggleTorch}
           />
           <CaptureButton ready={ready} onClick={onCapture} />
           <IconButton
@@ -86,6 +91,38 @@ function CaptureButton({ ready, onClick }: { ready: boolean } & ClickProps) {
     >
       <Box className="size-full rounded-full bg-[#d9467e]" />
     </Box>
+  );
+}
+
+function LeftControlButton({
+  ready,
+  torchOn,
+  torchSupported,
+  onPickAlbum,
+  onToggleTorch,
+}: {
+  ready: boolean;
+  torchOn: boolean;
+  torchSupported: boolean;
+  onPickAlbum?: () => void;
+  onToggleTorch: () => void;
+}) {
+  if (onPickAlbum) {
+    return (
+      <IconButton
+        icon="zi-photo"
+        label="Chọn ảnh"
+        onClick={onPickAlbum}
+      />
+    );
+  }
+
+  return (
+    <TorchButton
+      active={torchOn}
+      disabled={!ready || !torchSupported}
+      onClick={onToggleTorch}
+    />
   );
 }
 
@@ -121,7 +158,7 @@ function IconButton({
   label,
   onClick,
 }: {
-  icon: "zi-auto-solid";
+  icon: "zi-auto-solid" | "zi-photo";
   label: string;
   onClick: () => void;
 }) {
