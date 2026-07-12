@@ -23,6 +23,7 @@ The app requests Zalo user permission, stores or mocks user/couple data, lets a 
 11. **Verification.** For code changes, run `npm run typecheck`. Run `npm run build` when changing bundling, env handling, assets, or ZMP deployment behavior.
 12. **Control flow.** Do not add ternary operators, `else`/`else if`, or `switch`/`case`. Use guard clauses, early returns, and false-case-first checks.
 13. **Shared UI state.** When UI state is used across unrelated components, create a typed custom hook in `src/hooks/` with module-local listeners, show/hide helpers, `useEffect` subscription, and cleanup.
+14. **Zalo docs.** Before adding or changing `zmp-sdk` APIs or `zmp-ui`/ZaUI component behavior, read the official docs at `https://docs.zaloplatforms.com/docs/MA/api` or `https://docs.zaloplatforms.com/docs/MA/zaui` and check installed package versions.
 ## Ponytail Mode — Lazy Senior Dev
 
 Use Ponytail mode for all code changes in this repository. Lazy means efficient, not careless. The best code is the code never written.
@@ -117,6 +118,7 @@ Use these roles when the host tool supports sub-agents and the user has allowed 
 Project skills live in `.agents/skills/`:
 
 - `react-feature-builder` — app feature workflow for React/Vite/Zalo Mini App changes.
+- `zalo-platform-docs` — workflow for reading and applying official Zalo Mini App API and ZaUI docs.
 - `page-structure-builder` — workflow for building or refactoring pages using `src/pages/setup` as the folder/module blueprint.
 - `zaui-ui-builder` — UI workflow for using official ZaUI/`zmp-ui` components from Zalo Mini App docs.
 - `guard-clause-refactor` — code style workflow for replacing ternaries, else branches, and switch/case with guard clauses.
@@ -141,6 +143,7 @@ Hard constraints live in `.agents/rules/`:
 - `import-rules`
 - `shared-defs`
 - `localization`
+- `zalo-platform-docs`
 - `zaui-components`
 - `guard-clause-control-flow`
 - `shared-state-hooks`

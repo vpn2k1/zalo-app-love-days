@@ -7,11 +7,12 @@ description: Prefer official ZaUI/zmp-ui components and design tokens for Love D
 
 Use official ZaUI components from `zmp-ui` as the first choice for Love Days screens and reusable UI.
 
-Reference: https://miniapp.zaloplatforms.com/documents/zaui
+Reference: https://docs.zaloplatforms.com/docs/MA/zaui
 
 ## Rules
 
 - Prefer `zmp-ui` primitives for Mini App UI before building custom controls.
+- Check the official ZaUI docs and installed `zmp-ui` version before relying on a specific component prop, event, token, or overlay behavior.
 - Use ZaUI layout primitives such as `App`, `Page`, `Header`, `BottomNavigation`, and `Tabs` when they match the screen structure.
 - Use ZaUI display primitives such as `Avatar`, `Calendar`, `Icon`, `ImageViewer`, `List`, `Progress`, `Spinner`, `Swiper`, and `Text` before custom equivalents.
 - Use ZaUI form primitives such as `Button`, `Input`, `TextArea`, `Select`, `Picker`, `DatePicker`, `Switch`, `Checkbox`, `Radio`, and `Slider` for user input.

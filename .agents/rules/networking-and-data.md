@@ -8,6 +8,7 @@ description: Data, SDK, Supabase, mock mode, and secret-handling rules.
 Data access belongs in `src/services/`.
 
 - Use `zaloService.ts` for Zalo SDK user/share behavior.
+- Check https://docs.zaloplatforms.com/docs/MA/api before adding or changing `zmp-sdk` API usage.
 - Use `supabaseClient.ts` for Supabase client creation.
 - Use domain services such as `authService.ts`, `coupleService.ts`, `inviteService.ts`, and `anniversaryService.ts`.
 - Keep mock mode in `mockDb.ts` working when Supabase env vars are missing.

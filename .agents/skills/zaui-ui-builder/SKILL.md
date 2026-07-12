@@ -7,7 +7,9 @@ description: Design or implement Love Days React/Zalo Mini App UI using official
 
 Use this skill when adding or changing Love Days UI, screens, forms, overlays, navigation, loading states, or reusable visual components.
 
-Official docs: https://miniapp.zaloplatforms.com/documents/zaui
+Official docs: https://docs.zaloplatforms.com/docs/MA/zaui
+
+When a task depends on a specific component, prop, token, or overlay behavior, open the official docs page before editing and check the installed `zmp-ui` version in `package.json`.
 
 ## Step 1 - Pick The ZaUI Primitive First
 

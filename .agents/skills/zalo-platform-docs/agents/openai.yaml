@@ -1,0 +1,3 @@
+display_name: Zalo Platform Docs
+short_description: Use official Zalo Mini App API and ZaUI docs before platform changes.
+default_prompt: Use official Zalo Mini App API and ZaUI documentation to implement this Love Days change.
