@@ -61,7 +61,7 @@ export function AnniversaryForm({
 
   return (
     <FormProvider {...methods}>
-      <Box className="anniversary-form p-4">
+      <Box className="grid grid-cols-1 gap-4 p-4">
         <AppTextInput
           control={control}
           name="title"

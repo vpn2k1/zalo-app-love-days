@@ -7,6 +7,7 @@ import type { Anniversary } from "@/types/anniversary";
 
 import type { MemoryDetailFormValues } from "../types/MemoryDetailPageType";
 import { normalizeMemoryDetailValues } from "./memoryDetailForm";
+import { useAppNavigation } from "@/hooks/useAppNavigation";
 
 type Input = {
   coupleId: string;
@@ -14,13 +15,10 @@ type Input = {
   onCreated: (memory: Anniversary) => void;
 };
 
-export function useMemoryDetailCreate({
-  coupleId,
-  userId,
-  onCreated,
-}: Input) {
+export function useMemoryDetailCreate({ coupleId, userId, onCreated }: Input) {
   const queryClient = useQueryClient();
   const snackbar = useAppSnackbar();
+  const navigate = useAppNavigation();
 
   return useMutation({
     mutationFn: (values: MemoryDetailFormValues) =>
@@ -34,6 +32,7 @@ export function useMemoryDetailCreate({
       await queryClient.invalidateQueries({
         queryKey: anniversariesQueryKey(coupleId),
       });
+      navigate.goAnniversaries({ replace: true });
       snackbar.showSuccess("Đã tạo kỷ niệm.");
     },
     onError: (error) => {

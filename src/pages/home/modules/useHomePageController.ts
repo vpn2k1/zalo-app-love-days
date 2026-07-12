@@ -10,7 +10,7 @@ import { useAnniversaryMutation } from "./useAnniversaryMutation";
 import { useInvitePartnerMutation } from "./useInvitePartnerMutation";
 
 export function useHomePageController() {
-  const { user } = useCurrentUser();
+  const { currentUserQuery, user } = useCurrentUser();
   const { coupleData, coupleQuery } = useCoupleData();
   const { anniversariesQuery } = useAnniversariesData(
     coupleData?.couple.id || "",
@@ -22,7 +22,21 @@ export function useHomePageController() {
   const navigation = useAppNavigation();
   const loading = coupleQuery.isPending
     || Boolean(coupleData && anniversariesQuery.isPending);
+  const refreshing = currentUserQuery.isRefetching
+    || coupleQuery.isRefetching
+    || anniversariesQuery.isRefetching;
   let contentProps: HomePageContentProps | null = null;
+
+  const refreshHome = async () => {
+    const refreshedUser = await currentUserQuery.refetch();
+    if (!refreshedUser.data) {
+      navigation.goPermission({ replace: true });
+      return;
+    }
+
+    await coupleQuery.refetch();
+    await anniversariesQuery.refetch();
+  };
 
   if (user && coupleData) {
     contentProps = {
@@ -31,15 +45,18 @@ export function useHomePageController() {
       anniversaries: anniversariesQuery.data || [],
       addPartnerLoading: invitePartner.isPending,
       addAnniversaryLoading: addAnniversary.isPending,
+      refreshing,
       blockingMessage: getBlockingMessage(
         addAnniversary.isPending,
         invitePartner.isPending,
         leaveCouple.isPending,
         updateBackground.isPending,
+        refreshing,
       ),
       onAddPartner: () => invitePartner.mutateAsync(),
       onAddAnniversary: (draft) => addAnniversary.mutateAsync(draft),
       onEditProfile: navigation.goEdit,
+      onRefresh: refreshHome,
       onUpdateBackground: async (url) => {
         await updateBackground.mutateAsync(url);
       },
@@ -54,11 +71,13 @@ function getBlockingMessage(
   isInvitingPartner: boolean,
   isLeavingCouple: boolean,
   isUpdatingBackground: boolean,
+  isRefreshing: boolean,
 ) {
-  if (isAddingAnniversary) return "Äang lÆ°u ngÃ y ká»· niá»‡m...";
-  if (isInvitingPartner) return "Äang má»i ngÆ°á»i áº¥y...";
-  if (isLeavingCouple) return "Äang rá»i khÃ´ng gian...";
-  if (isUpdatingBackground) return "Äang cáº­p nháº­t áº£nh ná»n...";
+  if (isAddingAnniversary) return "Đang lưu ngày kỷ niệm...";
+  if (isInvitingPartner) return "Đang mời người ấy...";
+  if (isLeavingCouple) return "Đang rời không gian...";
+  if (isUpdatingBackground) return "Đang cập nhật ảnh nền...";
+  if (isRefreshing) return "Đang làm mới...";
 
   return null;
 }

@@ -14,7 +14,7 @@ export function useInvitePartnerMutation() {
       if (!user || !coupleData) {
         throw new Error("Bạn cần đăng nhập trước khi thêm đối tác.");
       }
-      const invite = await inviteService.createInvite(coupleData.couple.id, user.id);
+      const invite = await inviteService.createInvite(coupleData.couple.id, user.id);      
       return inviteService.shareInvite(
         invite.invite_code,
         user.custom_avatar_url || user.avatar_url || undefined,

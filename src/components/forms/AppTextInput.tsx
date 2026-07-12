@@ -1,5 +1,10 @@
-import { type FocusEvent } from "react";
-import { Controller, type Control, type FieldValues, type Path } from "react-hook-form";
+import { useEffect, type FocusEvent } from "react";
+import {
+  Controller,
+  type Control,
+  type FieldValues,
+  type Path,
+} from "react-hook-form";
 import { Input } from "zmp-ui";
 import type { InputProps } from "zmp-ui/input";
 import { hideKeyboard } from "zmp-sdk";
@@ -26,6 +31,7 @@ export function AppTextInput<TFormValues extends FieldValues>({
   const keyboard = useKeyboardFieldSpacer();
 
   const handleFocus = (event: FocusEvent<HTMLInputElement>) => {
+    if (inputProps.disabled || inputProps.readOnly) return;
     keyboard.openSpacer();
     inputProps.onFocus?.(event);
   };

@@ -25,30 +25,37 @@ type NavigateOptions = {
 export function useAppNavigation() {
   const navigate = useNavigate();
 
-  return useMemo(() => ({
-    goBoot: () => navigate(appPaths.booting, { replace: true }),
-    goBack: () => navigate(-1),
-    goAlbum: () => navigate(appPaths.album),
-    goAnniversaries: () => navigate(appPaths.anniversaries),
-    goCalendar: () => navigate(appPaths.calendar),
-    goEdit: () => navigate(appPaths.edit),
-    goHome: (options?: NavigateOptions) => navigate(appPaths.home, options),
-    goCreateMemory: (imageUrl?: string) => {
-      if (imageUrl) {
-        sessionStorage.setItem(quickMemoryImageStorageKey, imageUrl);
-        navigate(`${appPaths.memory}?type=create&quickImage=1`);
-        return;
-      }
+  return useMemo(
+    () => ({
+      goBoot: () => navigate(appPaths.booting, { replace: true }),
+      goBack: () => navigate(-1),
+      goAlbum: () => navigate(appPaths.album),
+      goAnniversaries: (option?: NavigateOptions) =>
+        navigate(appPaths.anniversaries, option),
+      goCalendar: () => navigate(appPaths.calendar),
+      goEdit: () => navigate(appPaths.edit),
+      goHome: (options?: NavigateOptions) => navigate(appPaths.home, options),
+      goCreateMemory: (imageUrl?: string) => {
+        if (imageUrl) {
+          sessionStorage.setItem(quickMemoryImageStorageKey, imageUrl);
+          navigate(`${appPaths.memory}?type=create&quickImage=1`);
+          return;
+        }
 
-      navigate(`${appPaths.memory}?type=create`);
-    },
-    goMemory: (memoryId: string) => {
-      navigate(`${appPaths.memory}?type=update&id=${encodeURIComponent(memoryId)}`);
-    },
-    goInvite: (options?: NavigateOptions) => navigate(appPaths.invite, options),
-    goPermission: (options?: NavigateOptions) => {
-      navigate(appPaths.permission, options);
-    },
-    goSetup: (options?: NavigateOptions) => navigate(appPaths.setup, options),
-  }), [navigate]);
+        navigate(`${appPaths.memory}?type=create`);
+      },
+      goMemory: (memoryId: string) => {
+        navigate(
+          `${appPaths.memory}?type=update&id=${encodeURIComponent(memoryId)}`,
+        );
+      },
+      goInvite: (options?: NavigateOptions) =>
+        navigate(appPaths.invite, options),
+      goPermission: (options?: NavigateOptions) => {
+        navigate(appPaths.permission, options);
+      },
+      goSetup: (options?: NavigateOptions) => navigate(appPaths.setup, options),
+    }),
+    [navigate],
+  );
 }

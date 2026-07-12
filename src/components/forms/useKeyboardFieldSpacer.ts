@@ -12,13 +12,15 @@ import {
   removeInputHistoryId,
 } from "@/utils/inputFocusHistory";
 
-const FALLBACK_KEYBOARD_HEIGHT = 320;
+const FALLBACK_KEYBOARD_HEIGHT = 300;
 const SCROLL_DELAYS = [60, 240];
 const TARGET_VIEWPORT_RATIO = 0.42;
 
 export function useKeyboardFieldSpacer() {
   const [focused, setFocused] = useState(false);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [spacerHeight, setSpacerHeight] = useState(0);
+
   const fieldRef = useRef<HTMLDivElement | null>(null);
   const timersRef = useRef<Set<number>>(new Set());
 
@@ -33,11 +35,13 @@ export function useKeyboardFieldSpacer() {
 
   const scheduleScroll = useCallback(() => {
     clearTimers();
+
     SCROLL_DELAYS.forEach((delay) => {
       const timer = window.setTimeout(() => {
         timersRef.current.delete(timer);
         scrollFieldIntoView();
       }, delay);
+
       timersRef.current.add(timer);
     });
   }, [clearTimers, scrollFieldIntoView]);
@@ -48,12 +52,14 @@ export function useKeyboardFieldSpacer() {
 
   const openSpacer = useCallback(() => {
     setFocused(true);
+    setIsKeyboardVisible(true);
     updateSpacerHeight();
     scheduleScroll();
   }, [scheduleScroll, updateSpacerHeight]);
 
   const closeSpacer = useCallback(() => {
     setFocused(false);
+    setIsKeyboardVisible(false);
     clearTimers();
     setSpacerHeight(0);
   }, [clearTimers]);
@@ -90,7 +96,9 @@ export function useKeyboardFieldSpacer() {
       viewport?.removeEventListener("resize", handleViewportChange);
       viewport?.removeEventListener("scroll", handleViewportChange);
       window.removeEventListener("resize", handleViewportChange);
+
       removeInputHistoryId(id);
+
       if (closedByBack) return;
       if (!isCurrentInputHistoryState(id)) return;
 
@@ -98,6 +106,12 @@ export function useKeyboardFieldSpacer() {
       window.history.back();
     };
   }, [closeSpacer, focused, scheduleScroll, updateSpacerHeight]);
+
+  useEffect(() => {
+    if (!isKeyboardVisible) {
+      closeSpacer();
+    }
+  }, [isKeyboardVisible]);
 
   useEffect(() => {
     return clearTimers;
@@ -108,6 +122,10 @@ export function useKeyboardFieldSpacer() {
     fieldRef,
     openSpacer,
     spacerHeight,
+
+    // thêm 2 field này
+    focused,
+    isKeyboardVisible,
   };
 }
 
@@ -119,6 +137,7 @@ function getKeyboardHeight() {
     0,
     window.innerHeight - viewport.height - viewport.offsetTop,
   );
+
   if (keyboardHeight > 0) return keyboardHeight;
 
   return FALLBACK_KEYBOARD_HEIGHT;
@@ -151,9 +170,9 @@ function getViewportHeight() {
 
 function getScrollContainer(element: HTMLElement) {
   let parent = element.parentElement;
+
   while (parent) {
     if (isScrollable(parent)) return parent;
-
     parent = parent.parentElement;
   }
 
@@ -163,6 +182,7 @@ function getScrollContainer(element: HTMLElement) {
 function isScrollable(element: HTMLElement) {
   const style = window.getComputedStyle(element);
   const canScroll = style.overflowY === "auto" || style.overflowY === "scroll";
+
   if (!canScroll) return false;
 
   return element.scrollHeight > element.clientHeight;

@@ -15,10 +15,12 @@ export type HomePageContentProps = {
   anniversaries: Anniversary[];
   addPartnerLoading?: boolean;
   addAnniversaryLoading?: boolean;
+  refreshing?: boolean;
   blockingMessage: string | null;
   onAddPartner: () => Promise<unknown>;
   onAddAnniversary: (draft: AnniversaryDraft) => Promise<unknown>;
   onEditProfile: () => void;
+  onRefresh: () => Promise<unknown>;
   onUpdateBackground?: (url: string) => Promise<unknown>;
 };
 

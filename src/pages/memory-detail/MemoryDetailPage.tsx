@@ -13,11 +13,15 @@ import { MemoryDetailLoadingState } from "./items/MemoryDetailLoadingState";
 import { MemoryDetailMissingState } from "./items/MemoryDetailMissingState";
 import { MemoryDetailUpdateContent } from "./items/MemoryDetailUpdateContent";
 import type { MemoryDetailMode } from "./types/MemoryDetailPageType";
+import { useGetMemory } from "./modules/useGetMemory";
 
 export function MemoryDetailPage() {
   const [searchParams] = useSearchParams();
   const mode = getMemoryDetailMode(searchParams.get("type"));
   const memoryId = searchParams.get("id");
+  const { data } = useGetMemory();
+  console.log(data);
+  
   const initialImageUrl = getInitialImageUrl(searchParams.get("quickImage"));
   const navigation = useAppNavigation();
   const { user } = useCurrentUser();
@@ -32,7 +36,7 @@ export function MemoryDetailPage() {
     return <MemoryDetailLoadingState />;
   }
 
-  if (!coupleData) {
+  if (!coupleData?.couple.id && !coupleQuery.isPending) {
     return <MemoryDetailMissingState onBack={navigation.goBack} />;
   }
 

@@ -26,6 +26,7 @@ export function AppTextArea<TFormValues extends FieldValues>({
   const keyboard = useKeyboardFieldSpacer();
 
   const handleFocus = (event: FocusEvent<HTMLTextAreaElement>) => {
+    if(textAreaProps.readOnly || textAreaProps.disabled) return;
     keyboard.openSpacer();
     textAreaProps.onFocus?.(event);
   };

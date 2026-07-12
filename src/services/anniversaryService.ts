@@ -88,4 +88,25 @@ export const anniversaryService = {
     if (error) throw error;
     return data;
   },
+  async getOne({
+    coupleId,
+    id,
+  }: {
+    id: string;
+    coupleId: string;
+  }): Promise<Anniversary> {
+    if (isMockMode || !supabase) {
+      return mockDb.getAnniversaries(coupleId)[0];
+    }
+
+    const { data, error } = await supabase
+      .from("anniversaries")
+      .select("*")
+      .eq("couple_id", coupleId)
+      .eq("id", id)
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
 };
