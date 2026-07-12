@@ -1,4 +1,5 @@
-import { Box, Button, Text } from "@/components/zaui";
+import { Box, Button, Text, useNavigate } from "@/components/zaui";
+import { useAppNavigation } from "@/hooks/useAppNavigation";
 import type { UpcomingAnniversary } from "@/types/anniversary";
 import { formatDate } from "@/utils/date";
 
@@ -11,6 +12,7 @@ export function MemoryGardenSection({
   nextAnniversary,
   onShowAnniversaryForm,
 }: Props) {
+  const navigation = useAppNavigation();
   return (
     <Box className="mb-3 overflow-hidden rounded-[24px] border border-white/75 bg-[radial-gradient(circle_at_3%_86%,#fff0da_0_15%,transparent_28%)] bg-white/85 p-4 shadow-[0_16px_34px_rgba(84,49,72,0.1)]">
       <Text className="text-[12px] font-extrabold uppercase tracking-[0.16em] text-[#c45a86]">
@@ -40,7 +42,7 @@ export function MemoryGardenSection({
           htmlType="button"
           size="small"
           variant="tertiary"
-          onClick={onShowAnniversaryForm}
+          onClick={() => navigation.goCreateMemory()}
         >
           Thêm kỷ niệm
         </Button>

@@ -1,5 +1,6 @@
 import { useFormContext, useWatch } from "react-hook-form";
 
+import { AppSafeImage } from "@/components/AppSafeImage";
 import { AppImagePicker } from "@/components/forms";
 import { Box, Button, Icon, Text } from "@/components/zaui";
 import { formatDate } from "@/utils/date";
@@ -56,9 +57,10 @@ export function MemoryImagePreview({ imageUrl, onOpen }: Props) {
           className="relative block aspect-[4/3] w-full overflow-hidden rounded-[26px] border border-white bg-[#fff0f6] p-0 shadow-[0_18px_36px_rgba(134,45,83,0.16)]"
           onClick={onOpen}
         >
-          <img
+          <AppSafeImage
             alt="Ảnh mô tả kỷ niệm"
             className="size-full object-cover"
+            fallback={<MemoryImageFallback />}
             src={imageUrl}
           />
           <Box className="absolute bottom-3 right-3 rounded-full bg-black/35 px-3 py-1.5 text-white backdrop-blur-md">
@@ -108,6 +110,14 @@ export function MemoryImagePreview({ imageUrl, onOpen }: Props) {
         </Box>
       </Box>
       {renderButton()}
+    </Box>
+  );
+}
+
+function MemoryImageFallback() {
+  return (
+    <Box className="grid size-full place-items-center bg-[#fff7fb] text-[#d9467e]">
+      <Icon icon="zi-photo" className="text-3xl" />
     </Box>
   );
 }

@@ -59,16 +59,16 @@ export const authService = {
     return data;
   },
 
-  async deleteUser(userId: string): Promise<void> {
+  async deleteUser(user: Pick<AppUser, "id" | "zalo_user_id">): Promise<void> {
     if (isMockMode || !supabase) {
-      mockDb.deleteUser(userId);
+      mockDb.deleteUser(user.id);
       return;
     }
 
     const { error } = await supabase
       .from("users")
       .delete()
-      .eq("id", userId);
+      .eq("zalo_user_id", user.zalo_user_id);
 
     if (error) throw error;
   },

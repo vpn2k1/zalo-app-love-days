@@ -15,7 +15,7 @@ export function HomePageContent(props: HomePageContentProps) {
       <FormProvider {...methods}>
         <BlockingLoadingOverlay
           show={Boolean(props.blockingMessage)}
-          message={props.blockingMessage || "Äang lÆ°u thay Ä‘á»•i..."}
+          message={props.blockingMessage || "Chờ một chút..."}
         />
         <HomePageBody />
       </FormProvider>

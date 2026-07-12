@@ -1,5 +1,6 @@
 import { useWatch } from "react-hook-form";
 
+import { AppSafeImage } from "@/components/AppSafeImage";
 import { AppSpinner, Box, Button, Icon, Text } from "@/components/zaui";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
 import type { Anniversary } from "@/types/anniversary";
@@ -110,14 +111,19 @@ function EmptyCalendarMemory({ onCreate }: Pick<Props, "onCreate">) {
 function MemoryThumb({ memory }: { memory: Anniversary }) {
   if (memory.image_url) {
     return (
-      <img
+      <AppSafeImage
         alt=""
         className="size-[72px] flex-none rounded-[18px] object-cover"
+        fallback={<MemoryThumbFallback />}
         src={memory.image_url}
       />
     );
   }
 
+  return <MemoryThumbFallback />;
+}
+
+function MemoryThumbFallback() {
   return (
     <Box className="grid size-[72px] flex-none place-items-center rounded-[18px] bg-[#ffe4ef]">
       <Icon

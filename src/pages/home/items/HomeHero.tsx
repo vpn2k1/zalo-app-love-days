@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { AppSafeImage } from "@/components/AppSafeImage";
 import { AppImageViewer, Box, Icon, Text } from "@/components/zaui";
 
 type Props = {
@@ -24,9 +25,10 @@ export function HomeHero({ backgroundUrl }: Props) {
         tabIndex={0}
         onClick={openViewer}
       >
-        <img
+        <AppSafeImage
           alt=""
           className="absolute inset-0 size-full object-cover"
+          fallback={<HomeHeroFallback cover />}
           src={backgroundUrl}
         />
         <Box className="absolute inset-0 bg-gradient-to-b from-[#3c2435]/5 to-[#3c2435]/45" />
@@ -40,11 +42,13 @@ export function HomeHero({ backgroundUrl }: Props) {
   }
 
   return (
-    <Box
-      className="mb-3.5 min-h-44 overflow-hidden rounded-[18px] bg-[radial-gradient(circle_at_3%_86%,#fff0da_0_15%,transparent_28%),radial-gradient(circle_at_97%_12%,#ffc9df_0_18%,transparent_30%),linear-gradient(132deg,#f2d7ff_0%,#ead9ff_48%,#ffddea_100%)] px-[22px] pb-[22px] pt-[55px]"
-      role="button"
-      tabIndex={0}
-    >
+    <HomeHeroFallback />
+  );
+}
+
+function HomeHeroFallback({ cover = false }: { cover?: boolean }) {
+  return (
+    <Box className={getFallbackClassName(cover)}>
       <Box className="mx-auto mb-2.5 grid size-[50px] place-items-center text-[32px] text-white">
         <Icon icon="zi-user" />
       </Box>
@@ -53,4 +57,11 @@ export function HomeHero({ backgroundUrl }: Props) {
       </Text>
     </Box>
   );
+}
+
+function getFallbackClassName(cover: boolean) {
+  const baseClassName = "min-h-44 overflow-hidden rounded-[18px] bg-[radial-gradient(circle_at_3%_86%,#fff0da_0_15%,transparent_28%),radial-gradient(circle_at_97%_12%,#ffc9df_0_18%,transparent_30%),linear-gradient(132deg,#f2d7ff_0%,#ead9ff_48%,#ffddea_100%)] px-[22px] pb-[22px] pt-[55px]";
+  if (cover) return `absolute inset-0 ${baseClassName}`;
+
+  return `mb-3.5 ${baseClassName}`;
 }

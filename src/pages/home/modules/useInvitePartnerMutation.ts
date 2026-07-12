@@ -21,7 +21,7 @@ export function useInvitePartnerMutation() {
       );
     },
     onSuccess: (result) => {
-      let feedback = "Đã tạo chia sẻ lời mời.";
+      let feedback = "Chia sẻ lời mời.";
       if (result.fallbackUsed) {
         feedback = "Không thể mở chia sẻ Zalo, liên kết mời đã được sao chép.";
       }

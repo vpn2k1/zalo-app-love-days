@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+
 import {
   AppCalendarPicker,
   AppImagePicker,
@@ -7,8 +8,13 @@ import {
   AppTextArea,
   AppTextInput,
 } from "@/components/forms";
-import { Box, Button, Text } from "@/components/zaui";
+import { Box, Button } from "@/components/zaui";
 import type { AnniversaryDraft } from "@/types/anniversary";
+
+import {
+  ANNIVERSARY_REPEAT_OPTIONS,
+  getDefaultAnniversaryValues,
+} from "./anniversaryFormDefaults";
 
 type Props = {
   onAdd: (draft: AnniversaryDraft) => void | Promise<unknown>;
@@ -18,16 +24,6 @@ type Props = {
   lockDate?: boolean;
 };
 
-function getDefaultValues(defaultDate = ""): AnniversaryDraft {
-  return {
-    title: "",
-    date: defaultDate,
-    repeat_type: "yearly",
-    note: "",
-    image_url: "",
-  };
-}
-
 export function AnniversaryForm({
   onAdd,
   loading,
@@ -36,7 +32,7 @@ export function AnniversaryForm({
   lockDate,
 }: Props) {
   const methods = useForm<AnniversaryDraft>({
-    defaultValues: getDefaultValues(defaultDate),
+    defaultValues: getDefaultAnniversaryValues(defaultDate),
   });
   const { control, handleSubmit, reset, watch } = methods;
   const title = watch("title");
@@ -44,18 +40,22 @@ export function AnniversaryForm({
   const canAdd = Boolean(title.trim() && date);
 
   useEffect(() => {
-    reset(getDefaultValues(defaultDate));
+    reset(getDefaultAnniversaryValues(defaultDate));
   }, [defaultDate, reset]);
 
   const submit = async (values: AnniversaryDraft) => {
     if (!values.title.trim() || !values.date) return;
+
     await onAdd({
       ...values,
       title: values.title.trim(),
       note: values.note?.trim(),
       image_url: values.image_url?.trim(),
     });
-    reset({ ...getDefaultValues(defaultDate), repeat_type: values.repeat_type });
+    reset({
+      ...getDefaultAnniversaryValues(defaultDate),
+      repeat_type: values.repeat_type,
+    });
     close?.();
   };
 
@@ -85,10 +85,7 @@ export function AnniversaryForm({
           control={control}
           name="repeat_type"
           label="Lặp lại"
-          options={[
-            { label: "Hàng năm", value: "yearly" },
-            { label: "Không lặp", value: "none" },
-          ]}
+          options={ANNIVERSARY_REPEAT_OPTIONS}
         />
         <AppTextArea
           control={control}

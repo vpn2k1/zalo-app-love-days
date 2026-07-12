@@ -3,7 +3,7 @@ import { createCameraContext, PhotoFormat, PhotoQuality } from "zmp-sdk";
 
 import { getPickAlbumAction } from "./cameraAlbumAction";
 import {
-  getFacingMode,
+  getCameraCaptureConstraints,
   getNextFacing,
   isFrontCamera,
   stopCamera,
@@ -16,8 +16,8 @@ import {
   cropImageDataToZoom,
 } from "./cameraZoom";
 
-const CAMERA_CAPTURE_HEIGHT = 1440;
-const CAMERA_CAPTURE_WIDTH = 1080;
+const CAMERA_PHOTO_HEIGHT = 2560;
+const CAMERA_PHOTO_WIDTH = 1920;
 
 type Input = {
   visible: boolean; onCapture: (imageUrl: string) => void;
@@ -48,25 +48,14 @@ export function useAppCameraCapture({
       if (!videoElement) return;
 
       resetCameraState();
-      const camera = createCameraContext({
-        videoElement,
-        mediaConstraints: {
-          audio: false,
-          facingMode: getFacingMode(facing),
-          height: CAMERA_CAPTURE_HEIGHT,
-          mirrored: isFrontCamera(facing),
-          video: true,
-          width: CAMERA_CAPTURE_WIDTH,
-        },
-      });
-      cameraRef.current = camera;
 
       try {
-        await camera.start();
+        const camera = await startCameraWithBestResolution(videoElement, facing);
         if (cancelled) {
           camera.stop();
           return;
         }
+        cameraRef.current = camera;
         setReady(true);
         setZoomSupported(true);
       } catch (cameraError) {
@@ -103,6 +92,8 @@ export function useAppCameraCapture({
 
     const frame = camera.takePhoto({
       format: PhotoFormat.JPEG,
+      minScreenshotHeight: CAMERA_PHOTO_HEIGHT,
+      minScreenshotWidth: CAMERA_PHOTO_WIDTH,
       quality: PhotoQuality.HIGH,
       useVideoSourceSize: true,
     });
@@ -146,6 +137,28 @@ export function useAppCameraCapture({
 
   return {
     capture, changeZoom, close, error, flipCamera, loading, pickAlbum, ready,
-    videoRef, zoom, zoomSupported,
+    mirrored: isFrontCamera(facing), videoRef, zoom, zoomSupported,
   };
+}
+
+async function startCameraWithBestResolution(
+  videoElement: HTMLVideoElement,
+  facing: CameraFacing,
+) {
+  const constraints = getCameraCaptureConstraints(facing);
+  let lastError: unknown = null;
+
+  for (const mediaConstraints of constraints) {
+    const camera = createCameraContext({ mediaConstraints, videoElement });
+
+    try {
+      await camera.start();
+      return camera;
+    } catch (cameraError) {
+      lastError = cameraError;
+      stopCamera(camera);
+    }
+  }
+
+  throw lastError;
 }

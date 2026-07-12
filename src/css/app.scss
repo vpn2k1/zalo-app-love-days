@@ -126,7 +126,7 @@ textarea,
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding-bottom: var(--app-keyboard-height, 0px);
+  padding-bottom: 0;
   transition: padding-bottom 160ms ease-out;
 }
 

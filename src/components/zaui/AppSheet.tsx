@@ -8,6 +8,7 @@ import {
 import type { SyntheticEvent } from "react";
 import { Sheet } from "zmp-ui";
 import type { SheetProps } from "zmp-ui/sheet";
+import { useOverlayBackClose } from "@/components/zaui/useOverlayBackClose";
 
 type Props = Omit<
   SheetProps,
@@ -63,7 +64,12 @@ export const AppSheet = forwardRef<AppSheetRef, Props>(function AppSheet(
     },
     [close, onClose],
   );
+  const closeFromBack = useCallback(() => {
+    close();
+    onClose?.({} as SyntheticEvent);
+  }, [close, onClose]);
 
+  useOverlayBackClose(currentVisible, closeFromBack);
   useImperativeHandle(ref, () => ({ close, open }), [close, open]);
 
   return (

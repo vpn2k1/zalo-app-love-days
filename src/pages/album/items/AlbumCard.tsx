@@ -1,3 +1,4 @@
+import { AppSafeImage } from "@/components/AppSafeImage";
 import { Box, Button, Icon, Text } from "@/components/zaui";
 import type { Anniversary } from "@/types/anniversary";
 import { formatDate } from "@/utils/date";
@@ -57,14 +58,19 @@ export function AlbumCard({ item, onOpenImage, onOpenMemory }: Props) {
 function AlbumImage({ item }: { item: Anniversary }) {
   if (item.image_url) {
     return (
-      <img
+      <AppSafeImage
         alt={item.title}
         className="size-full object-cover transition duration-200 active:scale-[1.02]"
+        fallback={<AlbumImageFallback />}
         src={item.image_url}
       />
     );
   }
 
+  return <AlbumImageFallback />;
+}
+
+function AlbumImageFallback() {
   return (
     <Box className="grid size-full place-items-center p-4 text-center">
       <Box className="grid place-items-center gap-2">

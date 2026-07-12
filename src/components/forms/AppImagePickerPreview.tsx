@@ -1,3 +1,4 @@
+import { AppSafeImage } from "@/components/AppSafeImage";
 import { Box, Button, Icon, Text } from "@/components/zaui";
 
 type Props = {
@@ -54,15 +55,28 @@ function AppImagePickerContent({
 }) {
   if (!value) {
     return (
-      <Box className="app-image-picker-empty">
-        <Box className="app-image-picker-plus">
-          <Icon icon="zi-plus" />
-        </Box>
-      </Box>
+      <AppImagePickerEmpty />
     );
   }
 
-  return <img alt={label} className="app-image-picker-image" src={value} />;
+  return (
+    <AppSafeImage
+      alt={label}
+      className="app-image-picker-image"
+      fallback={<AppImagePickerEmpty />}
+      src={value}
+    />
+  );
+}
+
+function AppImagePickerEmpty() {
+  return (
+    <Box className="app-image-picker-empty">
+      <Box className="app-image-picker-plus">
+        <Icon icon="zi-plus" />
+      </Box>
+    </Box>
+  );
 }
 
 function getPickerAriaLabel(value: string) {

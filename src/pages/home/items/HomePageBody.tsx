@@ -44,6 +44,7 @@ export function HomePageBody() {
         currentPerson={home.currentPerson}
         partnerPerson={home.partnerPerson}
         onAddPartner={home.onAddPartner}
+        onEditProfile={home.onEditProfile}
       />
       <DaysTogetherButton />
       <QuickActionGrid

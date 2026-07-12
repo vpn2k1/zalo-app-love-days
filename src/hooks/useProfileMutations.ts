@@ -6,6 +6,7 @@ import { useCurrentUserActions } from "@/hooks/useCurrentUser";
 import { authService } from "@/services/authService";
 import { coupleDisplayService } from "@/services/coupleDisplayService";
 import { coupleService } from "@/services/coupleService";
+import { leaveSpaceService } from "@/services/leaveSpaceService";
 import { mediaService } from "@/services/mediaService";
 import type { CoupleWithMembers } from "@/types/couple";
 import type { AppUser } from "@/types/user";
@@ -122,8 +123,7 @@ export function useProfileMutations({
   const leaveCoupleMutation = useMutation({
     mutationFn: async () => {
       if (!coupleData || !user) throw new Error("Không tìm thấy.");
-      await coupleService.removeMember(coupleData.couple.id, user.id);
-      await authService.deleteUser(user.id);
+      await leaveSpaceService.leave({ coupleData, user });
     },
     onSuccess: async () => {
       if (!user) return;
@@ -131,7 +131,7 @@ export function useProfileMutations({
       queryClient.removeQueries({
         queryKey: anniversariesQueryKey(coupleData?.couple.id),
       });
-      queryClient.removeQueries({ queryKey: currentUserQueryKey() });
+      queryClient.setQueryData(currentUserQueryKey(), null);
       navigation.goPermission({ replace: true });
     },
     onError: (error) => {

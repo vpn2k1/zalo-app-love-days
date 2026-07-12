@@ -10,6 +10,32 @@ type UploadImageInput = {
 };
 
 export const mediaService = {
+  async removeCoupleMedia(coupleId: string): Promise<void> {
+    if (!supabase) return;
+
+    const paths = await listCoupleMediaPaths(coupleId);
+    if (paths.length === 0) return;
+
+    const { error } = await supabase.storage
+      .from(MEDIA_BUCKET)
+      .remove(paths);
+
+    if (error) throw error;
+  },
+
+  async removeUserAvatar(coupleId: string, userId: string): Promise<void> {
+    if (!supabase) return;
+
+    const paths = await listMatchingScopePaths(coupleId, "avatars", `avatar-${userId}`);
+    if (paths.length === 0) return;
+
+    const { error } = await supabase.storage
+      .from(MEDIA_BUCKET)
+      .remove(paths);
+
+    if (error) throw error;
+  },
+
   async uploadImagePath({
     coupleId,
     fileName,
@@ -37,6 +63,39 @@ export const mediaService = {
     return `${data.publicUrl}?t=${Date.now()}`;
   },
 };
+
+async function listCoupleMediaPaths(coupleId: string) {
+  const scopes = ["avatars", "anniversaries", "backgrounds"];
+  const paths = await Promise.all(scopes.map((scope) => listScopePaths(coupleId, scope)));
+
+  return paths.reduce<string[]>((allPaths, scopePaths) => {
+    return allPaths.concat(scopePaths);
+  }, []);
+}
+
+async function listScopePaths(coupleId: string, scope: string) {
+  return listMatchingScopePaths(coupleId, scope);
+}
+
+async function listMatchingScopePaths(coupleId: string, scope: string, startsWith?: string) {
+  if (!supabase) return [];
+
+  const prefix = `${coupleId}/${scope}`;
+  const { data, error } = await supabase.storage
+    .from(MEDIA_BUCKET)
+    .list(prefix, { limit: 1000 });
+
+  if (error) throw error;
+  if (!data) return [];
+
+  return data
+    .filter((item) => {
+      if (!startsWith) return true;
+
+      return item.name.startsWith(startsWith);
+    })
+    .map((item) => `${prefix}/${item.name}`);
+}
 
 function isLocalImagePath(path: string) {
   return path.startsWith("blob:") || path.startsWith("data:") || !/^https?:\/\//.test(path);

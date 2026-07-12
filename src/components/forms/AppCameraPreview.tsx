@@ -5,6 +5,7 @@ import { AppSpinner, Box, Text } from "@/components/zaui";
 type Props = {
   error: string;
   loading: boolean;
+  mirrored: boolean;
   ready: boolean;
   videoRef: RefObject<HTMLVideoElement>;
   zoom: number;
@@ -13,6 +14,7 @@ type Props = {
 export function AppCameraPreview({
   error,
   loading,
+  mirrored,
   ready,
   videoRef,
   zoom,
@@ -25,7 +27,7 @@ export function AppCameraPreview({
         className={getVideoClassName(ready)}
         muted
         playsInline
-        style={{ transform: `scale(${getPreviewZoom(zoom)})` }}
+        style={{ transform: getPreviewTransform(zoom, mirrored) }}
       />
       {(loading || error) && (
         <Box className="absolute inset-0 z-10 grid place-items-center bg-black/45 px-6 text-center">
@@ -35,6 +37,13 @@ export function AppCameraPreview({
       )}
     </Box>
   );
+}
+
+function getPreviewTransform(zoom: number, mirrored: boolean) {
+  const previewZoom = getPreviewZoom(zoom);
+  if (mirrored) return `scaleX(-1) scale(${previewZoom})`;
+
+  return `scale(${previewZoom})`;
 }
 
 function getPreviewZoom(zoom: number) {

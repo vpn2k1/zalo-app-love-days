@@ -1,3 +1,4 @@
+import { AppSafeImage } from "@/components/AppSafeImage";
 import { Box, Button, Icon, Text } from "@/components/zaui";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
 import type { Anniversary } from "@/types/anniversary";
@@ -77,14 +78,19 @@ function TimelineItem({
 function TimelineThumb({ item }: { item: Anniversary }) {
   if (item.image_url) {
     return (
-      <img
+      <AppSafeImage
         alt=""
         className="size-[46px] flex-none rounded-[16px] object-cover shadow-sm"
+        fallback={<TimelineThumbFallback />}
         src={item.image_url}
       />
     );
   }
 
+  return <TimelineThumbFallback />;
+}
+
+function TimelineThumbFallback() {
   return (
     <Text className="grid size-[46px] flex-none place-items-center rounded-[16px] bg-[#fff0f6] text-[#e14d86]">
       ♡

@@ -1,7 +1,8 @@
 import { useFormContext, useWatch } from "react-hook-form";
 
+import { AppSafeImage } from "@/components/AppSafeImage";
 import { AppImagePicker } from "@/components/forms";
-import { Avatar, Box, Icon } from "@/components/zaui";
+import { Box, Icon } from "@/components/zaui";
 
 import type { ProfileFormValues } from "../types/EditProfilePageType";
 
@@ -21,8 +22,9 @@ export function EditProfilePhoto() {
       optional
       customs={
         <Box className="app-profile-photo" aria-label="Thay ảnh">
-          <img
+          <AppSafeImage
             className="app-profile-photo-avatar"
+            fallback={<ProfilePhotoFallback />}
             src={getAvatarSrc(avatarUrl)}
           />
           <Box className="app-profile-photo-action">
@@ -31,6 +33,14 @@ export function EditProfilePhoto() {
         </Box>
       }
     />
+  );
+}
+
+function ProfilePhotoFallback() {
+  return (
+    <Box className="app-profile-photo-avatar grid place-items-center bg-[#fff0f6] text-[#d9467e]">
+      <Icon icon="zi-user" />
+    </Box>
   );
 }
 

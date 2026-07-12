@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { AppSafeImage } from "@/components/AppSafeImage";
 import { Box, Icon, Text } from "@/components/zaui";
 import type { Anniversary } from "@/types/anniversary";
 import { formatDate } from "@/utils/date";
@@ -112,15 +113,20 @@ function AnniversaryRow({
 function AnniversaryThumb({ item }: { item: Anniversary }) {
   if (item.image_url) {
     return (
-      <img
+      <AppSafeImage
         alt=""
         className="size-[50px] flex-none rounded-[16px] object-cover"
+        fallback={<AnniversaryThumbFallback />}
         src={item.image_url}
       />
     );
   }
 
-  return <Icon icon="zi-heart-solid" className="text-[var(--love-primary)]"/>
+  return <AnniversaryThumbFallback />;
+}
+
+function AnniversaryThumbFallback() {
+  return <Icon icon="zi-heart-solid" className="text-[var(--love-primary)]"/>;
 }
 
 function getRepeatLabel(item: Anniversary) {

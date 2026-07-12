@@ -6,12 +6,14 @@ type Props = {
   currentPerson: Person;
   partnerPerson?: Person;
   onAddPartner: HomePageContentProps["onAddPartner"];
+  onEditProfile: HomePageContentProps["onEditProfile"];
 };
 
 export function CouplePeoplePanel({
   currentPerson,
   partnerPerson,
   onAddPartner,
+  onEditProfile,
 }: Props) {
   let partnerClick: HomePageContentProps["onAddPartner"] | undefined =
     onAddPartner;
@@ -22,7 +24,7 @@ export function CouplePeoplePanel({
   return (
     <Box className="my-4 grid w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-start gap-2 rounded-2xl bg-white p-3">
       <Box className="min-w-0">
-        <PersonChip person={currentPerson} />
+        <PersonChip person={currentPerson} onClick={onEditProfile} />
       </Box>
       <Box className="flex justify-center pt-3">
         <Icon icon="zi-heart-solid" size={36} className="text-[#ef4444]" />

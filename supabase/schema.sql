@@ -127,3 +127,7 @@ for insert with check (bucket_id = 'love-days-media');
 drop policy if exists "anon love days media update" on storage.objects;
 create policy "anon love days media update" on storage.objects
 for update using (bucket_id = 'love-days-media') with check (bucket_id = 'love-days-media');
+
+drop policy if exists "anon love days media delete" on storage.objects;
+create policy "anon love days media delete" on storage.objects
+for delete using (bucket_id = 'love-days-media');

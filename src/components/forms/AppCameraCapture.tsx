@@ -1,6 +1,7 @@
 import { createPortal } from "react-dom";
 
 import { Box } from "@/components/zaui";
+import { useOverlayBackClose } from "@/components/zaui/useOverlayBackClose";
 
 import {
   AppCameraCaptureControls,
@@ -28,6 +29,7 @@ export function AppCameraCapture({
     onClose,
     onPickAlbum,
   });
+  useOverlayBackClose(visible, camera.close);
 
   if (!visible) return null;
 
@@ -46,6 +48,7 @@ export function AppCameraCapture({
           <AppCameraPreview
             error={camera.error}
             loading={camera.loading}
+            mirrored={camera.mirrored}
             ready={camera.ready}
             videoRef={camera.videoRef}
             zoom={camera.zoom}

@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { Box, Button, Icon, Text } from "zmp-ui";
+
+import { AppSafeImage } from "@/components/AppSafeImage";
 import { useImageViewerZoom } from "@/components/zaui/useImageViewerZoom";
+import { useOverlayBackClose } from "@/components/zaui/useOverlayBackClose";
 import type { ImageType, ImageViewerProps } from "zmp-ui/image-viewer";
 
 type Props = Omit<ImageViewerProps, "images"> & {
@@ -19,6 +22,10 @@ export function AppImageViewer({
   const zoom = useImageViewerZoom();
   const image = normalizedImages[currentIndex];
   const hasMultipleImages = normalizedImages.length > 1;
+  const close = () => {
+    zoom.resetZoom();
+    onClose?.();
+  };
 
   useEffect(() => {
     if (!visible) return;
@@ -27,13 +34,11 @@ export function AppImageViewer({
     zoom.resetZoom();
   }, [activeIndex, normalizedImages.length, visible]);
 
+  useOverlayBackClose(visible, close);
+
   if (!visible) return null;
   if (!image) return null;
 
-  const close = () => {
-    zoom.resetZoom();
-    onClose?.();
-  };
   const previous = () => {
     setCurrentIndex((value) =>
       getPreviousIndex(value, normalizedImages.length),
@@ -76,10 +81,11 @@ export function AppImageViewer({
           onPointerUp={zoom.handlePointerEnd}
           onPointerCancel={zoom.handlePointerEnd}
         >
-          <img
+          <AppSafeImage
             alt={image.alt ?? "Ảnh"}
             className="max-h-full max-w-full select-none object-contain transition-transform duration-150"
             draggable={false}
+            fallback={<ImageViewerFallback />}
             src={image.src}
             style={{
               transform: `scale(${zoom.scale})`,
@@ -121,6 +127,14 @@ export function AppImageViewer({
       </Box>
     </Box>,
     document.body,
+  );
+}
+
+function ImageViewerFallback() {
+  return (
+    <Box className="grid size-full place-items-center text-white/70">
+      <Icon icon="zi-photo" className="text-4xl" />
+    </Box>
   );
 }
 

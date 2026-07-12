@@ -7,14 +7,20 @@ import type { Person } from "../types/HomePageType";
 type Props = {
   person?: Person;
   emptyLabel?: string;
+  onClick?: () => void;
   onEmptyClick?: () => void;
 };
 
-export function PersonChip({ person, emptyLabel, onEmptyClick }: Props) {
+export function PersonChip({ person, emptyLabel, onClick, onEmptyClick }: Props) {
   const avatarSrc = person?.avatar || undefined;
   const [showImageViewer, setShowImageViewer] = useState(false);
 
   const handleAvatarClick = () => {
+    if (onClick) {
+      onClick();
+      return;
+    }
+
     if (avatarSrc) {
       setShowImageViewer(true);
       return;

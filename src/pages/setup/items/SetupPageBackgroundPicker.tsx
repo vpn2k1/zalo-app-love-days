@@ -1,4 +1,5 @@
 import { useFormContext, useWatch } from "react-hook-form";
+import { AppSafeImage } from "@/components/AppSafeImage";
 import { Box, Button, Icon, Text, useAppSnackbar } from "@/components/zaui";
 import { pickImagePath } from "@/utils/imagePicker";
 
@@ -22,15 +23,14 @@ export function SetupPageBackgroundPicker() {
         aria-label="Chọn ảnh nền"
       >
         {backgroundUrl && (
-          <img
+          <AppSafeImage
             alt="backgroundUrl"
             className="absolute inset-0 size-full object-cover"
+            fallback={<BackgroundPickerFallback />}
             src={backgroundUrl}
           />
         )}
-        {!backgroundUrl && (
-          <Icon icon="zi-members" size={60} className="text-white" />
-        )}
+        {!backgroundUrl && <BackgroundPickerFallback />}
       </Box>
       <Box className="app-setup-user-copy min-w-0">
         <Text className="app-opening-card-title">Ảnh cặp đôi</Text>
@@ -45,4 +45,8 @@ export function SetupPageBackgroundPicker() {
       </Box>
     </Box>
   );
+}
+
+function BackgroundPickerFallback() {
+  return <Icon icon="zi-members" size={60} className="text-white" />;
 }

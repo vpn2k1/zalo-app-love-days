@@ -66,6 +66,7 @@ export function EditProfilePage() {
         <EditProfileLeaveModal
           visible={confirmLeave}
           leaveLoading={leaveCouple.isPending}
+          memberCount={coupleData.members.length}
           onClose={() => setConfirmLeave(false)}
           onLeave={() => leaveCouple.mutateAsync()}
         />
