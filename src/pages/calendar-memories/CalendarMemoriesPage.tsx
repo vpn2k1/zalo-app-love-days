@@ -28,7 +28,7 @@ export function CalendarMemoriesPage() {
   const [composerVisible, setComposerVisible] = useState(false);
   const navigation = useAppNavigation();
   const { coupleData } = useCoupleData();
-  const { anniversariesQuery } = useAnniversariesData(
+  const { anniversaries, anniversariesQuery } = useAnniversariesData(
     coupleData?.couple.id ?? "",
   );
   const addAnniversaryMutation = useAnniversaryMutation();
@@ -40,13 +40,11 @@ export function CalendarMemoriesPage() {
     },
   });
   useEffect(() => {
-    if (anniversariesQuery?.data) {
-      method.setValue("anniversaries", anniversariesQuery?.data);
-    }
+    method.setValue("anniversaries", anniversaries);
     if (coupleData?.couple.id) {
       method.setValue("coupleId", coupleData?.couple.id);
     }
-  }, [anniversariesQuery, coupleData]);
+  }, [anniversaries, coupleData, method]);
   const selectedDate = method.watch("selectDate");
   const selectedDateValue = getSelectedDateValue(selectedDate);
   const openComposer = () => {

@@ -1,6 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppSnackbar } from "@/components/zaui";
-import { anniversariesQueryKey } from "@/config/queryKeys";
+import {
+  allAnniversariesQueryKey,
+  infiniteAnniversariesQueryKey,
+} from "@/config/queryKeys";
 import { anniversaryService } from "@/services/anniversaryService";
 import type { Anniversary } from "@/types/anniversary";
 import type { MemoryDetailFormValues } from "../types/MemoryDetailPageType";
@@ -27,9 +30,14 @@ export function useMemoryDetailUpdate({ coupleId, memory, onUpdated }: Input) {
       ),
     onSuccess: async (updatedMemory) => {
       onUpdated(updatedMemory);
-      await queryClient.invalidateQueries({
-        queryKey: anniversariesQueryKey(coupleId),
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: allAnniversariesQueryKey(coupleId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: infiniteAnniversariesQueryKey(coupleId),
+        }),
+      ]);
       navigation.goAnniversaries({ replace: true });
       snackbar.showSuccess("Đã cập nhật kỷ niệm.");
     },

@@ -17,7 +17,7 @@ export function MemoryDetailFooter({
 }: Props) {
   return (
     <Box className="fixed bottom-0 left-0 right-0 z-20 mx-auto w-[min(100%,430px)] bg-[#fff4f8]/80 px-[18px] pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md">
-      <Box className="grid grid-cols-2 gap-2 rounded-[24px] border border-pink-100 bg-white/95 p-2 shadow-[0_16px_34px_rgba(134,45,83,0.16)]">
+      <Box className="flex justify-center items-center gap-10">
         <Button
           htmlType="button"
           variant="secondary"

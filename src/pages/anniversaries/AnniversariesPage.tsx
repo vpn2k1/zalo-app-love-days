@@ -1,6 +1,7 @@
 import { AppStatusBar } from "@/components/AppStatusBar";
+import { AppPullToRefresh } from "@/components/AppPullToRefresh";
 import { AppSpinner, Box, Page } from "@/components/zaui";
-import { useAnniversariesData } from "@/hooks/useAnniversariesData";
+import { useInfiniteAnniversariesData } from "@/hooks/useInfiniteAnniversariesData";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
 import { useCoupleData } from "@/hooks/useCoupleData";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
@@ -10,10 +11,14 @@ import { AnniversariesPageHeader } from "./items/AnniversariesPageHeader";
 import { AnniversariesPageList } from "./items/AnniversariesPageList";
 import { useAnniversariesPage } from "./modules/useAnniversariesPage";
 
+const anniversariesPageId = "anniversaries-page";
+
 export function AnniversariesPage() {
   const { user } = useCurrentUser();
   const { coupleData, coupleQuery } = useCoupleData();
-  const { anniversariesQuery } = useAnniversariesData(coupleData?.couple.id ?? '');
+  const { anniversaries, anniversariesQuery } = useInfiniteAnniversariesData(
+    coupleData?.couple.id ?? "",
+  );
 
   if (!user) return null;
 
@@ -26,20 +31,44 @@ export function AnniversariesPage() {
   }
 
   return (
-    <AnniversariesPageContent anniversaries={anniversariesQuery.data ?? []} />
+    <AnniversariesPageContent
+      anniversaries={anniversaries}
+      anniversariesQuery={anniversariesQuery}
+    />
   );
 }
 
 function AnniversariesPageContent({
   anniversaries,
+  anniversariesQuery,
 }: {
   anniversaries: Anniversary[];
+  anniversariesQuery: ReturnType<typeof useInfiniteAnniversariesData>["anniversariesQuery"];
 }) {
   const page = useAnniversariesPage({ anniversaries });
   const navigation = useAppNavigation();
+  const canLoadMore = page.canLoadMore || Boolean(anniversariesQuery.hasNextPage);
+  const loadMore = () => {
+    if (page.canLoadMore) {
+      page.loadMore();
+      return;
+    }
+    if (!anniversariesQuery.hasNextPage) return;
+    if (anniversariesQuery.isFetchingNextPage) return;
+
+    void anniversariesQuery.fetchNextPage();
+  };
 
   return (
-    <Page className="mx-auto min-h-screen w-[min(100%,430px)] bg-[#fff4f8] px-[18px] pb-[34px] pt-4 text-[#3c2435]">
+    <Page
+      id={anniversariesPageId}
+      className="mx-auto min-h-screen w-[min(100%,430px)] bg-[#fff4f8] px-[18px] pb-[34px] pt-4 text-[#3c2435]"
+    >
+      <AppPullToRefresh
+        pageId={anniversariesPageId}
+        refreshing={anniversariesQuery.isRefetching}
+        onRefresh={anniversariesQuery.refetch}
+      />
       <AppStatusBar />
       <AnniversariesPageHeader
         filter={page.filter}
@@ -52,9 +81,9 @@ function AnniversariesPageContent({
         onCreateMemory={navigation.goCreateMemory}
       />
       <AnniversariesPageList
-        canLoadMore={page.canLoadMore}
+        canLoadMore={canLoadMore}
         items={page.items}
-        onLoadMore={page.loadMore}
+        onLoadMore={loadMore}
         onOpenMemory={navigation.goMemory}
       />
     </Page>

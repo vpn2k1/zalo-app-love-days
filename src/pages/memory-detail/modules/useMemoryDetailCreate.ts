@@ -1,7 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { useAppSnackbar } from "@/components/zaui";
-import { anniversariesQueryKey } from "@/config/queryKeys";
+import {
+  allAnniversariesQueryKey,
+  infiniteAnniversariesQueryKey,
+} from "@/config/queryKeys";
 import { anniversaryService } from "@/services/anniversaryService";
 import type { Anniversary } from "@/types/anniversary";
 
@@ -29,9 +32,14 @@ export function useMemoryDetailCreate({ coupleId, userId, onCreated }: Input) {
       ),
     onSuccess: async (createdMemory) => {
       onCreated(createdMemory);
-      await queryClient.invalidateQueries({
-        queryKey: anniversariesQueryKey(coupleId),
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: allAnniversariesQueryKey(coupleId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: infiniteAnniversariesQueryKey(coupleId),
+        }),
+      ]);
       navigate.goAnniversaries({ replace: true });
       snackbar.showSuccess("Đã tạo kỷ niệm.");
     },

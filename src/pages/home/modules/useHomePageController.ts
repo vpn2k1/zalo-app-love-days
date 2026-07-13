@@ -12,7 +12,7 @@ import { useInvitePartnerMutation } from "./useInvitePartnerMutation";
 export function useHomePageController() {
   const { currentUserQuery, user } = useCurrentUser();
   const { coupleData, coupleQuery } = useCoupleData();
-  const { anniversariesQuery } = useAnniversariesData(
+  const { anniversaries, anniversariesQuery } = useAnniversariesData(
     coupleData?.couple.id || "",
   );
   const addAnniversary = useAnniversaryMutation();
@@ -42,7 +42,7 @@ export function useHomePageController() {
     contentProps = {
       user,
       coupleData,
-      anniversaries: anniversariesQuery.data || [],
+      anniversaries,
       addPartnerLoading: invitePartner.isPending,
       addAnniversaryLoading: addAnniversary.isPending,
       refreshing,
@@ -51,7 +51,6 @@ export function useHomePageController() {
         invitePartner.isPending,
         leaveCouple.isPending,
         updateBackground.isPending,
-        refreshing,
       ),
       onAddPartner: () => invitePartner.mutateAsync(),
       onAddAnniversary: (draft) => addAnniversary.mutateAsync(draft),
@@ -71,13 +70,10 @@ function getBlockingMessage(
   isInvitingPartner: boolean,
   isLeavingCouple: boolean,
   isUpdatingBackground: boolean,
-  isRefreshing: boolean,
 ) {
   if (isAddingAnniversary) return "Đang lưu ngày kỷ niệm...";
   if (isInvitingPartner) return "Đang mời người ấy...";
   if (isLeavingCouple) return "Đang rời không gian...";
   if (isUpdatingBackground) return "Đang cập nhật ảnh nền...";
-  if (isRefreshing) return "Đang làm mới...";
-
   return null;
 }

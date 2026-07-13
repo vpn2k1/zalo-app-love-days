@@ -1,6 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppSnackbar } from "@/components/zaui";
-import { anniversariesQueryKey, coupleQueryKey } from "@/config/queryKeys";
+import {
+  allAnniversariesQueryKey,
+  coupleQueryKey,
+  infiniteAnniversariesQueryKey,
+} from "@/config/queryKeys";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
 import { useCurrentUserActions } from "@/hooks/useCurrentUser";
 import { authService } from "@/services/authService";
@@ -38,9 +42,14 @@ export function useCreateCoupleMutation({ user }: Input) {
         coupleQueryKey(appUser.id),
         coupleData,
       );
-      await queryClient.invalidateQueries({
-        queryKey: anniversariesQueryKey(coupleData.couple.id),
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: allAnniversariesQueryKey(coupleData.couple.id),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: infiniteAnniversariesQueryKey(coupleData.couple.id),
+        }),
+      ]);
       navigation.goHome({ replace: true });
     },
     onError: (error) => {

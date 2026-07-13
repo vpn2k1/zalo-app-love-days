@@ -295,7 +295,7 @@
 }
 
 .app-opening-action {
-  position: absolute;
+  /* position: absolute; */
   right: 18px;
   bottom: max(24px, env(safe-area-inset-bottom));
   left: 18px;

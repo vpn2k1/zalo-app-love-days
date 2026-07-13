@@ -38,7 +38,7 @@ export function QuickActionGrid({
           <Box className="grid size-9 place-items-center rounded-2xl bg-white/70 shadow-sm">
             <Icon icon={action.icon} />
           </Box>
-          <Text className="mt-2 block overflow-hidden text-ellipsis whitespace-nowrap text-[12px] font-extrabold text-[#3a2232]">
+          <Text className="mt-2 block overflow-hidden text-ellipsis whitespace-nowrap text-[12px] font-extrabold text-[#3a2232] text-center">
             {action.label}
           </Text>
         </Box>

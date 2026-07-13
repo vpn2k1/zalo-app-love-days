@@ -20,10 +20,8 @@ export type AlbumPageState = {
   canLoadMore: boolean;
   filters: AlbumFilters;
   filteredCount: number;
-  isRefreshing: boolean;
   items: Anniversary[];
   loadMore: () => void;
-  refresh: () => void;
   setFilters: (filters: AlbumFilters) => void;
   setSortOrder: (sortOrder: AlbumSortOrder) => void;
   sortOrder: AlbumSortOrder;

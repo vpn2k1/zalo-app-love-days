@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 
 import { AppStatusBar } from "@/components/AppStatusBar";
+import { AppPullToRefresh } from "@/components/AppPullToRefresh";
 import { AppSpinner, Box, Page } from "@/components/zaui";
-import { useAnniversariesData } from "@/hooks/useAnniversariesData";
+import { useInfiniteAnniversariesData } from "@/hooks/useInfiniteAnniversariesData";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
 import { useCoupleData } from "@/hooks/useCoupleData";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
@@ -11,10 +12,14 @@ import { AlbumPageGrid } from "./items/AlbumPageGrid";
 import { AlbumPageHeader } from "./items/AlbumPageHeader";
 import { useAlbumPage } from "./modules/useAlbumPage";
 
+const albumPageId = "album-page";
+
 export function AlbumPage() {
   const { user } = useCurrentUser();
   const { coupleData, coupleQuery } = useCoupleData();
-  const { anniversariesQuery } = useAnniversariesData(coupleData?.couple.id ?? '');
+  const { anniversaries, anniversariesQuery } = useInfiniteAnniversariesData(
+    coupleData?.couple.id ?? "",
+  );
 
   if (!user) return null;
 
@@ -26,24 +31,43 @@ export function AlbumPage() {
 
   return (
     <AlbumPageContent
-      anniversaries={anniversariesQuery.data ?? []}
-      onRefresh={anniversariesQuery.refetch}
+      anniversaries={anniversaries}
+      anniversariesQuery={anniversariesQuery}
     />
   );
 }
 
 function AlbumPageContent({
   anniversaries,
-  onRefresh,
+  anniversariesQuery,
 }: {
   anniversaries: Anniversary[];
-  onRefresh: () => Promise<unknown>;
+  anniversariesQuery: ReturnType<typeof useInfiniteAnniversariesData>["anniversariesQuery"];
 }) {
   const navigation = useAppNavigation();
-  const page = useAlbumPage({ anniversaries, onRefresh });
+  const page = useAlbumPage({ anniversaries });
+  const canLoadMore = page.canLoadMore || Boolean(anniversariesQuery.hasNextPage);
+  const loadMore = () => {
+    if (page.canLoadMore) {
+      page.loadMore();
+      return;
+    }
+    if (!anniversariesQuery.hasNextPage) return;
+    if (anniversariesQuery.isFetchingNextPage) return;
+
+    void anniversariesQuery.fetchNextPage();
+  };
 
   return (
-    <Page className="mx-auto min-h-screen w-[min(100%,430px)] bg-[#fff4f8] px-[18px] pb-[calc(34px+env(safe-area-inset-bottom))] pt-4 text-[#3c2435] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <Page
+      id={albumPageId}
+      className="mx-auto min-h-screen w-[min(100%,430px)] bg-[#fff4f8] px-[18px] pb-[calc(34px+env(safe-area-inset-bottom))] pt-4 text-[#3c2435] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+    >
+      <AppPullToRefresh
+        pageId={albumPageId}
+        refreshing={anniversariesQuery.isRefetching}
+        onRefresh={anniversariesQuery.refetch}
+      />
       <AppStatusBar />
       <AlbumPageHeader
         filteredCount={page.filteredCount}
@@ -55,12 +79,10 @@ function AlbumPageContent({
         onBack={navigation.goBack}
       />
       <AlbumPageGrid
-        canLoadMore={page.canLoadMore}
-        isRefreshing={page.isRefreshing}
+        canLoadMore={canLoadMore}
         items={page.items}
-        onLoadMore={page.loadMore}
+        onLoadMore={loadMore}
         onOpenMemory={navigation.goMemory}
-        onRefresh={page.refresh}
       />
     </Page>
   );

@@ -4,7 +4,10 @@ import { useCoupleData } from "@/hooks/useCoupleData";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { anniversaryService } from "@/services/anniversaryService";
 import type { AnniversaryDraft } from "@/types/anniversary";
-import { anniversariesQueryKey } from "@/config/queryKeys";
+import {
+  allAnniversariesQueryKey,
+  infiniteAnniversariesQueryKey,
+} from "@/config/queryKeys";
 
 export function useAnniversaryMutation() {
   const queryClient = useQueryClient();
@@ -18,9 +21,14 @@ export function useAnniversaryMutation() {
       return anniversaryService.create(coupleData.couple.id, user.id, draft);
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: anniversariesQueryKey(coupleData?.couple.id),
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: allAnniversariesQueryKey(coupleData?.couple.id),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: infiniteAnniversariesQueryKey(coupleData?.couple.id),
+        }),
+      ]);
       await queryClient.invalidateQueries({
         queryKey: ["memory"],
       });

@@ -10,7 +10,12 @@ import { leaveSpaceService } from "@/services/leaveSpaceService";
 import { mediaService } from "@/services/mediaService";
 import type { CoupleWithMembers } from "@/types/couple";
 import type { AppUser } from "@/types/user";
-import { anniversariesQueryKey, coupleQueryKey, currentUserQueryKey } from "@/config/queryKeys";
+import {
+  allAnniversariesQueryKey,
+  coupleQueryKey,
+  currentUserQueryKey,
+  infiniteAnniversariesQueryKey,
+} from "@/config/queryKeys";
 
 type Input = {
   coupleData: CoupleWithMembers | null;
@@ -129,7 +134,10 @@ export function useProfileMutations({
       if (!user) return;
       await queryClient.invalidateQueries({ queryKey: coupleQueryKey(user.id) });
       queryClient.removeQueries({
-        queryKey: anniversariesQueryKey(coupleData?.couple.id),
+        queryKey: allAnniversariesQueryKey(coupleData?.couple.id),
+      });
+      queryClient.removeQueries({
+        queryKey: infiniteAnniversariesQueryKey(coupleData?.couple.id),
       });
       queryClient.setQueryData(currentUserQueryKey(), null);
       navigation.goPermission({ replace: true });

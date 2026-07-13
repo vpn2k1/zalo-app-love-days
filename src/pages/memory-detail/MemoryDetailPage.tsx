@@ -1,11 +1,9 @@
-import { useAnniversariesData } from "@/hooks/useAnniversariesData";
 import {
   quickMemoryImageStorageKey,
   useAppNavigation,
 } from "@/hooks/useAppNavigation";
 import { useCoupleData } from "@/hooks/useCoupleData";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import type { Anniversary } from "@/types/anniversary";
 import { useSearchParams } from "@/components/zaui";
 
 import { MemoryDetailCreateContent } from "./items/MemoryDetailCreateContent";
@@ -19,16 +17,11 @@ export function MemoryDetailPage() {
   const [searchParams] = useSearchParams();
   const mode = getMemoryDetailMode(searchParams.get("type"));
   const memoryId = searchParams.get("id");
-  const { data } = useGetMemory();
-  console.log(data);
-  
+  const memoryQuery = useGetMemory();
   const initialImageUrl = getInitialImageUrl(searchParams.get("quickImage"));
   const navigation = useAppNavigation();
   const { user } = useCurrentUser();
   const { coupleData, coupleQuery } = useCoupleData();
-  const { anniversariesQuery } = useAnniversariesData(
-    coupleData?.couple.id ?? "",
-  );
 
   if (!user) return null;
 
@@ -40,10 +33,15 @@ export function MemoryDetailPage() {
     return <MemoryDetailMissingState onBack={navigation.goBack} />;
   }
 
+  const coupleId = coupleData?.couple.id;
+  if (!coupleId) {
+    return <MemoryDetailLoadingState />;
+  }
+
   if (mode === "create") {
     return (
       <MemoryDetailCreateContent
-        coupleId={coupleData.couple.id}
+        coupleId={coupleId}
         initialImageUrl={initialImageUrl}
         userId={user.id}
         onBack={navigation.goBack}
@@ -52,29 +50,25 @@ export function MemoryDetailPage() {
     );
   }
 
-  if (anniversariesQuery.isPending) {
+  if (!memoryId) {
+    return <MemoryDetailMissingState onBack={navigation.goBack} />;
+  }
+
+  if (memoryQuery.isPending) {
     return <MemoryDetailLoadingState />;
   }
 
-  const memory = findMemory(anniversariesQuery.data, memoryId);
-  if (!memory) {
+  if (!memoryQuery.data) {
     return <MemoryDetailMissingState onBack={navigation.goBack} />;
   }
 
   return (
     <MemoryDetailUpdateContent
-      coupleId={coupleData.couple.id}
-      memory={memory}
+      coupleId={coupleId}
+      memory={memoryQuery.data}
       onBack={navigation.goBack}
     />
   );
-}
-
-function findMemory(items: Anniversary[] | undefined, memoryId: string | null) {
-  if (!items) return undefined;
-  if (!memoryId) return undefined;
-
-  return items.find((item) => item.id === memoryId);
 }
 
 function getMemoryDetailMode(value: string | null): MemoryDetailMode {

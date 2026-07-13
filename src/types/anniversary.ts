@@ -22,6 +22,13 @@ export type AnniversaryDraft = {
 
 export type AnniversaryUpdateInput = AnniversaryDraft;
 
+export type AnniversaryPage = {
+  hasMore: boolean;
+  items: Anniversary[];
+  limit: number;
+  page: number;
+};
+
 export type UpcomingAnniversary = {
   title: string;
   date: string;

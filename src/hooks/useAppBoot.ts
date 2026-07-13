@@ -7,7 +7,7 @@ import {
 } from "@/hooks/useCurrentUser";
 import { coupleService } from "@/services/coupleService";
 import { anniversaryService } from "@/services/anniversaryService";
-import { anniversariesQueryKey, coupleQueryKey } from "@/config/queryKeys";
+import { allAnniversariesQueryKey, coupleQueryKey } from "@/config/queryKeys";
 import { getInviteCodeFromUrl } from "@/utils/invite";
 import type { AppUser } from "@/types/user";
 import type { QueryClient } from "@tanstack/react-query";
@@ -27,7 +27,7 @@ async function resolveSpaceAfterBoot(
 
   const coupleId = coupleData.couple.id;
   await queryClient.prefetchQuery({
-    queryKey: anniversariesQueryKey(coupleId),
+    queryKey: allAnniversariesQueryKey(coupleId),
     queryFn: () => anniversaryService.list(coupleId),
   });
   navigation.goHome({ replace: true });
@@ -50,7 +50,7 @@ export function useAppBoot() {
         })
         .catch(() => undefined)
         .then(() => {
-          navigation.goInvite({ replace: true });
+          navigation.goInvite(inviteCode, { replace: true });
         });
       return;
     }

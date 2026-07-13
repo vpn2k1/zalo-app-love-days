@@ -2,9 +2,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { useAppSnackbar } from "@/components/zaui";
 import {
-  anniversariesQueryKey,
+  allAnniversariesQueryKey,
   coupleQueryKey,
   currentUserQueryKey,
+  infiniteAnniversariesQueryKey,
 } from "@/config/queryKeys";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
 import { useCoupleData } from "@/hooks/useCoupleData";
@@ -31,7 +32,10 @@ export function useLeaveCoupleMutation() {
         queryKey: coupleQueryKey(user.id),
       });
       queryClient.removeQueries({
-        queryKey: anniversariesQueryKey(coupleData?.couple.id),
+        queryKey: allAnniversariesQueryKey(coupleData?.couple.id),
+      });
+      queryClient.removeQueries({
+        queryKey: infiniteAnniversariesQueryKey(coupleData?.couple.id),
       });
       queryClient.setQueryData(currentUserQueryKey(), null);
       navigation.goPermission({ replace: true });

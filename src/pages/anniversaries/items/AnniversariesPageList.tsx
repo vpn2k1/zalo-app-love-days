@@ -47,6 +47,13 @@ export function AnniversariesPageList({
         <Text className="mt-1 text-xs leading-[1.35] text-[#8b6b7d]">
           Thử đổi từ khóa hoặc bộ lọc.
         </Text>
+        {canLoadMore && (
+          <div ref={sentinelRef} className="min-h-10 py-3">
+            <Text className="text-xs font-bold text-[#8b6b7d]">
+              Đang tìm thêm...
+            </Text>
+          </div>
+        )}
       </Box>
     );
   }

@@ -8,7 +8,11 @@ import { isInviteConflictMessage } from "@/services/inviteErrors";
 import { inviteService } from "@/services/inviteService";
 import type { CoupleWithMembers } from "@/types/couple";
 import { getInviteCodeFromUrl } from "@/utils/invite";
-import { anniversariesQueryKey, coupleQueryKey } from "@/config/queryKeys";
+import {
+  allAnniversariesQueryKey,
+  coupleQueryKey,
+  infiniteAnniversariesQueryKey,
+} from "@/config/queryKeys";
 import type { AppUser } from "@/types/user";
 
 export function useInviteAcceptance() {
@@ -35,9 +39,14 @@ export function useInviteAcceptance() {
       setUser(appUser);
       setInviteConflict("");
       queryClient.setQueryData(coupleQueryKey(appUser.id), accepted);
-      await queryClient.invalidateQueries({
-        queryKey: anniversariesQueryKey(accepted.couple.id),
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: allAnniversariesQueryKey(accepted.couple.id),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: infiniteAnniversariesQueryKey(accepted.couple.id),
+        }),
+      ]);
       navigation.goHome({ replace: true });
     },
     onError: (error) => {

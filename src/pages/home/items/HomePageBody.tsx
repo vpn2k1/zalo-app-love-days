@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { AppPullToRefresh } from "@/components/AppPullToRefresh";
 import { Page } from "@/components/zaui";
 import { formatDate } from "@/utils/date";
 import { AnniversaryComposer } from "./AnniversaryComposer";
@@ -13,6 +14,8 @@ import { QuickMemoryCaptureModal } from "./QuickMemoryCaptureModal";
 import { StatusBar } from "./StatusBar";
 import { TimelineSection } from "./TimelineSection";
 import { useHomePageView } from "../modules/useHomePageView";
+
+const homePageId = "home-page";
 
 export function HomePageBody() {
   const home = useHomePageView();
@@ -31,7 +34,15 @@ export function HomePageBody() {
   };
 
   return (
-    <Page className="mx-auto min-h-screen w-[min(100%,430px)] bg-[#fff4f8] px-[18px] pb-[34px] pt-4 text-[#3c2435] [scrollbar-width:none]">
+    <Page
+      id={homePageId}
+      className="mx-auto min-h-screen w-[min(100%,430px)] bg-[#fff4f8] px-[18px] pb-[34px] pt-4 text-[#3c2435] [scrollbar-width:none]"
+    >
+      <AppPullToRefresh
+        pageId={homePageId}
+        refreshing={Boolean(home.refreshing)}
+        onRefresh={home.onRefresh}
+      />
       <StatusBar />
       <HomeHeader
         title="Góc nhỏ của chúng mình"

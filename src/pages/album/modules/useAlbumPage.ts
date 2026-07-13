@@ -9,16 +9,12 @@ import type {
 } from "../types/AlbumPageType";
 
 const PAGE_SIZE = 10;
-const REFRESH_DELAY_MS = 450;
-
 type Input = {
   anniversaries: Anniversary[];
-  onRefresh: () => Promise<unknown>;
 };
 
 export function useAlbumPage({
   anniversaries,
-  onRefresh,
 }: Input): AlbumPageState {
   const [filters, setFilters] = useState<AlbumFilters>({
     date: "",
@@ -27,7 +23,6 @@ export function useAlbumPage({
     startDate: "",
     year: "",
   });
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [sortOrder, setSortOrder] = useState<AlbumSortOrder>("newest");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
@@ -50,25 +45,12 @@ export function useAlbumPage({
     setVisibleCount((current) => current + PAGE_SIZE);
   };
 
-  const refresh = () => {
-    if (isRefreshing) return;
-
-    setIsRefreshing(true);
-    void onRefresh()
-      .catch(() => undefined)
-      .then(() => {
-        window.setTimeout(() => setIsRefreshing(false), REFRESH_DELAY_MS);
-      });
-  };
-
   return {
     canLoadMore,
     filteredCount: filteredItems.length,
     filters,
-    isRefreshing,
     items,
     loadMore,
-    refresh,
     setFilters,
     setSortOrder,
     sortOrder,

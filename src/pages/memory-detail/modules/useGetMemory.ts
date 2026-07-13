@@ -1,21 +1,21 @@
 import { useCoupleData } from "@/hooks/useCoupleData";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { anniversaryService } from "@/services/anniversaryService";
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "zmp-ui";
 
 export function useGetMemory() {
   const [searchParams] = useSearchParams();
   const memoryId = searchParams.get("id");
-  
   const { coupleData } = useCoupleData();
+  const coupleId = coupleData?.couple.id;
+
   return useQuery({
-    queryKey: ["get-memory", memoryId],
+    queryKey: ["get-memory", coupleId, memoryId],
     queryFn: () =>
       anniversaryService.getOne({
-        coupleId: coupleData?.couple.id as string,
-        id: memoryId as string,
+        coupleId: coupleId ?? "",
+        id: memoryId ?? "",
       }),
-    enabled: !!memoryId || !!coupleData?.couple.id,
+    enabled: Boolean(memoryId && coupleId),
   });
 }

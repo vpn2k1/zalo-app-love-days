@@ -1,13 +1,13 @@
-import { anniversariesQueryKey } from "@/config/queryKeys";
+import { allAnniversariesQueryKey } from "@/config/queryKeys";
 import { anniversaryService } from "@/services/anniversaryService";
 import { useQuery } from "@tanstack/react-query";
 
 export function useAnniversariesData(id: string) {
   const anniversariesQuery = useQuery({
-    queryKey: anniversariesQueryKey(id),
+    queryKey: allAnniversariesQueryKey(id),
     queryFn: () => anniversaryService.list(id),
-    enabled: !!id,
+    enabled: Boolean(id),
   });
 
-  return { anniversariesQuery };
+  return { anniversaries: anniversariesQuery.data ?? [], anniversariesQuery };
 }

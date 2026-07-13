@@ -7,7 +7,7 @@ export function InviteAcceptHero() {
         <Icon icon="zi-heart-solid" size={50} className="text-red-400" />
       </Box>
       <Text
-        className="text-[var(--love-primary)] text-lg font-serif"
+        className="text-[var(--love-primary)] text-lg font-serif text-center"
       >
         Người ấy đang chờ bạn tham gia
       </Text>

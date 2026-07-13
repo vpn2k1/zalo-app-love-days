@@ -4,23 +4,59 @@ import { mediaService } from "@/services/mediaService";
 import type {
   Anniversary,
   AnniversaryDraft,
+  AnniversaryPage,
   AnniversaryUpdateInput,
 } from "@/types/anniversary";
 
+type AnniversaryListInput = {
+  limit?: number;
+  page?: number;
+};
+
+const ALL_ANNIVERSARIES_PAGE_LIMIT = 100;
+
 export const anniversaryService = {
   async list(coupleId: string): Promise<Anniversary[]> {
+    const anniversaries: Anniversary[] = [];
+    let page = 1;
+
+    while (true) {
+      const result = await anniversaryService.listPage(coupleId, {
+        limit: ALL_ANNIVERSARIES_PAGE_LIMIT,
+        page,
+      });
+      anniversaries.push(...result.items);
+      if (!result.hasMore) return anniversaries;
+
+      page += 1;
+    }
+  },
+
+  async listPage(coupleId: string, input: AnniversaryListInput = {}): Promise<AnniversaryPage> {
+    const page = normalizePositiveNumber(input.page, 1);
+    const limit = normalizePositiveNumber(input.limit, 20);
+
     if (isMockMode || !supabase) {
-      return mockDb.getAnniversaries(coupleId);
+      return getMockAnniversaryPage(coupleId, page, limit);
     }
 
+    const from = (page - 1) * limit;
+    const to = from + limit;
     const { data, error } = await supabase
       .from("anniversaries")
       .select("*")
       .eq("couple_id", coupleId)
-      .order("date", { ascending: true });
+      .order("date", { ascending: false })
+      .range(from, to);
 
     if (error) throw error;
-    return data ?? [];
+    const items = data ?? [];
+    return {
+      hasMore: items.length > limit,
+      items: items.slice(0, limit),
+      limit,
+      page,
+    };
   },
 
   async create(
@@ -96,7 +132,12 @@ export const anniversaryService = {
     coupleId: string;
   }): Promise<Anniversary> {
     if (isMockMode || !supabase) {
-      return mockDb.getAnniversaries(coupleId)[0];
+      const anniversary = mockDb
+        .getAnniversaries(coupleId)
+        .find((item) => item.id === id);
+      if (!anniversary) throw new Error("Không tìm thấy kỷ niệm.");
+
+      return anniversary;
     }
 
     const { data, error } = await supabase
@@ -110,3 +151,41 @@ export const anniversaryService = {
     return data;
   },
 };
+
+function getMockAnniversaryPage(
+  coupleId: string,
+  page: number,
+  limit: number,
+): AnniversaryPage {
+  const from = (page - 1) * limit;
+  const items = mockDb
+    .getAnniversaries(coupleId)
+    .sort(compareAnniversaryDateDesc)
+    .slice(from, from + limit + 1);
+
+  return {
+    hasMore: items.length > limit,
+    items: items.slice(0, limit),
+    limit,
+    page,
+  };
+}
+
+function normalizePositiveNumber(value: number | undefined, fallback: number) {
+  if (!value) return fallback;
+  if (!Number.isFinite(value)) return fallback;
+  if (value < 1) return fallback;
+
+  return Math.floor(value);
+}
+
+function compareAnniversaryDateDesc(left: Anniversary, right: Anniversary) {
+  return getDateTime(right.date) - getDateTime(left.date);
+}
+
+function getDateTime(value: string) {
+  const time = new Date(value).getTime();
+  if (Number.isNaN(time)) return 0;
+
+  return time;
+}

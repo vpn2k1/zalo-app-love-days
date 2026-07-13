@@ -10,11 +10,6 @@ type Props = {
 export function HomeHeader({ title, subtitle, onEditProfile, avatar }: Props) {
   return (
     <Box className="mb-[13px] flex items-center gap-2">
-      <Box aria-label="Mở hồ sơ" onClick={onEditProfile}>
-        <Avatar size={40} src={avatar} className="rounded-full">
-          <Icon icon="zi-user" />
-        </Avatar>
-      </Box>
       <Box>
         <Text.Title
           size="large"

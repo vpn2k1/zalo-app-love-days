@@ -1,10 +1,11 @@
 export const getInviteCodeFromUrl = () => {
   const params = new URLSearchParams(window.location.search);
-  return params.get("inviteCode") ?? params.get("invite_code");
+  const inviteCode = params.get("inviteCode") ?? params.get("invite_code");
+  return inviteCode?.trim() || null;
 };
 
 export const buildInvitePath = (inviteCode: string) =>
-  `/?inviteCode=${encodeURIComponent(inviteCode)}`;
+  `/invite?inviteCode=${encodeURIComponent(inviteCode)}`;
 
 export const buildInviteUrl = (inviteCode: string) => {
   const origin = window.location.origin || "https://zalo.me";

@@ -38,8 +38,11 @@ export function AlbumCard({ item, onOpenImage, onOpenMemory }: Props) {
             {formatDate(item.date)}
           </Text>
         </Box>
-        <Text className="line-clamp-2 min-h-[36px] text-sm font-[850] leading-[1.25] text-[#3a2232]">
+        <Text className="line-clamp-1 text-sm font-[850] leading-[1.25] text-[#3a2232]">
           {item.title}
+        </Text>
+        <Text className="line-clamp-2 mt-1 text-xs leading-[1.35] text-[#8b6b7d]">
+          {item.note}
         </Text>
         <Button
           fullWidth

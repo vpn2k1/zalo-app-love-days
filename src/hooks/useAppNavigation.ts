@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 
 import { useNavigate } from "@/components/zaui";
+import { buildInvitePath } from "@/utils/invite";
 
 export const appPaths = {
   album: "/album",
@@ -49,8 +50,8 @@ export function useAppNavigation() {
           `${appPaths.memory}?type=update&id=${encodeURIComponent(memoryId)}`,
         );
       },
-      goInvite: (options?: NavigateOptions) =>
-        navigate(appPaths.invite, options),
+      goInvite: (inviteCode: string, options?: NavigateOptions) =>
+        navigate(buildInvitePath(inviteCode), options),
       goPermission: (options?: NavigateOptions) => {
         navigate(appPaths.permission, options);
       },
