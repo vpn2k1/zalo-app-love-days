@@ -1,24 +1,24 @@
 import { useState } from "react";
 
 import { AppPullToRefresh } from "@/components/AppPullToRefresh";
+import { BlockingLoadingOverlay } from "@/components/BlockingLoadingOverlay";
+import { QuickMemoryCaptureModal } from "@/components/QuickMemoryCaptureModal";
 import { Page } from "@/components/zaui";
 import { formatDate } from "@/utils/date";
-import { AnniversaryComposer } from "./AnniversaryComposer";
 import { CouplePeoplePanel } from "./CouplePeoplePanel";
 import { DaysTogetherButton } from "./DaysTogetherButton";
 import { HomeHeader } from "./HomeHeader";
 import { HomeHero } from "./HomeHero";
 import { MemoryGardenSection } from "./MemoryGardenSection";
 import { QuickActionGrid } from "./QuickActionGrid";
-import { QuickMemoryCaptureModal } from "./QuickMemoryCaptureModal";
 import { StatusBar } from "./StatusBar";
 import { TimelineSection } from "./TimelineSection";
-import { useHomePageView } from "../modules/useHomePageView";
+import { useHomePage } from "../modules/useHomePage";
 
 const homePageId = "home-page";
 
 export function HomePageBody() {
-  const home = useHomePageView();
+  const home = useHomePage();
   const [quickCaptureVisible, setQuickCaptureVisible] = useState(false);
 
   const openQuickCapture = () => {
@@ -43,6 +43,10 @@ export function HomePageBody() {
         refreshing={Boolean(home.refreshing)}
         onRefresh={home.onRefresh}
       />
+      <BlockingLoadingOverlay
+        show={Boolean(home.blockingMessage)}
+        message={home.blockingMessage || "Chờ một chút..."}
+      />
       <StatusBar />
       <HomeHeader
         title="Góc nhỏ của chúng mình"
@@ -54,7 +58,7 @@ export function HomePageBody() {
       <CouplePeoplePanel
         currentPerson={home.currentPerson}
         partnerPerson={home.partnerPerson}
-        onAddPartner={home.onAddPartner}
+        onAddPartner={home.addPartner}
         onEditProfile={home.onEditProfile}
       />
       <DaysTogetherButton />
@@ -69,16 +73,7 @@ export function HomePageBody() {
         onClose={closeQuickCapture}
         onSelectImage={createQuickMemory}
       />
-      <AnniversaryComposer
-        loading={home.addAnniversaryLoading}
-        visible={home.showAnniversaryComposer}
-        onAdd={home.addAnniversary}
-        onClose={home.hideAnniversaryForm}
-      />
-      <MemoryGardenSection
-        nextAnniversary={home.nextAnniversary}
-        onShowAnniversaryForm={home.showAnniversaryForm}
-      />
+      <MemoryGardenSection nextAnniversary={home.nextAnniversary} />
       <TimelineSection
         anniversaries={home.visibleAnniversaries}
         onViewAll={home.onViewAllAnniversaries}

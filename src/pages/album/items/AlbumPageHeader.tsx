@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { useFormContext, useWatch } from "react-hook-form";
 
 import { AppPageHeader } from "@/components/AppPageHeader";
 import { Box, Button, Icon, Text } from "@/components/zaui";
@@ -6,28 +7,28 @@ import type { AppSheetRef } from "@/components/zaui";
 
 import { AlbumFilterSheet } from "./AlbumFilterSheet";
 import { getFilterLabel, getSortLabel } from "./albumFilterHelpers";
-import type { AlbumFilters, AlbumSortOrder } from "../types/AlbumPageType";
+import type { AlbumPageFormValues } from "../types/AlbumPageType";
 
 type Props = {
   filteredCount: number;
-  filters: AlbumFilters;
-  setFilters: (filters: AlbumFilters) => void;
-  setSortOrder: (sortOrder: AlbumSortOrder) => void;
-  sortOrder: AlbumSortOrder;
   totalCount: number;
   onBack: () => void;
+  onQuickAdd: () => void;
 };
 
 export function AlbumPageHeader({
   filteredCount,
-  filters,
-  setFilters,
-  setSortOrder,
-  sortOrder,
   totalCount,
   onBack,
+  onQuickAdd,
 }: Props) {
   const sheetRef = useRef<AppSheetRef>(null);
+  const { control } = useFormContext<AlbumPageFormValues>();
+  const [filters, sortOrder] = useWatch({
+    control,
+    exact: true,
+    name: ["filters", "sortOrder"],
+  });
 
   return (
     <Box>
@@ -36,13 +37,22 @@ export function AlbumPageHeader({
         subtitle={`${filteredCount}/${totalCount} ảnh kỷ niệm`}
         onBack={onBack}
         action={
-          <Button
-            className="!size-10 !min-h-10 !min-w-10 rounded-full bg-[#d9467e] p-0 text-white"
-            htmlType="button"
-            icon={<Icon icon="zi-filter" />}
-            variant="tertiary"
-            onClick={() => sheetRef.current?.open()}
-          />
+          <Box className="flex items-center gap-2">
+            <Button
+              className="!size-10 !min-h-10 !min-w-10 rounded-full bg-[#fff0f6] p-0 text-[#d9467e]"
+              htmlType="button"
+              icon={<Icon icon="zi-plus" />}
+              variant="tertiary"
+              onClick={onQuickAdd}
+            />
+            <Button
+              className="!size-10 !min-h-10 !min-w-10 rounded-full bg-[#d9467e] p-0 text-white"
+              htmlType="button"
+              icon={<Icon icon="zi-filter" />}
+              variant="tertiary"
+              onClick={() => sheetRef.current?.open()}
+            />
+          </Box>
         }
       />
       <Box className="mb-3 min-w-0">
@@ -50,13 +60,7 @@ export function AlbumPageHeader({
           {getFilterLabel(filters)} · {getSortLabel(sortOrder)}
         </Text>
       </Box>
-      <AlbumFilterSheet
-        ref={sheetRef}
-        filters={filters}
-        setFilters={setFilters}
-        setSortOrder={setSortOrder}
-        sortOrder={sortOrder}
-      />
+      <AlbumFilterSheet ref={sheetRef} />
     </Box>
   );
 }

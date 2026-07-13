@@ -1,10 +1,10 @@
-import type { Anniversary } from "@/types/anniversary";
+import type { Anniversary, AnniversaryUpdateInput } from "@/types/anniversary";
 import { todayDateString } from "@/utils/date";
 import type { MemoryDetailFormValues } from "../types/MemoryDetailPageType";
 
 export function getCreateMemoryDetailDefaultValues(
   imageUrl = "",
-): MemoryDetailFormValues {
+): AnniversaryUpdateInput {
   return {
     date: todayDateString(),
     image_url: imageUrl,
@@ -16,7 +16,7 @@ export function getCreateMemoryDetailDefaultValues(
 
 export function getMemoryDetailDefaultValues(
   memory: Anniversary,
-): MemoryDetailFormValues {
+): AnniversaryUpdateInput {
   return {
     date: memory.date,
     image_url: memory.image_url ?? "",
@@ -28,7 +28,7 @@ export function getMemoryDetailDefaultValues(
 
 export function normalizeMemoryDetailValues(
   values: MemoryDetailFormValues,
-): MemoryDetailFormValues {
+): AnniversaryUpdateInput {
   return {
     date: values.date,
     image_url: values.image_url?.trim(),

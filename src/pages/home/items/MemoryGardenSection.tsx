@@ -1,16 +1,14 @@
-import { Box, Button, Text, useNavigate } from "@/components/zaui";
+import { Box, Button, Text } from "@/components/zaui";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
 import type { UpcomingAnniversary } from "@/types/anniversary";
 import { formatDate } from "@/utils/date";
 
 type Props = {
   nextAnniversary: UpcomingAnniversary | null;
-  onShowAnniversaryForm: () => void;
 };
 
 export function MemoryGardenSection({
   nextAnniversary,
-  onShowAnniversaryForm,
 }: Props) {
   const navigation = useAppNavigation();
   return (

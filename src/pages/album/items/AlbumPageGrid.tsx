@@ -1,26 +1,25 @@
 import { useEffect, useRef, useState, type MutableRefObject } from "react";
 
-import { AppImageViewer } from "@/components/zaui";
-import { Box, Text } from "@/components/zaui";
+import { AppImageViewer, Box, Text } from "@/components/zaui";
 import type { Anniversary } from "@/types/anniversary";
-
-import { AlbumCard } from "./AlbumCard";
+import { formatDate } from "@/utils/date";
+import { AlbumTile } from "./AlbumTile";
+import { AlbumViewerInfo } from "./AlbumViewerInfo";
 
 type Props = {
   canLoadMore: boolean;
   items: Anniversary[];
   onLoadMore: () => void;
-  onOpenMemory: (memoryId: string) => void;
 };
 
 export function AlbumPageGrid({
   canLoadMore,
   items,
   onLoadMore,
-  onOpenMemory,
 }: Props) {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const [viewerIndex, setViewerIndex] = useState(0);
+  const [viewerInfoExpanded, setViewerInfoExpanded] = useState(false);
   const [viewerVisible, setViewerVisible] = useState(false);
   const albumImages = getAlbumImages(items);
 
@@ -52,10 +51,18 @@ export function AlbumPageGrid({
     if (imageIndex < 0) return;
 
     setViewerIndex(imageIndex);
+    setViewerInfoExpanded(false);
     setViewerVisible(true);
   };
   const closeViewer = () => {
     setViewerVisible(false);
+  };
+  const changeViewerIndex = (index: number) => {
+    setViewerIndex(index);
+    setViewerInfoExpanded(false);
+  };
+  const toggleViewerInfo = () => {
+    setViewerInfoExpanded((current) => !current);
   };
 
   if (items.length === 0) {
@@ -64,13 +71,12 @@ export function AlbumPageGrid({
 
   return (
     <Box>
-      <Box className="grid grid-cols-2 gap-2.5">
+      <Box className="grid grid-cols-3 gap-1.5">
         {items.map((item) => (
-          <AlbumCard
+          <AlbumTile
             item={item}
             key={item.id}
             onOpenImage={openImage}
-            onOpenMemory={onOpenMemory}
           />
         ))}
       </Box>
@@ -87,6 +93,14 @@ export function AlbumPageGrid({
           images={albumImages}
           visible={viewerVisible}
           onClose={closeViewer}
+          onIndexChange={changeViewerIndex}
+          renderOverlay={(image) => (
+            <AlbumViewerInfo
+              expanded={viewerInfoExpanded}
+              image={image}
+              onToggle={toggleViewerInfo}
+            />
+          )}
         />
       )}
     </Box>
@@ -98,8 +112,11 @@ function getAlbumImages(items: Anniversary[]) {
     .filter((item) => Boolean(item.image_url))
     .map((item) => ({
       alt: item.title,
+      date: formatDate(item.date),
+      description: item.note,
       id: item.id,
       src: item.image_url ?? "",
+      title: item.title,
     }));
 }
 

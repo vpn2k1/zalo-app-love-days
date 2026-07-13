@@ -1,54 +1,131 @@
 import { useMemo, useState } from "react";
-import { useAppSnackbar } from "@/components/zaui";
-import type { Anniversary, AnniversaryDraft } from "@/types/anniversary";
-import { diffInDays, getNextAnniversary } from "@/utils/date";
-import type { HomePageContentProps } from "../types/HomePageType";
+import { useQueryClient } from "@tanstack/react-query";
+import { useFormContext, useWatch } from "react-hook-form";
 
-export function useHomePage({
-  coupleData,
-  anniversaries,
-  onAddAnniversary,
-  startDate,
-}: Pick<
-  HomePageContentProps,
-  "coupleData" | "anniversaries" | "onAddAnniversary"
-> & {
-  startDate: string;
-}) {
-  const [showAnniversaryForm, setShowAnniversaryForm] = useState(false);
+import { useAppSnackbar } from "@/components/zaui";
+import {
+  allAnniversariesQueryKey,
+  coupleQueryKey,
+} from "@/config/queryKeys";
+import { useAppNavigation } from "@/hooks/useAppNavigation";
+import {
+  restoreCurrentUser,
+  setCurrentUserCache,
+} from "@/hooks/useCurrentUser";
+import type { Anniversary } from "@/types/anniversary";
+import { getNextAnniversary } from "@/utils/date";
+
+import type { HomeFormValues, Person } from "../types/HomePageType";
+import { useInvitePartnerMutation } from "./useInvitePartnerMutation";
+
+export function useHomePage() {
+  const queryClient = useQueryClient();
+  const navigation = useAppNavigation();
   const snackbar = useAppSnackbar();
-  const couple = useMemo(
-    () => ({ ...coupleData.couple, start_date: startDate }),
-    [coupleData.couple, startDate],
-  );
-  const days = diffInDays(startDate);
+  const invitePartner = useInvitePartnerMutation();
+  const [refreshing, setRefreshing] = useState(false);
+  const { control } = useFormContext<HomeFormValues>();
+  const [
+    backgroundUrl,
+    coupleCreatedBy,
+    coupleId,
+    currentAvatar,
+    currentName,
+    memories,
+    partnerAvatar,
+    partnerName,
+    startDate,
+  ] = useWatch({
+    control,
+    exact: true,
+    name: [
+      "backgroundUrl",
+      "coupleCreatedBy",
+      "coupleId",
+      "currentAvatar",
+      "currentName",
+      "memories",
+      "partnerAvatar",
+      "partnerName",
+      "startDate",
+    ],
+  });
+  const currentPerson = {
+    avatar: currentAvatar,
+    name: currentName,
+  };
+  const partnerPerson = getPartnerPerson(partnerName, partnerAvatar);
   const nextAnniversary = useMemo(
-    () => getNextAnniversary(couple, anniversaries),
-    [anniversaries, couple],
+    () => {
+      if (!startDate) return null;
+
+      return getNextAnniversary({
+        created_by: coupleCreatedBy,
+        id: coupleId,
+        start_date: startDate,
+      }, memories);
+    },
+    [coupleCreatedBy, coupleId, memories, startDate],
   );
   const visibleAnniversaries = useMemo(
-    () => getNewestAnniversaries(anniversaries),
-    [anniversaries],
+    () => getNewestAnniversaries(memories),
+    [memories],
   );
 
-  const addAnniversary = async (draft: AnniversaryDraft) => {
+  const addPartner = async () => {
+    await invitePartner.mutateAsync();
+  };
+
+  const refresh = async () => {
+    if (refreshing) return;
+
+    setRefreshing(true);
     try {
-      await onAddAnniversary(draft);
-      snackbar.showSuccess("Đã thêm ngày kỷ niệm.");
-      setShowAnniversaryForm(false);
+      const user = await restoreCurrentUser();
+      setCurrentUserCache(queryClient, user);
+      if (!user) {
+        navigation.goPermission({ replace: true });
+        return;
+      }
+
+      await Promise.all([
+        queryClient.refetchQueries({ queryKey: coupleQueryKey(user.id) }),
+        queryClient.refetchQueries({
+          queryKey: allAnniversariesQueryKey(coupleId),
+        }),
+      ]);
     } catch (error) {
       console.error(error);
+      snackbar.showError("Không thể làm mới. Vui lòng thử lại.");
+    } finally {
+      setRefreshing(false);
     }
   };
 
   return {
-    addAnniversary,
-    days,
+    addPartner,
+    backgroundUrl,
+    currentPerson,
+    memories,
     nextAnniversary,
-    setShowAnniversaryForm,
-    showAnniversaryForm,
+    onEditProfile: navigation.goEdit,
+    onQuickAddMemory: navigation.goCreateMemory,
+    onRefresh: refresh,
+    onViewAlbums: navigation.goAlbum,
+    onViewAllAnniversaries: navigation.goAnniversaries,
+    openCalendar: navigation.goCalendar,
+    partnerPerson,
+    refreshing,
+    startDate,
     visibleAnniversaries,
+    blockingMessage: getBlockingMessage(invitePartner.isPending),
   };
+}
+
+function getPartnerPerson(name: string, avatar: string): Person | undefined {
+  if (!name && !avatar) return undefined;
+
+  return { avatar, name };
 }
 
 function getNewestAnniversaries(anniversaries: Anniversary[]) {
@@ -66,4 +143,10 @@ function getDateTime(value: string) {
   if (Number.isNaN(time)) return 0;
 
   return time;
+}
+
+function getBlockingMessage(invitingPartner: boolean) {
+  if (invitingPartner) return "Đang mời người ấy...";
+
+  return null;
 }

@@ -2,9 +2,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppSnackbar } from "@/components/zaui";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
 import { useCoupleData } from "@/hooks/useCoupleData";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { useCurrentUserActions } from "@/hooks/useCurrentUser";
+import { setCurrentUserCache } from "@/hooks/useCurrentUser";
 import { authService } from "@/services/authService";
+import { currentUserStore } from "@/services/currentUserStore";
 import { mediaService } from "@/services/mediaService";
 import type { CoupleWithMembers } from "@/types/couple";
 import type { AppUser } from "@/types/user";
@@ -17,11 +17,10 @@ type ProfilePayload = {
 
 export function useSaveProfileMutation() {
   const queryClient = useQueryClient();
-  const { user } = useCurrentUser();
   const { coupleData } = useCoupleData();
-  const { setUser } = useCurrentUserActions();
   const snackbar = useAppSnackbar();
   const navigation = useAppNavigation();
+  const user = currentUserStore.get();
 
   return useMutation({
     mutationFn: async (payload: ProfilePayload) => {
@@ -50,19 +49,19 @@ export function useSaveProfileMutation() {
         display_name: payload.display_name,
         custom_avatar_url: payload.custom_avatar_url,
       };
-      setUser(optimisticUser);
+      setCurrentUserCache(queryClient, optimisticUser);
       updateCoupleUserCache(queryClient, optimisticUser);
       return { previousCouple, previousUser };
     },
     onSuccess: async (updated) => {
-      setUser(updated);
+      setCurrentUserCache(queryClient, updated);
       updateCoupleUserCache(queryClient, updated);
       await queryClient.invalidateQueries({ queryKey: coupleQueryKey(updated.id) });
       navigation.goHome();
     },
     onError: (error, _payload, context) => {
       if (context) {
-        setUser(context.previousUser);
+        setCurrentUserCache(queryClient, context.previousUser);
         queryClient.setQueryData(
           coupleQueryKey(context.previousUser.id),
           context.previousCouple,

@@ -1,9 +1,4 @@
 import type { Anniversary } from "@/types/anniversary";
-import type { AppUser } from "@/types/user";
-
-export type AlbumPageProps = {
-  user: AppUser;
-};
 
 export type AlbumSortOrder = "newest" | "oldest" | "week" | "month" | "year";
 export type AlbumFilterMode = "all" | "day" | "range" | "year";
@@ -16,14 +11,17 @@ export type AlbumFilters = {
   year: string;
 };
 
+export type AlbumPageFormValues = {
+  anniversaries: Anniversary[];
+  draftFilters: AlbumFilters;
+  filters: AlbumFilters;
+  sortOrder: AlbumSortOrder;
+};
+
 export type AlbumPageState = {
   canLoadMore: boolean;
-  filters: AlbumFilters;
   filteredCount: number;
   items: Anniversary[];
   loadMore: () => void;
-  setFilters: (filters: AlbumFilters) => void;
-  setSortOrder: (sortOrder: AlbumSortOrder) => void;
-  sortOrder: AlbumSortOrder;
   totalCount: number;
 };

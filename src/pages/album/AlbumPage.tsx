@@ -1,51 +1,42 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { FormProvider } from "react-hook-form";
 
 import { AppStatusBar } from "@/components/AppStatusBar";
 import { AppPullToRefresh } from "@/components/AppPullToRefresh";
+import { QuickMemoryCaptureModal } from "@/components/QuickMemoryCaptureModal";
 import { AppSpinner, Box, Page } from "@/components/zaui";
-import { useInfiniteAnniversariesData } from "@/hooks/useInfiniteAnniversariesData";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
-import { useCoupleData } from "@/hooks/useCoupleData";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
-import type { Anniversary } from "@/types/anniversary";
+
 import { AlbumPageGrid } from "./items/AlbumPageGrid";
 import { AlbumPageHeader } from "./items/AlbumPageHeader";
 import { useAlbumPage } from "./modules/useAlbumPage";
+import { useFormValuesAlbum } from "./modules/useFormValuesAlbum";
 
 const albumPageId = "album-page";
 
 export function AlbumPage() {
-  const { user } = useCurrentUser();
-  const { coupleData, coupleQuery } = useCoupleData();
-  const { anniversaries, anniversariesQuery } = useInfiniteAnniversariesData(
-    coupleData?.couple.id ?? "",
-  );
+  const album = useFormValuesAlbum();
 
-  if (!user) return null;
-
-  if (coupleQuery.isPending || (coupleData && anniversariesQuery.isPending)) {
-    return <AlbumLoadingState />;
-  }
-
-  if (!coupleData) return <AlbumMissingCoupleState />;
+  if (album.loading) return <AlbumLoadingState />;
+  if (!album.coupleData) return <AlbumMissingCoupleState />;
 
   return (
-    <AlbumPageContent
-      anniversaries={anniversaries}
-      anniversariesQuery={anniversariesQuery}
-    />
+    <FormProvider {...album.forms}>
+      <AlbumPageContent
+        anniversariesQuery={album.anniversariesQuery}
+      />
+    </FormProvider>
   );
 }
 
 function AlbumPageContent({
-  anniversaries,
   anniversariesQuery,
 }: {
-  anniversaries: Anniversary[];
-  anniversariesQuery: ReturnType<typeof useInfiniteAnniversariesData>["anniversariesQuery"];
+  anniversariesQuery: ReturnType<typeof useFormValuesAlbum>["anniversariesQuery"];
 }) {
   const navigation = useAppNavigation();
-  const page = useAlbumPage({ anniversaries });
+  const [quickCaptureVisible, setQuickCaptureVisible] = useState(false);
+  const page = useAlbumPage();
   const canLoadMore = page.canLoadMore || Boolean(anniversariesQuery.hasNextPage);
   const loadMore = () => {
     if (page.canLoadMore) {
@@ -56,6 +47,15 @@ function AlbumPageContent({
     if (anniversariesQuery.isFetchingNextPage) return;
 
     void anniversariesQuery.fetchNextPage();
+  };
+  const openQuickCapture = () => {
+    setQuickCaptureVisible(true);
+  };
+  const closeQuickCapture = () => {
+    setQuickCaptureVisible(false);
+  };
+  const createQuickMemory = (imageUrl: string) => {
+    navigation.goCreateMemory(imageUrl);
   };
 
   return (
@@ -71,18 +71,19 @@ function AlbumPageContent({
       <AppStatusBar />
       <AlbumPageHeader
         filteredCount={page.filteredCount}
-        filters={page.filters}
-        setFilters={page.setFilters}
-        setSortOrder={page.setSortOrder}
-        sortOrder={page.sortOrder}
         totalCount={page.totalCount}
         onBack={navigation.goBack}
+        onQuickAdd={openQuickCapture}
       />
       <AlbumPageGrid
         canLoadMore={canLoadMore}
         items={page.items}
         onLoadMore={loadMore}
-        onOpenMemory={navigation.goMemory}
+      />
+      <QuickMemoryCaptureModal
+        visible={quickCaptureVisible}
+        onClose={closeQuickCapture}
+        onSelectImage={createQuickMemory}
       />
     </Page>
   );

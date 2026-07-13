@@ -56,7 +56,7 @@ const getCurrentUserWithProof = async (): Promise<ZaloUserProfile> => {
 };
 
 export const zaloService = {
-  async getZaloUserId(): Promise<string> {
+  async getZaloUserId(): Promise<string | undefined> {
     const userID = await getUserID();    
     return userID;
   },

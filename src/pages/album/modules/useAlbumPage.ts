@@ -1,29 +1,23 @@
 import { useEffect, useMemo, useState } from "react";
+import { useFormContext, useWatch } from "react-hook-form";
 
 import type { Anniversary } from "@/types/anniversary";
 import { parseLocalDate } from "@/utils/date";
 import type {
-  AlbumFilters,
+  AlbumPageFormValues,
   AlbumPageState,
   AlbumSortOrder,
 } from "../types/AlbumPageType";
 
 const PAGE_SIZE = 10;
-type Input = {
-  anniversaries: Anniversary[];
-};
 
-export function useAlbumPage({
-  anniversaries,
-}: Input): AlbumPageState {
-  const [filters, setFilters] = useState<AlbumFilters>({
-    date: "",
-    endDate: "",
-    mode: "all",
-    startDate: "",
-    year: "",
+export function useAlbumPage(): AlbumPageState {
+  const { control } = useFormContext<AlbumPageFormValues>();
+  const [anniversaries, filters, sortOrder] = useWatch({
+    control,
+    exact: true,
+    name: ["anniversaries", "filters", "sortOrder"],
   });
-  const [sortOrder, setSortOrder] = useState<AlbumSortOrder>("newest");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   useEffect(() => {
@@ -48,19 +42,15 @@ export function useAlbumPage({
   return {
     canLoadMore,
     filteredCount: filteredItems.length,
-    filters,
     items,
     loadMore,
-    setFilters,
-    setSortOrder,
-    sortOrder,
     totalCount: albumItems.length,
   };
 }
 
 function getFilteredItems(
   items: Anniversary[],
-  filters: AlbumFilters,
+  filters: AlbumPageFormValues["filters"],
   sortOrder: AlbumSortOrder,
 ) {
   return [...items]
@@ -72,7 +62,10 @@ function hasImage(item: Anniversary) {
   return Boolean(item.image_url);
 }
 
-function matchesFilters(item: Anniversary, filters: AlbumFilters) {
+function matchesFilters(
+  item: Anniversary,
+  filters: AlbumPageFormValues["filters"],
+) {
   if (filters.mode === "all") return true;
   if (filters.mode === "day") return matchesDay(item, filters.date);
   if (filters.mode === "range") return matchesRange(item, filters);
@@ -87,7 +80,10 @@ function matchesDay(item: Anniversary, date: string) {
   return item.date === date;
 }
 
-function matchesRange(item: Anniversary, filters: AlbumFilters) {
+function matchesRange(
+  item: Anniversary,
+  filters: AlbumPageFormValues["filters"],
+) {
   const time = parseLocalDate(item.date).getTime();
   if (filters.startDate && time < parseLocalDate(filters.startDate).getTime()) {
     return false;

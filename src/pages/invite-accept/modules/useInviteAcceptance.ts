@@ -2,8 +2,12 @@ import { useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppSnackbar } from "@/components/zaui";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
-import { authorizeCurrentUser, useCurrentUserActions } from "@/hooks/useCurrentUser";
+import {
+  authorizeCurrentUser,
+  setCurrentUserCache,
+} from "@/hooks/useCurrentUser";
 import { coupleService } from "@/services/coupleService";
+import { currentUserStore } from "@/services/currentUserStore";
 import { isInviteConflictMessage } from "@/services/inviteErrors";
 import { inviteService } from "@/services/inviteService";
 import type { CoupleWithMembers } from "@/types/couple";
@@ -18,7 +22,6 @@ import type { AppUser } from "@/types/user";
 export function useInviteAcceptance() {
   const [inviteConflict, setInviteConflict] = useState("");
   const snackbar = useAppSnackbar();
-  const { getUser, setUser } = useCurrentUserActions();
   const navigation = useAppNavigation();
   const queryClient = useQueryClient();
   const inviteCode = useMemo(getInviteCodeFromUrl, []);
@@ -26,8 +29,8 @@ export function useInviteAcceptance() {
   const acceptInviteMutation = useMutation({
     mutationFn: async () => {
       if (!inviteCode) throw new Error("Thiếu mã lời mời.");
-      const appUser = await getSavedInviteUser(getUser());
-      setUser(appUser);
+      const appUser = await getSavedInviteUser(currentUserStore.get());
+      setCurrentUserCache(queryClient, appUser);
       const existingCouple = await coupleService.getCoupleByUser(appUser.id);
       if (existingCouple) {
         queryClient.setQueryData(coupleQueryKey(appUser.id), existingCouple);
@@ -36,7 +39,7 @@ export function useInviteAcceptance() {
       return { appUser, accepted };
     },
     onSuccess: async ({ appUser, accepted }) => {
-      setUser(appUser);
+      setCurrentUserCache(queryClient, appUser);
       setInviteConflict("");
       queryClient.setQueryData(coupleQueryKey(appUser.id), accepted);
       await Promise.all([
@@ -63,7 +66,7 @@ export function useInviteAcceptance() {
 
   const closeInviteConflict = async () => {
     setInviteConflict("");
-    const user = getUser();
+    const user = currentUserStore.get();
     if (!user) {
       navigation.goPermission({ replace: true });
       return;

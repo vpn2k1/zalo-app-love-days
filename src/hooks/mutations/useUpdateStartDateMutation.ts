@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppSnackbar } from "@/components/zaui";
 import { useCoupleData } from "@/hooks/useCoupleData";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { coupleService } from "@/services/coupleService";
+import { currentUserStore } from "@/services/currentUserStore";
 import {
   allAnniversariesQueryKey,
   coupleQueryKey,
@@ -11,7 +11,6 @@ import {
 
 export function useUpdateStartDateMutation() {
   const queryClient = useQueryClient();
-  const { user } = useCurrentUser();
   const { coupleData } = useCoupleData();
   const snackbar = useAppSnackbar();
 
@@ -21,6 +20,7 @@ export function useUpdateStartDateMutation() {
       return coupleService.updateCoupleStartDate(coupleData.couple.id, startDate);
     },
     onSuccess: async () => {
+      const user = currentUserStore.get();
       if (!user) return;
       if (!coupleData) return;
 

@@ -547,14 +547,6 @@
     linear-gradient(132deg, #f9e7ff 0%, #eedcff 48%, #ffe5ee 100%);
 }
 
-.app-hero::before,
-.app-hero::after {
-  position: absolute;
-  content: "";
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.45);
-}
-
 .app-hero::before {
   width: 122px;
   height: 122px;

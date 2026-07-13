@@ -1,6 +1,6 @@
 import { AnimationRoutes, AppSpinner, Box, Route } from "@/components/zaui";
-import { appPaths } from "@/hooks/useAppNavigation";
 import { useAppBoot } from "@/hooks/useAppBoot";
+import { appPaths } from "@/hooks/useAppNavigation";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { useRouteScrollReset } from "@/hooks/useRouteScrollReset";
 import { AlbumPage } from "@/pages/album/AlbumPage";
@@ -9,7 +9,7 @@ import { CalendarMemoriesPage } from "@/pages/calendar-memories/CalendarMemories
 import { EditProfilePage } from "@/pages/edit-profile/EditProfilePage";
 import { HomePage } from "@/pages/home/HomePage";
 import { InviteAcceptPage } from "@/pages/invite-accept/InviteAcceptPage";
-import { MemoryDetailPage } from "@/pages/memory-detail/MemoryDetailPage";
+import { MemoryDetail } from "@/pages/memory-detail/MemoryDetail";
 import { PermissionGate } from "@/pages/permission/PermissionGate";
 import { SetupPage } from "@/pages/setup/SetupPage";
 
@@ -29,7 +29,7 @@ export function LoveDaysApp() {
       <Route path={appPaths.album} element={<AlbumPage />} />
       <Route path={appPaths.calendar} element={<CalendarMemoriesPage />} />
       <Route path={appPaths.anniversaries} element={<AnniversariesPage />} />
-      <Route path={appPaths.memory} element={<MemoryDetailPage />} />
+      <Route path={appPaths.memory} element={<MemoryDetail />} />
       <Route path="*" element={<PermissionGate />} />
     </AnimationRoutes>
   );

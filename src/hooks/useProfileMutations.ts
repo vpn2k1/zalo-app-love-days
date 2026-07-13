@@ -13,7 +13,6 @@ import type { AppUser } from "@/types/user";
 import {
   allAnniversariesQueryKey,
   coupleQueryKey,
-  currentUserQueryKey,
   infiniteAnniversariesQueryKey,
 } from "@/config/queryKeys";
 
@@ -139,7 +138,7 @@ export function useProfileMutations({
       queryClient.removeQueries({
         queryKey: infiniteAnniversariesQueryKey(coupleData?.couple.id),
       });
-      queryClient.setQueryData(currentUserQueryKey(), null);
+      setUser(null);
       navigation.goPermission({ replace: true });
     },
     onError: (error) => {

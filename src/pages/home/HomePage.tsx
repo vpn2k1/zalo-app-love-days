@@ -1,14 +1,20 @@
-import { HomePageContent } from "./items/HomePageContent";
+import { FormProvider } from "react-hook-form";
+
+import { HomePageBody } from "./items/HomePageBody";
 import {
   HomePageLoadingState,
   HomePageMissingCoupleState,
 } from "./items/HomePageStates";
-import { useHomePageController } from "./modules/useHomePageController";
+import { useFormValuesHome } from "./modules/useFormValuesHome";
 
 export function HomePage() {
-  const home = useHomePageController();
+  const home = useFormValuesHome();
   if (home.loading) return <HomePageLoadingState />;
-  if (!home.contentProps) return <HomePageMissingCoupleState />;
+  if (!home.user || !home.coupleData) return <HomePageMissingCoupleState />;
 
-  return <HomePageContent {...home.contentProps} />;
+  return (
+    <FormProvider {...home.forms}>
+      <HomePageBody />
+    </FormProvider>
+  );
 }

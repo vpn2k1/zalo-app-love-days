@@ -4,28 +4,29 @@ import { useAppSnackbar } from "@/components/zaui";
 import {
   allAnniversariesQueryKey,
   coupleQueryKey,
-  currentUserQueryKey,
   infiniteAnniversariesQueryKey,
 } from "@/config/queryKeys";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
 import { useCoupleData } from "@/hooks/useCoupleData";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { setCurrentUserCache } from "@/hooks/useCurrentUser";
+import { currentUserStore } from "@/services/currentUserStore";
 import { leaveSpaceService } from "@/services/leaveSpaceService";
 
 export function useLeaveCoupleMutation() {
   const queryClient = useQueryClient();
-  const { user } = useCurrentUser();
   const { coupleData } = useCoupleData();
   const snackbar = useAppSnackbar();
   const navigation = useAppNavigation();
 
   return useMutation({
     mutationFn: async () => {
+      const user = currentUserStore.get();
       if (!coupleData || !user) throw new Error("Không tìm thấy.");
 
       await leaveSpaceService.leave({ coupleData, user });
     },
     onSuccess: async () => {
+      const user = currentUserStore.get();
       if (!user) return;
 
       await queryClient.invalidateQueries({
@@ -37,7 +38,7 @@ export function useLeaveCoupleMutation() {
       queryClient.removeQueries({
         queryKey: infiniteAnniversariesQueryKey(coupleData?.couple.id),
       });
-      queryClient.setQueryData(currentUserQueryKey(), null);
+      setCurrentUserCache(queryClient, null);
       navigation.goPermission({ replace: true });
     },
     onError: (error) => {

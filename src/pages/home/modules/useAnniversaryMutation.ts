@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppSnackbar } from "@/components/zaui";
 import { useCoupleData } from "@/hooks/useCoupleData";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { anniversaryService } from "@/services/anniversaryService";
+import { currentUserStore } from "@/services/currentUserStore";
 import type { AnniversaryDraft } from "@/types/anniversary";
 import {
   allAnniversariesQueryKey,
@@ -11,12 +11,12 @@ import {
 
 export function useAnniversaryMutation() {
   const queryClient = useQueryClient();
-  const { user } = useCurrentUser();
   const { coupleData } = useCoupleData();
   const snackbar = useAppSnackbar();
 
   return useMutation({
     mutationFn: async (draft: AnniversaryDraft) => {
+      const user = currentUserStore.get();
       if (!user || !coupleData) throw new Error("Bạn cần cấp quyền Zalo trước.");
       return anniversaryService.create(coupleData.couple.id, user.id, draft);
     },

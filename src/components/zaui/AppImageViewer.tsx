@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Box, Button, Icon, Text } from "zmp-ui";
 
@@ -7,13 +7,27 @@ import { useImageViewerZoom } from "@/components/zaui/useImageViewerZoom";
 import { useOverlayBackClose } from "@/components/zaui/useOverlayBackClose";
 import type { ImageType, ImageViewerProps } from "zmp-ui/image-viewer";
 
+export type AppImageViewerImage = ImageType & {
+  date?: string;
+  description?: string | null;
+  title?: string;
+};
+
 type Props = Omit<ImageViewerProps, "images"> & {
-  images: ImageType[] | string[];
+  images: AppImageViewerImage[] | string[];
+  onIndexChange?: (index: number) => void;
+  renderOverlay?: (
+    image: AppImageViewerImage,
+    index: number,
+    total: number,
+  ) => ReactNode;
 };
 
 export function AppImageViewer({
   activeIndex = 0,
   images,
+  onIndexChange,
+  renderOverlay,
   visible,
   onClose,
 }: Props) {
@@ -40,14 +54,16 @@ export function AppImageViewer({
   if (!image) return null;
 
   const previous = () => {
-    setCurrentIndex((value) =>
-      getPreviousIndex(value, normalizedImages.length),
-    );
+    setImageIndex(getPreviousIndex(currentIndex, normalizedImages.length));
     zoom.resetZoom();
   };
   const next = () => {
-    setCurrentIndex((value) => getNextIndex(value, normalizedImages.length));
+    setImageIndex(getNextIndex(currentIndex, normalizedImages.length));
     zoom.resetZoom();
+  };
+  const setImageIndex = (index: number) => {
+    setCurrentIndex(index);
+    onIndexChange?.(index);
   };
 
   return createPortal(
@@ -120,11 +136,12 @@ export function AppImageViewer({
         </Box>
       )}
 
-      <Box className="pointer-events-none absolute bottom-[max(18px,env(safe-area-inset-bottom))] left-0 right-0 z-20 text-center">
+      <Box className={getCounterClassName(Boolean(renderOverlay))}>
         <Text className="text-sm font-bold text-white/80">
           {currentIndex + 1}/{normalizedImages.length}
         </Text>
       </Box>
+      {renderOverlay?.(image, currentIndex, normalizedImages.length)}
     </Box>,
     document.body,
   );
@@ -138,12 +155,20 @@ function ImageViewerFallback() {
   );
 }
 
-function normalizeImages(images: Props["images"]): ImageType[] {
+function normalizeImages(images: Props["images"]): AppImageViewerImage[] {
   return images.map((image) => {
     if (typeof image === "string") return { src: image };
 
     return image;
   });
+}
+
+function getCounterClassName(hasOverlay: boolean) {
+  if (hasOverlay) {
+    return "pointer-events-none absolute bottom-[max(18px,env(safe-area-inset-bottom))] right-4 z-20 rounded-full bg-white/15 px-2.5 py-1 backdrop-blur-md";
+  }
+
+  return "pointer-events-none absolute bottom-[max(18px,env(safe-area-inset-bottom))] left-0 right-0 z-20 text-center";
 }
 
 function getSafeIndex(index: number, length: number) {

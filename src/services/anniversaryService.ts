@@ -1,6 +1,7 @@
 import { mockDb } from "@/services/mockDb";
 import { isMockMode, supabase } from "@/services/supabaseClient";
 import { mediaService } from "@/services/mediaService";
+import { waitForMockNetworkDelay } from "@/services/mockNetworkDelay";
 import type {
   Anniversary,
   AnniversaryDraft,
@@ -37,6 +38,7 @@ export const anniversaryService = {
     const limit = normalizePositiveNumber(input.limit, 20);
 
     if (isMockMode || !supabase) {
+      await waitForMockNetworkDelay();
       return getMockAnniversaryPage(coupleId, page, limit);
     }
 

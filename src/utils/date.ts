@@ -3,6 +3,11 @@ import type { Couple } from "@/types/couple";
 import type { CalendarDateValue } from "@/types/date";
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
+const DATE_FORMATTER = new Intl.DateTimeFormat("vi-VN", {
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+});
 
 export const todayDateString = (): CalendarDateValue => {
   const now = new Date();
@@ -37,15 +42,17 @@ export const diffFromNowParts = (from: string) => {
   };
 };
 
-export const formatDate = (value: string) =>
-  new Intl.DateTimeFormat("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  }).format(parseLocalDate(value));
+export const formatDate = (value: string) => {
+  if (!value) return "";
+
+  const date = parseLocalDate(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  return DATE_FORMATTER.format(date);
+};
 
 export const getNextAnniversary = (
-  couple: Couple,
+  couple: Pick<Couple, "created_by" | "id" | "start_date">,
   anniversaries: Anniversary[],
 ): UpcomingAnniversary | null => {
   const base: Anniversary[] = [

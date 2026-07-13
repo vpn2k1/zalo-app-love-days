@@ -1,16 +1,25 @@
+import { useWatch } from "react-hook-form";
+
 import { AppPageHeader } from "@/components/AppPageHeader";
 
-import type { MemoryDetailFormProps } from "../types/MemoryDetailPageType";
+import type {
+  MemoryDetailFormProps,
+  MemoryDetailFormValues,
+} from "../types/MemoryDetailPageType";
 
 export function MemoryDetailHeader({
-  memory,
   mode,
   onBack,
 }: MemoryDetailFormProps) {
+  const title = useWatch<MemoryDetailFormValues, "title">({
+    name: "title",
+    exact: true,
+  });
+
   return (
     <AppPageHeader
       title={getTitle(mode)}
-      subtitle={getSubtitle(mode, memory?.title)}
+      subtitle={getSubtitle(mode, title)}
       onBack={onBack}
     />
   );

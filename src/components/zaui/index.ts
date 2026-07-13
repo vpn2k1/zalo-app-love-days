@@ -21,6 +21,7 @@ export {
 } from "zmp-ui";
 export { AppActionSheet } from "@/components/zaui/AppActionSheet";
 export { AppImageViewer } from "@/components/zaui/AppImageViewer";
+export type { AppImageViewerImage } from "@/components/zaui/AppImageViewer";
 export { AppModal } from "@/components/zaui/AppModal";
 export { AppSheet } from "@/components/zaui/AppSheet";
 export type { AppSheetRef } from "@/components/zaui/AppSheet";

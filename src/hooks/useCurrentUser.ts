@@ -5,14 +5,16 @@ import {
 } from "@tanstack/react-query";
 import { currentUserQueryKey } from "@/config/queryKeys";
 import { authService } from "@/services/authService";
+import {
+  currentUserStore,
+  type CurrentUserUpdater,
+} from "@/services/currentUserStore";
 import { zaloService } from "@/services/zaloService";
 import type { AppUser, ZaloUserProfile } from "@/types/user";
 
 type Options = {
   restore?: boolean;
 };
-
-type UpdateCurrentUser = (current: AppUser) => AppUser;
 
 export function useCurrentUser(options: Options = {}) {
   const queryClient = useQueryClient();
@@ -27,8 +29,9 @@ export function useCurrentUser(options: Options = {}) {
   return {
     currentUserQuery,
     getUser: () => getCurrentUserCache(queryClient),
-    setUser: (user: AppUser) => setCurrentUserCache(queryClient, user),
-    updateUser: (updater: UpdateCurrentUser) => updateCurrentUserCache(queryClient, updater),
+    setUser: (user: AppUser | null) => setCurrentUserCache(queryClient, user),
+    updateUser: (updater: CurrentUserUpdater) =>
+      updateCurrentUserCache(queryClient, updater),
     user: currentUserQuery.data ?? null,
   };
 }
@@ -38,8 +41,9 @@ export function useCurrentUserActions() {
 
   return {
     getUser: () => getCurrentUserCache(queryClient),
-    setUser: (user: AppUser) => setCurrentUserCache(queryClient, user),
-    updateUser: (updater: UpdateCurrentUser) => updateCurrentUserCache(queryClient, updater),
+    setUser: (user: AppUser | null) => setCurrentUserCache(queryClient, user),
+    updateUser: (updater: CurrentUserUpdater) =>
+      updateCurrentUserCache(queryClient, updater),
   };
 }
 
@@ -61,6 +65,14 @@ export async function authorizePendingCurrentUser(): Promise<AppUser> {
   };
 }
 
+export async function createDefaultCurrentUser() {
+  const profile = await getDefaultZaloProfile();
+  const existingUser = await authService.findUserByZaloId(profile.id);
+  if (existingUser) return existingUser;
+
+  return authService.upsertZaloUser(profile);
+}
+
 async function authorizeZaloUserProfile(): Promise<ZaloUserProfile> {
   try {
     await zaloService.requestUserInfoPermission();
@@ -76,11 +88,22 @@ async function authorizeZaloUserProfile(): Promise<ZaloUserProfile> {
 
 export async function restoreCurrentUser(): Promise<AppUser | null> {
   const zaloUserId = await zaloService.getZaloUserId();
-  return authService.findUserByZaloId(zaloUserId);
+  if (!zaloUserId) {
+    currentUserStore.set(null);
+    return null;
+  }
+
+  const user = await authService.findUserByZaloId(zaloUserId);
+  currentUserStore.set(user);
+  return user;
 }
 
 async function getDefaultZaloProfile(): Promise<ZaloUserProfile> {
   const zaloUserId = await zaloService.getZaloUserId();
+  if (!zaloUserId) {
+    throw new Error("Không thể lấy mã người dùng Zalo. Vui lòng mở trong Zalo để tiếp tục.");
+  }
+
   return {
     id: zaloUserId,
     name: DEFAULT_USER_NAME,
@@ -88,27 +111,28 @@ async function getDefaultZaloProfile(): Promise<ZaloUserProfile> {
   };
 }
 
-
 export function setCurrentUserCache(
   queryClient: QueryClient,
-  user: AppUser,
+  user: AppUser | null,
 ) {
+  currentUserStore.set(user);
   queryClient.setQueryData(currentUserQueryKey(), user);
 }
 
 export function getCurrentUserCache(queryClient: QueryClient) {
-  return queryClient.getQueryData<AppUser>(currentUserQueryKey()) ?? null;
+  const user = queryClient.getQueryData<AppUser>(currentUserQueryKey()) ?? null;
+  currentUserStore.set(user);
+  return user;
 }
 
 export function updateCurrentUserCache(
   queryClient: QueryClient,
-  updater: UpdateCurrentUser,
+  updater: CurrentUserUpdater,
 ) {
-  queryClient.setQueryData<AppUser | null>(currentUserQueryKey(), (current) => {
-    if (!current) return current;
+  const current = getCurrentUserCache(queryClient);
+  if (!current) return;
 
-    return updater(current);
-  });
+  setCurrentUserCache(queryClient, updater(current));
 }
 
 function getRestoreOption(options: Options) {

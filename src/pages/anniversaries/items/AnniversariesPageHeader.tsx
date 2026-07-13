@@ -1,16 +1,16 @@
-import { Input } from "zmp-ui";
+import { useFormContext, useWatch } from "react-hook-form";
+import { Icon, Input } from "zmp-ui";
 
 import { AppPageHeader } from "@/components/AppPageHeader";
 import { Box, Button } from "@/components/zaui";
 
-import type { AnniversaryFilter } from "../types/AnniversariesPageType";
+import type {
+  AnniversaryFilter,
+  AnniversariesPageFormValues,
+} from "../types/AnniversariesPageType";
 
 type Props = {
-  filter: AnniversaryFilter;
   filteredCount: number;
-  query: string;
-  setFilter: (filter: AnniversaryFilter) => void;
-  setQuery: (query: string) => void;
   totalCount: number;
   onBack: () => void;
   onCreateMemory: () => void;
@@ -23,15 +23,18 @@ const FILTERS: Array<{ label: string; value: AnniversaryFilter }> = [
 ];
 
 export function AnniversariesPageHeader({
-  filter,
   filteredCount,
-  query,
-  setFilter,
-  setQuery,
   totalCount,
   onBack,
   onCreateMemory,
 }: Props) {
+  const { control, setValue } = useFormContext<AnniversariesPageFormValues>();
+  const [filter, query] = useWatch({
+    control,
+    exact: true,
+    name: ["filter", "query"],
+  });
+
   return (
     <Box>
       <AppPageHeader
@@ -39,20 +42,21 @@ export function AnniversariesPageHeader({
         subtitle={`${filteredCount}/${totalCount} ngày đáng nhớ`}
         onBack={onBack}
       />
-      <Button
-        className="mb-3 min-h-11 w-full rounded-2xl border-none font-[850]"
-        htmlType="button"
-        variant="primary"
-        onClick={onCreateMemory}
-      >
-        Tạo kỷ niệm mới
-      </Button>
-      <Input.Search
-        label="Tìm kiếm"
-        placeholder="Tên hoặc ghi chú kỷ niệm"
-        value={query}
-        onChange={(event) => setQuery(event.currentTarget.value)}
-      />
+      <Box className="flex items-center gap-2">
+        <Input.Search
+          label="Tìm kiếm"
+          placeholder="Tên hoặc ghi chú kỷ niệm"
+          value={query}
+          onChange={(event) => setValue("query", event.currentTarget.value)}
+        />
+        <Button
+          htmlType="button"
+          variant="primary"
+          onClick={onCreateMemory}
+          icon={<Icon icon="zi-plus" />}
+        />
+      </Box>
+
       <Box className="my-3 grid grid-cols-3 gap-2">
         {FILTERS.map((item) => (
           <Button
@@ -61,7 +65,7 @@ export function AnniversariesPageHeader({
             key={item.value}
             size="small"
             variant="tertiary"
-            onClick={() => setFilter(item.value)}
+            onClick={() => setValue("filter", item.value)}
           >
             {item.label}
           </Button>

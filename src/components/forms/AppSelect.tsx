@@ -41,6 +41,11 @@ export function AppSelect<TFormValues extends FieldValues, TValue extends string
         return (
           <Select
             {...selectProps}
+            className={mergeClassNames("app-select", selectProps.className)}
+            closeOnSelect={getCloseOnSelect(
+              selectProps.closeOnSelect,
+              selectProps.multiple,
+            )}
             label={label}
             name={field.name}
             value={(field.value ?? "") as string}
@@ -65,4 +70,18 @@ export function AppSelect<TFormValues extends FieldValues, TValue extends string
       }}
     />
   );
+}
+
+function mergeClassNames(...classNames: Array<string | undefined>) {
+  return classNames.filter(Boolean).join(" ");
+}
+
+function getCloseOnSelect(
+  closeOnSelect: SelectProps["closeOnSelect"],
+  multiple: SelectProps["multiple"],
+) {
+  if (closeOnSelect !== undefined) return closeOnSelect;
+  if (multiple) return false;
+
+  return true;
 }

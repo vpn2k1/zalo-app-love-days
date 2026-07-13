@@ -4,22 +4,23 @@ import { coupleQueryKey } from "@/config/queryKeys";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
 import {
   authorizePendingCurrentUser,
-  useCurrentUser,
+  createDefaultCurrentUser,
+  setCurrentUserCache,
 } from "@/hooks/useCurrentUser";
 import { coupleService } from "@/services/coupleService";
+import { currentUserStore } from "@/services/currentUserStore";
 import type { AppUser } from "@/types/user";
 
 export function useAuthorizeMutation() {
   const queryClient = useQueryClient();
-  const { getUser, setUser } = useCurrentUser();
   const snackbar = useAppSnackbar();
   const navigation = useAppNavigation();
 
   return useMutation({
     mutationFn: async () => {
       const pendingUser = await authorizePendingCurrentUser();
-      const appUser = mergeAuthorizedUser(getUser(), pendingUser);
-      setUser(appUser);
+      const appUser = mergeAuthorizedUser(currentUserStore.get(), pendingUser);
+      setCurrentUserCache(queryClient, appUser);
       return appUser;
     },
     onSuccess: async (appUser) => {
@@ -39,6 +40,29 @@ export function useAuthorizeMutation() {
       console.error(error);
       snackbar.showError(
         "Không thể kết nối. Vui lòng thử lại.",
+      );
+    },
+  });
+}
+
+export function useSkipAuthorizeMutation() {
+  const queryClient = useQueryClient();
+  const snackbar = useAppSnackbar();
+  const navigation = useAppNavigation();
+
+  return useMutation({
+    mutationFn: async () => {
+      const appUser = await createDefaultCurrentUser();
+      setCurrentUserCache(queryClient, appUser);
+      return appUser;
+    },
+    onSuccess: () => {
+      navigation.goSetup({ replace: true });
+    },
+    onError: (error) => {
+      console.error(error);
+      snackbar.showError(
+        "Không thể tiếp tục. Vui lòng thử lại.",
       );
     },
   });

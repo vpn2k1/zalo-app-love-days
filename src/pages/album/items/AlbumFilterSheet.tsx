@@ -1,5 +1,5 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { forwardRef, useImperativeHandle, useRef } from "react";
+import { useFormContext, useWatch } from "react-hook-form";
 
 import {
   AppSheet,
@@ -17,16 +17,9 @@ import {
 } from "./albumFilterHelpers";
 import type {
   AlbumFilterMode,
-  AlbumFilters,
+  AlbumPageFormValues,
   AlbumSortOrder,
 } from "../types/AlbumPageType";
-
-type Props = {
-  filters: AlbumFilters;
-  setFilters: (filters: AlbumFilters) => void;
-  setSortOrder: (sortOrder: AlbumSortOrder) => void;
-  sortOrder: AlbumSortOrder;
-};
 
 const FILTER_MODES: Array<{ label: string; value: AlbumFilterMode }> = [
   { label: "Tất cả", value: "all" },
@@ -43,35 +36,32 @@ const SORT_OPTIONS: Array<{ label: string; value: AlbumSortOrder }> = [
   { label: "Năm", value: "year" },
 ];
 
-export const AlbumFilterSheet = forwardRef<AppSheetRef, Props>(
-  function AlbumFilterSheet(
-    { filters, setFilters, setSortOrder, sortOrder }: Props,
-    ref,
-  ) {
-    const { control, handleSubmit, reset, setValue } = useForm<AlbumFilters>({
-      defaultValues: filters,
+export const AlbumFilterSheet = forwardRef<AppSheetRef>(
+  function AlbumFilterSheet(_, ref) {
+    const { control, getValues, setValue } = useFormContext<AlbumPageFormValues>();
+    const [mode, sortOrder] = useWatch({
+      control,
+      exact: true,
+      name: ["draftFilters.mode", "sortOrder"],
     });
-    const mode = useWatch({ control, name: "mode" });
     const sheetRef = useRef<AppSheetRef>(null);
-
-    useEffect(() => {
-      reset(filters);
-    }, [filters, reset]);
 
     useImperativeHandle(ref, () => ({
       close: () => sheetRef.current?.close(),
       open: () => sheetRef.current?.open(),
     }));
 
-    const applyFilters = handleSubmit((values) => {
-      setFilters(normalizeFilters(values));
+    const applyFilters = () => {
+      const filters = normalizeFilters(getValues("draftFilters"));
+      setValue("draftFilters", filters);
+      setValue("filters", filters);
       sheetRef.current?.close();
-    });
+    };
 
     const clearFilters = () => {
       const nextFilters = emptyFilters();
-      reset(nextFilters);
-      setFilters(nextFilters);
+      setValue("draftFilters", nextFilters);
+      setValue("filters", nextFilters);
     };
 
     return (
@@ -91,7 +81,7 @@ export const AlbumFilterSheet = forwardRef<AppSheetRef, Props>(
                 key={item.value}
                 size="small"
                 variant="tertiary"
-                onClick={() => setValue("mode", item.value)}
+                onClick={() => setValue("draftFilters.mode", item.value)}
               >
                 {item.label}
               </Button>
@@ -109,7 +99,7 @@ export const AlbumFilterSheet = forwardRef<AppSheetRef, Props>(
                 key={item.value}
                 size="small"
                 variant="tertiary"
-                onClick={() => setSortOrder(item.value)}
+                onClick={() => setValue("sortOrder", item.value)}
               >
                 {item.label}
               </Button>
@@ -127,7 +117,7 @@ export const AlbumFilterSheet = forwardRef<AppSheetRef, Props>(
             <Button
               className="min-h-11 rounded-full bg-[#d9467e] text-sm font-[850] text-white"
               htmlType="button"
-              onClick={() => void applyFilters()}
+              onClick={applyFilters}
             >
               Áp dụng
             </Button>

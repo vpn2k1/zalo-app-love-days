@@ -1,21 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
+import { useFormContext, useWatch } from "react-hook-form";
+
 import type { Anniversary } from "@/types/anniversary";
 import type {
   AnniversaryFilter,
+  AnniversariesPageFormValues,
   AnniversariesPageState,
 } from "../types/AnniversariesPageType";
 
 const PAGE_SIZE = 8;
 
-type Input = {
-  anniversaries: Anniversary[];
-};
-
-export function useAnniversariesPage({
-  anniversaries,
-}: Input): AnniversariesPageState {
-  const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState<AnniversaryFilter>("all");
+export function useAnniversariesPage(): AnniversariesPageState {
+  const { control } = useFormContext<AnniversariesPageFormValues>();
+  const [anniversaries, filter, query] = useWatch({
+    control,
+    exact: true,
+    name: ["anniversaries", "filter", "query"],
+  });
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   useEffect(() => {
@@ -35,13 +36,9 @@ export function useAnniversariesPage({
 
   return {
     canLoadMore,
-    filter,
     filteredCount: filteredItems.length,
     items,
     loadMore,
-    query,
-    setFilter,
-    setQuery,
     totalCount: anniversaries.length,
   };
 }

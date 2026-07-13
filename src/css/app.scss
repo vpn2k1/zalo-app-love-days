@@ -274,6 +274,11 @@ textarea,
   border-radius: 14px;
 }
 
+.app-pull-to-refresh-spinner .zaui-spinner {
+  width: 24px;
+  height: 24px;
+}
+
 .permission-card,
 .soft-card,
 .main-love-card,
@@ -462,6 +467,34 @@ textarea,
 
 .app-error-text {
   color: var(--love-danger);
+}
+
+.app-select {
+  min-height: 48px;
+  border-color: var(--love-border);
+  border-radius: 16px;
+  color: #3c2435;
+  background: var(--love-card-strong);
+}
+
+.app-select .zaui-select-icon {
+  color: #d9467e;
+}
+
+.zaui-select-panel {
+  --zaui-light-option-color: #3c2435;
+  --zaui-light-option-selected-color: #d9467e;
+  --zaui-light-option-divider-color: #f0dce6;
+  --zaui-light-pressed-bg-color: #fff0f6;
+  --zaui-light-select-title-color: #3c2435;
+}
+
+.zaui-select-option {
+  font-weight: 700;
+}
+
+.zaui-select-option-selected {
+  background: #fff0f6;
 }
 
 .anniversary-list {

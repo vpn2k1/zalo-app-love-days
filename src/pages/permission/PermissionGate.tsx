@@ -9,12 +9,16 @@ import { getPermissionCopy } from "./modules/getPermissionCopy";
 import "../../css/app.css";
 import { PermissionStep } from "./items/PermissionStep";
 import { AppStatusBar } from "@/components/AppStatusBar";
-import { useAuthorizeMutation } from "@/hooks/mutations/useAuthorizeMutation";
+import {
+  useAuthorizeMutation,
+  useSkipAuthorizeMutation,
+} from "@/hooks/mutations/useAuthorizeMutation";
 
 export function PermissionGate({
   blocked,
 }: { blocked?: boolean }) {
   const authorize = useAuthorizeMutation();
+  const skipAuthorize = useSkipAuthorizeMutation();
   const copy = getPermissionCopy(blocked);
 
   return (
@@ -29,6 +33,8 @@ export function PermissionGate({
         actionLabel={copy.actionLabel}
         loading={authorize.isPending}
         onAllow={() => authorize.mutateAsync()}
+        onSkip={() => skipAuthorize.mutateAsync()}
+        skipLoading={skipAuthorize.isPending}
       />
     </Page>
   );

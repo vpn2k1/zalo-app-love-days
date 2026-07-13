@@ -1,11 +1,14 @@
-import type { Anniversary, AnniversaryUpdateInput } from "@/types/anniversary";
+import type { AnniversaryUpdateInput } from "@/types/anniversary";
 
 export type MemoryDetailMode = "create" | "update";
 
-export type MemoryDetailFormValues = AnniversaryUpdateInput;
+export type MemoryDetailFormValues = AnniversaryUpdateInput & {
+  couple_id: string;
+  id: string;
+  mode: MemoryDetailMode;
+};
 
 export type MemoryDetailFormProps = {
-  memory?: Anniversary;
   mode: MemoryDetailMode;
   onBack: () => void;
 };

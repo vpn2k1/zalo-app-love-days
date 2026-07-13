@@ -1,51 +1,39 @@
-import { AppStatusBar } from "@/components/AppStatusBar";
-import { AppPullToRefresh } from "@/components/AppPullToRefresh";
-import { AppSpinner, Box, Page } from "@/components/zaui";
-import { useInfiniteAnniversariesData } from "@/hooks/useInfiniteAnniversariesData";
-import { useAppNavigation } from "@/hooks/useAppNavigation";
-import { useCoupleData } from "@/hooks/useCoupleData";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
-import type { Anniversary } from "@/types/anniversary";
 import { useEffect } from "react";
+import { FormProvider } from "react-hook-form";
+
+import { AppPullToRefresh } from "@/components/AppPullToRefresh";
+import { AppStatusBar } from "@/components/AppStatusBar";
+import { AppSpinner, Box, Page } from "@/components/zaui";
+import { useAppNavigation } from "@/hooks/useAppNavigation";
+
 import { AnniversariesPageHeader } from "./items/AnniversariesPageHeader";
 import { AnniversariesPageList } from "./items/AnniversariesPageList";
 import { useAnniversariesPage } from "./modules/useAnniversariesPage";
+import { useFormValuesAnniversaries } from "./modules/useFormValuesAnniversaries";
 
 const anniversariesPageId = "anniversaries-page";
 
 export function AnniversariesPage() {
-  const { user } = useCurrentUser();
-  const { coupleData, coupleQuery } = useCoupleData();
-  const { anniversaries, anniversariesQuery } = useInfiniteAnniversariesData(
-    coupleData?.couple.id ?? "",
-  );
+  const anniversaries = useFormValuesAnniversaries();
 
-  if (!user) return null;
-
-  if (coupleQuery.isPending || (coupleData && anniversariesQuery.isPending)) {
-    return <AnniversariesLoadingState />;
-  }
-
-  if (!coupleData) {
-    return <AnniversariesMissingCoupleState />;
-  }
+  if (anniversaries.loading) return <AnniversariesLoadingState />;
+  if (!anniversaries.coupleData) return <AnniversariesMissingCoupleState />;
 
   return (
-    <AnniversariesPageContent
-      anniversaries={anniversaries}
-      anniversariesQuery={anniversariesQuery}
-    />
+    <FormProvider {...anniversaries.forms}>
+      <AnniversariesPageContent
+        anniversariesQuery={anniversaries.anniversariesQuery}
+      />
+    </FormProvider>
   );
 }
 
 function AnniversariesPageContent({
-  anniversaries,
   anniversariesQuery,
 }: {
-  anniversaries: Anniversary[];
-  anniversariesQuery: ReturnType<typeof useInfiniteAnniversariesData>["anniversariesQuery"];
+  anniversariesQuery: ReturnType<typeof useFormValuesAnniversaries>["anniversariesQuery"];
 }) {
-  const page = useAnniversariesPage({ anniversaries });
+  const page = useAnniversariesPage();
   const navigation = useAppNavigation();
   const canLoadMore = page.canLoadMore || Boolean(anniversariesQuery.hasNextPage);
   const loadMore = () => {
@@ -71,11 +59,7 @@ function AnniversariesPageContent({
       />
       <AppStatusBar />
       <AnniversariesPageHeader
-        filter={page.filter}
         filteredCount={page.filteredCount}
-        query={page.query}
-        setFilter={page.setFilter}
-        setQuery={page.setQuery}
         totalCount={page.totalCount}
         onBack={navigation.goBack}
         onCreateMemory={navigation.goCreateMemory}

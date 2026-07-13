@@ -1,12 +1,12 @@
 import { Box, Icon } from "@/components/zaui";
-import type { HomePageContentProps, Person } from "../types/HomePageType";
+import type { Person } from "../types/HomePageType";
 import { PersonChip } from "./PersonChip";
 
 type Props = {
   currentPerson: Person;
   partnerPerson?: Person;
-  onAddPartner: HomePageContentProps["onAddPartner"];
-  onEditProfile: HomePageContentProps["onEditProfile"];
+  onAddPartner: () => Promise<unknown>;
+  onEditProfile: () => void;
 };
 
 export function CouplePeoplePanel({
@@ -15,8 +15,7 @@ export function CouplePeoplePanel({
   onAddPartner,
   onEditProfile,
 }: Props) {
-  let partnerClick: HomePageContentProps["onAddPartner"] | undefined =
-    onAddPartner;
+  let partnerClick: (() => Promise<unknown>) | undefined = onAddPartner;
   if (partnerPerson) {
     partnerClick = undefined;
   }

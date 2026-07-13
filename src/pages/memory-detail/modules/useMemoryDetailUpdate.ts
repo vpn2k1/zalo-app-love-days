@@ -1,35 +1,34 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useWatch } from "react-hook-form";
+
 import { useAppSnackbar } from "@/components/zaui";
 import {
   allAnniversariesQueryKey,
   infiniteAnniversariesQueryKey,
 } from "@/config/queryKeys";
+import { useAppNavigation } from "@/hooks/useAppNavigation";
 import { anniversaryService } from "@/services/anniversaryService";
-import type { Anniversary } from "@/types/anniversary";
+
 import type { MemoryDetailFormValues } from "../types/MemoryDetailPageType";
 import { normalizeMemoryDetailValues } from "./memoryDetailForm";
-import { useAppNavigation } from "@/hooks/useAppNavigation";
 
-type Input = {
-  coupleId: string;
-  memory: Anniversary;
-  onUpdated: (memory: Anniversary) => void;
-};
-
-export function useMemoryDetailUpdate({ coupleId, memory, onUpdated }: Input) {
+export function useMemoryDetailUpdate() {
   const queryClient = useQueryClient();
   const snackbar = useAppSnackbar();
   const navigation = useAppNavigation();
-
+  const coupleId = useWatch({ name: "couple_id", exact: true });
+  const id = useWatch({ name: "id", exact: true });
   return useMutation({
-    mutationFn: (values: MemoryDetailFormValues) =>
-      anniversaryService.update(
+    mutationFn: (values: MemoryDetailFormValues) => {
+      if (!coupleId || !id) throw new Error("Không tìm thấy kỷ niệm.");
+
+      return anniversaryService.update(
         coupleId,
-        memory.id,
+        id,
         normalizeMemoryDetailValues(values),
-      ),
-    onSuccess: async (updatedMemory) => {
-      onUpdated(updatedMemory);
+      );
+    },
+    onSuccess: async () => {
       await Promise.all([
         queryClient.invalidateQueries({
           queryKey: allAnniversariesQueryKey(coupleId),

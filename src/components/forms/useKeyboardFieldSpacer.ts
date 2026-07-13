@@ -12,7 +12,7 @@ import {
   removeInputHistoryId,
 } from "@/utils/inputFocusHistory";
 
-const FALLBACK_KEYBOARD_HEIGHT = 300;
+const FALLBACK_KEYBOARD_HEIGHT = 200;
 const SCROLL_DELAYS = [60, 240];
 const TARGET_VIEWPORT_RATIO = 0.42;
 

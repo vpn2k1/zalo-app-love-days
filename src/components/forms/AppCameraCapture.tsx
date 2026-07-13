@@ -41,10 +41,10 @@ export function AppCameraCapture({
       onClick={(event) => event.stopPropagation()}
       onPointerDown={(event) => event.stopPropagation()}
     >
-      <Box className="mx-auto flex justify-around h-[80%] w-[min(100%,430px)] flex-col px-5 pb-[calc(26px+env(safe-area-inset-bottom))] pt-[max(22px,calc(14px+env(safe-area-inset-top)))]">
+      <Box className="mx-auto flex justify-around w-[min(100%,430px)] flex-col px-5 pb-[calc(26px+env(safe-area-inset-bottom))] pt-[max(22px,calc(14px+env(safe-area-inset-top)))]">
         <AppCameraCaptureHeader onClick={camera.close} />
 
-        <Box className="grid grid-cols-1">
+        <Box className="grid grid-cols">
           <AppCameraPreview
             error={camera.error}
             loading={camera.loading}

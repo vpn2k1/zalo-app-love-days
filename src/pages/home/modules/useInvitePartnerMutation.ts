@@ -1,16 +1,16 @@
 import { useMutation } from "@tanstack/react-query";
 import { useAppSnackbar } from "@/components/zaui";
 import { useCoupleData } from "@/hooks/useCoupleData";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { currentUserStore } from "@/services/currentUserStore";
 import { inviteService } from "@/services/inviteService";
 
 export function useInvitePartnerMutation() {
-  const { user } = useCurrentUser();
   const { coupleData } = useCoupleData();
   const snackbar = useAppSnackbar();
 
   return useMutation({
     mutationFn: async () => {
+      const user = currentUserStore.get();
       if (!user || !coupleData) {
         throw new Error("Bạn cần đăng nhập trước khi thêm đối tác.");
       }

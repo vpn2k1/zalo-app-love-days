@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 
-import { AppSpinner, Box, Icon } from "@/components/zaui";
+import { AppSpinner, Box } from "@/components/zaui";
 
 const refreshThreshold = 44;
 const maxPullDistance = 72;
 const pullResistance = 2.5;
-const refreshingIndicatorHeight = 44;
+const refreshingIndicatorHeight = 32;
 
 type Props = {
   onRefresh: () => Promise<unknown>;
@@ -26,19 +26,25 @@ export function AppPullToRefresh({ onRefresh, pageId, refreshing }: Props) {
     let startX = 0;
     let startY = 0;
 
+    const removeMoveListener = () => {
+      page.removeEventListener("touchmove", onTouchMove);
+    };
+
     const reset = () => {
       active = false;
       pullDistanceRef.current = 0;
       setPullDistance(0);
+      removeMoveListener();
     };
 
     const onTouchStart = (event: TouchEvent) => {
-      if (refreshing || !scrollContainer || scrollContainer.scrollTop > 0) return;
+      if (refreshing || !isAtTop(page, scrollContainer)) return;
 
       const touch = event.touches[0];
       startX = touch.clientX;
       startY = touch.clientY;
       active = true;
+      page.addEventListener("touchmove", onTouchMove, { passive: false });
     };
 
     const onTouchMove = (event: TouchEvent) => {
@@ -48,6 +54,11 @@ export function AppPullToRefresh({ onRefresh, pageId, refreshing }: Props) {
       const deltaX = Math.abs(touch.clientX - startX);
       const deltaY = touch.clientY - startY;
       if (deltaY <= 0 || deltaX >= deltaY) {
+        reset();
+        return;
+      }
+
+      if (!isAtTop(page, scrollContainer)) {
         reset();
         return;
       }
@@ -67,13 +78,12 @@ export function AppPullToRefresh({ onRefresh, pageId, refreshing }: Props) {
     };
 
     page.addEventListener("touchstart", onTouchStart, { passive: true });
-    page.addEventListener("touchmove", onTouchMove, { passive: false });
     page.addEventListener("touchend", onTouchEnd);
     page.addEventListener("touchcancel", reset);
 
     return () => {
       page.removeEventListener("touchstart", onTouchStart);
-      page.removeEventListener("touchmove", onTouchMove);
+      removeMoveListener();
       page.removeEventListener("touchend", onTouchEnd);
       page.removeEventListener("touchcancel", reset);
     };
@@ -88,8 +98,21 @@ export function AppPullToRefresh({ onRefresh, pageId, refreshing }: Props) {
       className="flex items-center justify-center overflow-hidden text-[#d9467e] transition-[height] duration-150"
       style={{ height: indicatorHeight }}
     >
-      {refreshing && <AppSpinner />}
-      {!refreshing && pullDistance > 0 && <Icon icon="zi-arrow-down" />}
+      {refreshing && (
+        <AppSpinner className="app-pull-to-refresh-spinner" logo={null} />
+      )}
     </Box>
   );
+}
+
+function isAtTop(page: HTMLElement, scrollContainer: HTMLElement | null) {
+  return getScrollTop(page) <= 0 && getScrollTop(scrollContainer) <= 0;
+}
+
+function getScrollTop(element: HTMLElement | null) {
+  const documentScrollTop = document.scrollingElement?.scrollTop ?? 0;
+  const windowScrollTop = window.scrollY || 0;
+  const elementScrollTop = element?.scrollTop ?? 0;
+
+  return Math.max(documentScrollTop, windowScrollTop, elementScrollTop);
 }

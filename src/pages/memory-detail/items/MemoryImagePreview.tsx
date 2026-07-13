@@ -8,7 +8,7 @@ import { formatDate } from "@/utils/date";
 import type { MemoryDetailFormValues } from "../types/MemoryDetailPageType";
 
 type Props = {
-  imageUrl?: string;
+  imageUrl?: string | null;
   onOpen: () => void;
 };
 

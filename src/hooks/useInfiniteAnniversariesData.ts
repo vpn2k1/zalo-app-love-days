@@ -5,7 +5,7 @@ import { infiniteAnniversariesQueryKey } from "@/config/queryKeys";
 import { anniversaryService } from "@/services/anniversaryService";
 import type { Anniversary, AnniversaryPage } from "@/types/anniversary";
 
-export const ANNIVERSARIES_PAGE_LIMIT = 20;
+export const ANNIVERSARIES_PAGE_LIMIT = 10;
 
 export function useInfiniteAnniversariesData(id: string) {
   const anniversariesQuery = useInfiniteQuery({

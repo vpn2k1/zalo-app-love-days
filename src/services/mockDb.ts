@@ -6,6 +6,7 @@ import type {
 import type { Couple, CoupleMember, CoupleWithMembers, SetupCoupleInput } from "@/types/couple";
 import type { AppUser, ZaloUserProfile } from "@/types/user";
 import { mockInviteDb } from "./mockInviteDb";
+import { ensureMockAnniversaryFixtures } from "./mockAnniversaryFixtures";
 import { now, readState, uid, writeState } from "./mockDbState";
 import {
   createStartDateAnniversaryDraft,
@@ -17,9 +18,7 @@ import {
 export const mockDb = {
   findUserByZaloId(zaloUserId: string): AppUser | null {
     const state = readState();
-    return state.users.find((user) => user.zalo_user_id === zaloUserId)
-      ?? state.users[0]
-      ?? null;
+    return state.users.find((user) => user.zalo_user_id === zaloUserId) ?? null;
   },
 
   upsertUser(profile: ZaloUserProfile): AppUser {
@@ -83,6 +82,7 @@ export const mockDb = {
     const couple = state.couples.find((item) => item.id === membership.couple_id);
     if (!couple) return null;
     syncStartDateAnniversary(state.anniversaries, couple);
+    ensureMockAnniversaryFixtures(state, couple);
     writeState(state);
     const members = state.members
       .filter((member) => member.couple_id === couple.id)
@@ -141,6 +141,7 @@ export const mockDb = {
     state.couples.push(couple);
     state.members.push(member);
     state.anniversaries.push(...anniversaries);
+    ensureMockAnniversaryFixtures(state, couple);
     writeState(state);
     return { couple, members: [member] };
   },
@@ -207,7 +208,13 @@ export const mockDb = {
   },
 
   getAnniversaries(coupleId: string): Anniversary[] {
-    return readState().anniversaries.filter((item) => item.couple_id === coupleId);
+    const state = readState();
+    const couple = state.couples.find((item) => item.id === coupleId);
+    if (couple && ensureMockAnniversaryFixtures(state, couple)) {
+      writeState(state);
+    }
+
+    return state.anniversaries.filter((item) => item.couple_id === coupleId);
   },
 
   addAnniversary(

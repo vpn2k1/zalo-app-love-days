@@ -6,11 +6,11 @@ import { Box } from "@/components/zaui";
 import { keepDigits } from "./albumFilterHelpers";
 import type {
   AlbumFilterMode,
-  AlbumFilters,
+  AlbumPageFormValues,
 } from "../types/AlbumPageType";
 
 type Props = {
-  control: Control<AlbumFilters>;
+  control: Control<AlbumPageFormValues>;
   mode: AlbumFilterMode;
 };
 
@@ -20,7 +20,7 @@ export function AlbumFilterFields({ control, mode }: Props) {
       <Box className="mt-3">
         <AppCalendarPicker
           control={control}
-          name="date"
+          name="draftFilters.date"
           label="Ngày"
           placeholder="Chọn ngày"
         />
@@ -33,13 +33,13 @@ export function AlbumFilterFields({ control, mode }: Props) {
       <Box className="mt-3 gap-2">
         <AppCalendarPicker
           control={control}
-          name="startDate"
+          name="draftFilters.startDate"
           label="Từ ngày"
           placeholder="Bắt đầu"
         />
         <AppCalendarPicker
           control={control}
-          name="endDate"
+          name="draftFilters.endDate"
           label="Đến ngày"
           placeholder="Kết thúc"
         />
@@ -54,7 +54,7 @@ export function AlbumFilterFields({ control, mode }: Props) {
           control={control}
           label="Năm"
           maxLength={4}
-          name="year"
+          name="draftFilters.year"
           placeholder="YYYY"
         />
       </Box>
@@ -65,10 +65,10 @@ export function AlbumFilterFields({ control, mode }: Props) {
 }
 
 type NumberFieldProps = {
-  control: Control<AlbumFilters>;
+  control: Control<AlbumPageFormValues>;
   label: string;
   maxLength: number;
-  name: "year";
+  name: "draftFilters.year";
   placeholder: string;
 };
 
@@ -90,7 +90,9 @@ function NumberField({
           maxLength={maxLength}
           placeholder={placeholder}
           value={field.value}
-          onChange={(event) => field.onChange(keepDigits(event.currentTarget.value))}
+          onChange={(event) =>
+            field.onChange(keepDigits(event.currentTarget.value))
+          }
         />
       )}
     />

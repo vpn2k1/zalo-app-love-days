@@ -1,9 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppSnackbar } from "@/components/zaui";
 import { useCoupleData } from "@/hooks/useCoupleData";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { coupleService } from "@/services/coupleService";
+import { currentUserStore } from "@/services/currentUserStore";
 import { mediaService } from "@/services/mediaService";
+import type { CoupleWithMembers } from "@/types/couple";
 import {
   allAnniversariesQueryKey,
   coupleQueryKey,
@@ -17,7 +18,6 @@ export type UpdateCouplePayload = {
 
 export function useUpdateCoupleMutation() {
   const queryClient = useQueryClient();
-  const { user } = useCurrentUser();
   const { coupleData } = useCoupleData();
   const snackbar = useAppSnackbar();
 
@@ -49,9 +49,15 @@ export function useUpdateCoupleMutation() {
 
       return coupleService.updateCouple(coupleData.couple.id, updatePayload);
     },
-    onSuccess: async () => {
+    onSuccess: async (updatedCouple) => {
+      const user = currentUserStore.get();
       if (!user) return;
       if (!coupleData) return;
+
+      queryClient.setQueryData<CoupleWithMembers>(coupleQueryKey(user.id), {
+        ...coupleData,
+        couple: updatedCouple,
+      });
 
       await queryClient.invalidateQueries({ queryKey: coupleQueryKey(user.id) });
       await Promise.all([
