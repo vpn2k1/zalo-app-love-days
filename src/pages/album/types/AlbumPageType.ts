@@ -21,7 +21,16 @@ export type AlbumPageFormValues = {
 export type AlbumPageState = {
   canLoadMore: boolean;
   filteredCount: number;
-  items: Anniversary[];
+  items: AlbumPhoto[];
   loadMore: () => void;
   totalCount: number;
+};
+
+export type AlbumPhoto = {
+  anniversary: Anniversary;
+  date: string;
+  description?: string | null;
+  id: string;
+  imageUrl: string;
+  title: string;
 };

@@ -9,12 +9,16 @@ export const appPaths = {
   blocked: "/blocked",
   booting: "/",
   calendar: "/calendar",
+  dataDeletion: "/data-deletion",
   edit: "/edit",
   home: "/home",
   invite: "/invite",
+  legal: "/legal",
   memory: "/memory",
   permission: "/permission",
+  privacy: "/privacy",
   setup: "/setup",
+  terms: "/terms",
 } as const;
 
 export const quickMemoryImageStorageKey = "love-days.quick-memory-image";
@@ -34,8 +38,10 @@ export function useAppNavigation() {
       goAnniversaries: (option?: NavigateOptions) =>
         navigate(appPaths.anniversaries, option),
       goCalendar: () => navigate(appPaths.calendar),
+      goDataDeletion: () => navigate(appPaths.dataDeletion),
       goEdit: () => navigate(appPaths.edit),
       goHome: (options?: NavigateOptions) => navigate(appPaths.home, options),
+      goLegal: () => navigate(appPaths.legal),
       goCreateMemory: (imageUrl?: string) => {
         if (imageUrl) {
           sessionStorage.setItem(quickMemoryImageStorageKey, imageUrl);
@@ -55,7 +61,9 @@ export function useAppNavigation() {
       goPermission: (options?: NavigateOptions) => {
         navigate(appPaths.permission, options);
       },
+      goPrivacy: () => navigate(appPaths.privacy),
       goSetup: (options?: NavigateOptions) => navigate(appPaths.setup, options),
+      goTerms: () => navigate(appPaths.terms),
     }),
     [navigate],
   );

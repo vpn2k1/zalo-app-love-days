@@ -62,7 +62,7 @@ const ensureCoupleCanInvite = async (coupleId: string) => {
   const hasPartner = members.some((member) => member.role === "partner" || member.side === "right");
   if (hasPartner || members.length >= 2) {
     await cancelPendingInvitesForCouple(coupleId);
-    throw new Error("Yêu này đã có đối tác, không thể tạo thêm lời mời.");
+    throw new Error("Nhật Ký Yêu này đã có đối tác, không thể tạo thêm lời mời.");
   }
 };
 

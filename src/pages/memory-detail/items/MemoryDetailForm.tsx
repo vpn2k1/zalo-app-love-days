@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
 import { BlockingLoadingOverlay } from "@/components/BlockingLoadingOverlay";
-import { AppImageViewer, Box } from "@/components/zaui";
+import { Box } from "@/components/zaui";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
 import { currentUserStore } from "@/services/currentUserStore";
 
@@ -22,16 +22,13 @@ import { MemoryDetailFields } from "./MemoryDetailFields";
 import { MemoryDetailFooter } from "./MemoryDetailFooter";
 import { MemoryDetailFormShell } from "./MemoryDetailFormShell";
 import { MemoryDetailHeader } from "./MemoryDetailHeader";
-import { MemoryImagePreview } from "./MemoryImagePreview";
 
 export function MemoryDetailForm() {
   const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
-  const [viewerVisible, setViewerVisible] = useState(false);
 
   const { control, formState, handleSubmit } =
     useFormContext<MemoryDetailFormValues>();
   const createdBy = useWatch({ control, name: "created_by", exact: true });
-  const imageUrl = useWatch({ control, name: "image_url", exact: true });
   const mode = useWatch({ control, name: "mode", exact: true });
   const createMutation = useMemoryDetailCreate();
   const deleteMutation = useMemoryDetailDelete();
@@ -56,14 +53,6 @@ export function MemoryDetailForm() {
 
     updateMutation.mutate(values);
   });
-  const openViewer = () => {
-    if (!imageUrl) return;
-
-    setViewerVisible(true);
-  };
-  const closeViewer = () => {
-    setViewerVisible(false);
-  };
   const openDeleteConfirm = () => {
     setDeleteConfirmVisible(true);
   };
@@ -92,7 +81,6 @@ export function MemoryDetailForm() {
         onDelete={openDeleteConfirm}
       />
       <Box className="grid gap-3">
-        <MemoryImagePreview imageUrl={imageUrl} onOpen={openViewer} />
         <MemoryDetailFields dateDisabled={mode === "update"} />
       </Box>
       <MemoryDetailFooter
@@ -112,13 +100,6 @@ export function MemoryDetailForm() {
         onClose={closeDeleteConfirm}
         onConfirm={confirmDelete}
       />
-      {imageUrl && (
-        <AppImageViewer
-          images={[imageUrl]}
-          visible={viewerVisible}
-          onClose={closeViewer}
-        />
-      )}
     </MemoryDetailFormShell>
   );
 }

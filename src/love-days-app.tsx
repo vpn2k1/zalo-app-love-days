@@ -9,6 +9,7 @@ import { CalendarMemoriesPage } from "@/pages/calendar-memories/CalendarMemories
 import { EditProfilePage } from "@/pages/edit-profile/EditProfilePage";
 import { HomePage } from "@/pages/home/HomePage";
 import { InviteAcceptPage } from "@/pages/invite-accept/InviteAcceptPage";
+import { LegalPage } from "@/pages/legal/LegalPage";
 import { MemoryDetail } from "@/pages/memory-detail/MemoryDetail";
 import { PermissionGate } from "@/pages/permission/PermissionGate";
 import { SetupPage } from "@/pages/setup/SetupPage";
@@ -30,6 +31,10 @@ export function LoveDaysApp() {
       <Route path={appPaths.calendar} element={<CalendarMemoriesPage />} />
       <Route path={appPaths.anniversaries} element={<AnniversariesPage />} />
       <Route path={appPaths.memory} element={<MemoryDetail />} />
+      <Route
+        path={appPaths.legal}
+        element={<LegalPage kind="terms" />}
+      />
       <Route path="*" element={<PermissionGate />} />
     </AnimationRoutes>
   );

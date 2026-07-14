@@ -1,10 +1,10 @@
 import { AppSafeImage } from "@/components/AppSafeImage";
 import { Box, Icon } from "@/components/zaui";
-import type { Anniversary } from "@/types/anniversary";
+import type { AlbumPhoto } from "../types/AlbumPageType";
 
 type Props = {
-  item: Anniversary;
-  onOpenImage: (item: Anniversary) => void;
+  item: AlbumPhoto;
+  onOpenImage: (item: AlbumPhoto) => void;
 };
 
 export function AlbumTile({ item, onOpenImage }: Props) {
@@ -24,19 +24,15 @@ export function AlbumTile({ item, onOpenImage }: Props) {
   );
 }
 
-function AlbumTileImage({ item }: { item: Anniversary }) {
-  if (item.image_url) {
-    return (
-      <AppSafeImage
-        alt={item.title}
-        className="size-full object-cover"
-        fallback={<AlbumTileFallback />}
-        src={item.image_url}
-      />
-    );
-  }
-
-  return <AlbumTileFallback />;
+function AlbumTileImage({ item }: { item: AlbumPhoto }) {
+  return (
+    <AppSafeImage
+      alt={item.title}
+      className="size-full object-cover"
+      fallback={<AlbumTileFallback />}
+      src={item.imageUrl}
+    />
+  );
 }
 
 function AlbumTileFallback() {

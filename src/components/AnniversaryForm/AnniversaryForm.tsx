@@ -3,7 +3,7 @@ import { FormProvider, useForm } from "react-hook-form";
 
 import {
   AppCalendarPicker,
-  AppImagePicker,
+  AppImageMultiPicker,
   AppSelect,
   AppTextArea,
   AppTextInput,
@@ -50,7 +50,8 @@ export function AnniversaryForm({
       ...values,
       title: values.title.trim(),
       note: values.note?.trim(),
-      image_url: values.image_url?.trim(),
+      image_url: values.image_urls?.[0],
+      image_urls: normalizeImageUrls(values.image_urls),
     });
     reset({
       ...getDefaultAnniversaryValues(defaultDate),
@@ -75,11 +76,13 @@ export function AnniversaryForm({
           required
           disabled={lockDate}
         />
-        <AppImagePicker
+        <AppImageMultiPicker
           control={control}
-          name="image_url"
+          name="image_urls"
           label="Ảnh kỷ niệm"
+          maxCount={10}
           optional
+          tileMinWidth={86}
         />
         <AppSelect
           control={control}
@@ -106,4 +109,10 @@ export function AnniversaryForm({
       </Box>
     </FormProvider>
   );
+}
+
+function normalizeImageUrls(imageUrls?: string[]) {
+  if (!imageUrls) return [];
+
+  return imageUrls.map((item) => item.trim()).filter(Boolean);
 }

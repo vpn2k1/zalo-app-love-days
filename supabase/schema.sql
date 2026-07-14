@@ -40,12 +40,21 @@ create table if not exists public.anniversaries (
   repeat_type text not null default 'yearly' check (repeat_type in ('yearly', 'none')),
   note text,
   image_url text,
+  image_urls jsonb not null default '[]'::jsonb,
   created_by uuid not null references public.users(id) on delete cascade,
   created_at timestamptz not null default now()
 );
 
 alter table public.anniversaries
 add column if not exists image_url text;
+
+alter table public.anniversaries
+add column if not exists image_urls jsonb not null default '[]'::jsonb;
+
+update public.anniversaries
+set image_urls = jsonb_build_array(image_url)
+where image_url is not null
+  and image_urls = '[]'::jsonb;
 
 alter table public.couples
 add column if not exists background_url text;

@@ -18,7 +18,7 @@ export const mockInviteDb = {
     if (hasPartner || members.length >= 2) {
       state.invites = cancelPendingInvites(state.invites, coupleId);
       writeState(state);
-      throw new Error("Yêu này đã có đối tác, không thể tạo thêm lời mời.");
+      throw new Error("Nhật Ký Yêu này đã có đối tác, không thể tạo thêm lời mời.");
     }
 
     const pendingInvite = state.invites.find((invite) => {
@@ -86,7 +86,7 @@ export const mockInviteDb = {
     writeState(state);
 
     const couple = state.couples.find((item) => item.id === invite.couple_id);
-    if (!couple) throw new Error("Không tìm thấy Yêu.");
+    if (!couple) throw new Error("Không tìm thấy Nhật Ký Yêu.");
     const members = state.members
       .filter((member) => member.couple_id === couple.id)
       .map((member) => ({

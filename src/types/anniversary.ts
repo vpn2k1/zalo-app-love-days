@@ -8,6 +8,7 @@ export type Anniversary = {
   repeat_type: RepeatType;
   note?: string | null;
   image_url?: string | null;
+  image_urls?: string[] | null;
   created_by: string;
   created_at?: string;
 };
@@ -18,6 +19,7 @@ export type AnniversaryDraft = {
   repeat_type: RepeatType;
   note?: string;
   image_url?: string;
+  image_urls?: string[];
 };
 
 export type AnniversaryUpdateInput = AnniversaryDraft;

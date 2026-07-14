@@ -4,6 +4,7 @@ import { useFormContext, useWatch } from "react-hook-form";
 import type { Anniversary } from "@/types/anniversary";
 import { parseLocalDate } from "@/utils/date";
 import type {
+  AlbumPhoto,
   AlbumPageFormValues,
   AlbumPageState,
   AlbumSortOrder,
@@ -24,13 +25,15 @@ export function useAlbumPage(): AlbumPageState {
     setVisibleCount(PAGE_SIZE);
   }, [filters, sortOrder]);
 
-  const albumItems = useMemo(
-    () => anniversaries.filter(hasImage),
+  const albumPhotos = useMemo(
+    () => anniversaries.reduce<AlbumPhoto[]>((items, anniversary) => {
+      return items.concat(getAlbumPhotos(anniversary));
+    }, []),
     [anniversaries],
   );
   const filteredItems = useMemo(
-    () => getFilteredItems(albumItems, filters, sortOrder),
-    [albumItems, filters, sortOrder],
+    () => getFilteredItems(albumPhotos, filters, sortOrder),
+    [albumPhotos, filters, sortOrder],
   );
   const items = filteredItems.slice(0, visibleCount);
   const canLoadMore = visibleCount < filteredItems.length;
@@ -44,12 +47,12 @@ export function useAlbumPage(): AlbumPageState {
     filteredCount: filteredItems.length,
     items,
     loadMore,
-    totalCount: albumItems.length,
+    totalCount: albumPhotos.length,
   };
 }
 
 function getFilteredItems(
-  items: Anniversary[],
+  items: AlbumPhoto[],
   filters: AlbumPageFormValues["filters"],
   sortOrder: AlbumSortOrder,
 ) {
@@ -58,12 +61,8 @@ function getFilteredItems(
     .sort((left, right) => compareByDate(left, right, sortOrder));
 }
 
-function hasImage(item: Anniversary) {
-  return Boolean(item.image_url);
-}
-
 function matchesFilters(
-  item: Anniversary,
+  item: AlbumPhoto,
   filters: AlbumPageFormValues["filters"],
 ) {
   if (filters.mode === "all") return true;
@@ -74,14 +73,14 @@ function matchesFilters(
   return true;
 }
 
-function matchesDay(item: Anniversary, date: string) {
+function matchesDay(item: AlbumPhoto, date: string) {
   if (!date) return true;
 
   return item.date === date;
 }
 
 function matchesRange(
-  item: Anniversary,
+  item: AlbumPhoto,
   filters: AlbumPageFormValues["filters"],
 ) {
   const time = parseLocalDate(item.date).getTime();
@@ -95,22 +94,38 @@ function matchesRange(
   return true;
 }
 
-function matchesYear(item: Anniversary, year: string) {
+function matchesYear(item: AlbumPhoto, year: string) {
   if (!year) return true;
 
   return parseLocalDate(item.date).getFullYear() === Number(year);
 }
 
-function compareByDate(
-  left: Anniversary,
-  right: Anniversary,
-  sortOrder: AlbumSortOrder,
-) {
+function compareByDate(left: AlbumPhoto, right: AlbumPhoto, sortOrder: AlbumSortOrder) {
   const diff = getSortTime(right.date, sortOrder) - getSortTime(left.date, sortOrder);
   if (sortOrder === "oldest") return -diff;
   if (diff !== 0) return diff;
 
   return parseLocalDate(right.date).getTime() - parseLocalDate(left.date).getTime();
+}
+
+function getAlbumPhotos(anniversary: Anniversary): AlbumPhoto[] {
+  return getImageUrls(anniversary).map((imageUrl, index) => ({
+    anniversary,
+    date: anniversary.date,
+    description: anniversary.note,
+    id: `${anniversary.id}-${index}`,
+    imageUrl,
+    title: anniversary.title,
+  }));
+}
+
+function getImageUrls(anniversary: Anniversary) {
+  if (anniversary.image_urls && anniversary.image_urls.length > 0) {
+    return anniversary.image_urls.filter(Boolean);
+  }
+  if (!anniversary.image_url) return [];
+
+  return [anniversary.image_url];
 }
 
 function getSortTime(value: string, sortOrder: AlbumSortOrder) {

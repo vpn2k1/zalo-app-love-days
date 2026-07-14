@@ -2,6 +2,7 @@ export { AppCheckbox } from "@/components/forms/AppCheckbox";
 export { AppCheckboxGroup } from "@/components/forms/AppCheckboxGroup";
 export { AppCalendarPicker } from "@/components/forms/AppCalendarPicker";
 export { AppDatePicker } from "@/components/forms/AppDatePicker";
+export { AppImageMultiPicker } from "@/components/forms/AppImageMultiPicker";
 export { AppImagePicker } from "@/components/forms/AppImagePicker";
 export { AppPicker } from "@/components/forms/AppPicker";
 export { AppRadioGroup } from "@/components/forms/AppRadioGroup";

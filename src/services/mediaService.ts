@@ -5,6 +5,7 @@ const MEDIA_BUCKET = "love-days-media";
 type UploadImageInput = {
   coupleId: string;
   fileName: string;
+  folderName?: string;
   path: string | null | undefined;
   scope: "avatars" | "anniversaries" | "backgrounds";
 };
@@ -36,9 +37,25 @@ export const mediaService = {
     if (error) throw error;
   },
 
+  async removeAnniversaryMedia(coupleId: string, anniversaryId: string): Promise<void> {
+    if (!supabase) return;
+
+    const paths = await listFolderPaths(
+      `${coupleId}/anniversaries/${safeFileName(anniversaryId)}`,
+    );
+    if (paths.length === 0) return;
+
+    const { error } = await supabase.storage
+      .from(MEDIA_BUCKET)
+      .remove(paths);
+
+    if (error) throw error;
+  },
+
   async uploadImagePath({
     coupleId,
     fileName,
+    folderName,
     path,
     scope,
   }: UploadImageInput): Promise<string | null> {
@@ -49,7 +66,13 @@ export const mediaService = {
     if (blob.size > 50 * 1024 * 1024) {
       throw new Error("Kích thước ảnh vượt quá giới hạn cho phép (tối đa 50MB).");
     }
-    const storagePath = `${coupleId}/${scope}/${safeFileName(fileName)}.${extensionFor(blob)}`;
+    const storagePath = getStoragePath({
+      blob,
+      coupleId,
+      fileName,
+      folderName,
+      scope,
+    });
     const { error } = await supabase.storage
       .from(MEDIA_BUCKET)
       .upload(storagePath, blob, {
@@ -63,6 +86,22 @@ export const mediaService = {
     return `${data.publicUrl}?t=${Date.now()}`;
   },
 };
+
+function getStoragePath({
+  blob,
+  coupleId,
+  fileName,
+  folderName,
+  scope,
+}: Required<Pick<UploadImageInput, "coupleId" | "fileName" | "scope">> & {
+  blob: Blob;
+  folderName?: string;
+}) {
+  const filePath = `${safeFileName(fileName)}.${extensionFor(blob)}`;
+  if (!folderName) return `${coupleId}/${scope}/${filePath}`;
+
+  return `${coupleId}/${scope}/${safeFileName(folderName)}/${filePath}`;
+}
 
 async function listCoupleMediaPaths(coupleId: string) {
   const scopes = ["avatars", "anniversaries", "backgrounds"];
@@ -95,6 +134,19 @@ async function listMatchingScopePaths(coupleId: string, scope: string, startsWit
       return item.name.startsWith(startsWith);
     })
     .map((item) => `${prefix}/${item.name}`);
+}
+
+async function listFolderPaths(prefix: string) {
+  if (!supabase) return [];
+
+  const { data, error } = await supabase.storage
+    .from(MEDIA_BUCKET)
+    .list(prefix, { limit: 1000 });
+
+  if (error) throw error;
+  if (!data) return [];
+
+  return data.map((item) => `${prefix}/${item.name}`);
 }
 
 function isLocalImagePath(path: string) {

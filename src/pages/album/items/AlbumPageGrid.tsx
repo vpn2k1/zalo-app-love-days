@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState, type MutableRefObject } from "react";
 
 import { AppImageViewer, Box, Text } from "@/components/zaui";
-import type { Anniversary } from "@/types/anniversary";
 import { formatDate } from "@/utils/date";
+import type { AlbumPhoto } from "../types/AlbumPageType";
 import { AlbumTile } from "./AlbumTile";
 import { AlbumViewerInfo } from "./AlbumViewerInfo";
 
 type Props = {
   canLoadMore: boolean;
-  items: Anniversary[];
+  items: AlbumPhoto[];
   onLoadMore: () => void;
 };
 
@@ -44,9 +44,7 @@ export function AlbumPageGrid({
     };
   }, [canLoadMore, items.length, onLoadMore]);
 
-  const openImage = (item: Anniversary) => {
-    if (!item.image_url) return;
-
+  const openImage = (item: AlbumPhoto) => {
     const imageIndex = albumImages.findIndex((image) => image.id === item.id);
     if (imageIndex < 0) return;
 
@@ -107,17 +105,15 @@ export function AlbumPageGrid({
   );
 }
 
-function getAlbumImages(items: Anniversary[]) {
-  return items
-    .filter((item) => Boolean(item.image_url))
-    .map((item) => ({
-      alt: item.title,
-      date: formatDate(item.date),
-      description: item.note,
-      id: item.id,
-      src: item.image_url ?? "",
-      title: item.title,
-    }));
+function getAlbumImages(items: AlbumPhoto[]) {
+  return items.map((item) => ({
+    alt: item.title,
+    date: formatDate(item.date),
+    description: item.description,
+    id: item.id,
+    src: item.imageUrl,
+    title: item.title,
+  }));
 }
 
 function AlbumEmptyState({

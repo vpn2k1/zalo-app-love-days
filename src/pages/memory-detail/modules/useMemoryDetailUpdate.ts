@@ -40,8 +40,11 @@ export function useMemoryDetailUpdate() {
         queryClient.invalidateQueries({
           queryKey: anniversariesByDateQueryKey(coupleId),
         }),
+        queryClient.refetchQueries({
+          queryKey: ["get-memory", coupleId, id],
+        }),
       ]);
-      navigation.goAnniversaries({ replace: true });
+      navigation.goBack();
       snackbar.showSuccess("Đã cập nhật kỷ niệm.");
     },
     onError: (error) => {

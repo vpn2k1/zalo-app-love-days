@@ -3,6 +3,7 @@ import { useFormContext } from "react-hook-form";
 
 import {
   AppCalendarPicker,
+  AppImageMultiPicker,
   AppSelect,
   AppTextArea,
   AppTextInput,
@@ -47,6 +48,14 @@ export function MemoryDetailFields({ dateDisabled }: Props) {
         onPointerDown={stopSheetEvent}
         onTouchStart={stopSheetEvent}
       >
+        <AppImageMultiPicker
+          control={control}
+          name="image_urls"
+          label="Ảnh kỷ niệm"
+          maxCount={10}
+          optional
+          tileMinWidth={86}
+        />
         <AppTextInput
           control={control}
           name="title"

@@ -14,5 +14,6 @@ export function getDefaultAnniversaryValues(
     repeat_type: "yearly",
     note: "",
     image_url: "",
+    image_urls: [],
   };
 }

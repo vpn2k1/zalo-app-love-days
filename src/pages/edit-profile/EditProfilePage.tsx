@@ -13,6 +13,7 @@ import { EditProfileActions } from "./items/EditProfileActions";
 import { EditProfileDangerZone } from "./items/EditProfileDangerZone";
 import { EditProfileFields } from "./items/EditProfileFields";
 import { EditProfileHeader } from "./items/EditProfileHeader";
+import { EditProfileLegalLinks } from "./items/EditProfileLegalLinks";
 import { EditProfileLeaveModal } from "./items/EditProfileLeaveModal";
 import { EditProfilePhoto } from "./items/EditProfilePhoto";
 import type { ProfileFormValues } from "./types/EditProfilePageType";
@@ -53,6 +54,9 @@ export function EditProfilePage() {
         <EditProfileHeader onBack={navigation.goBack} />
         <EditProfilePhoto />
         <EditProfileFields />
+        <EditProfileLegalLinks
+          onOpenLegal={navigation.goLegal}
+        />
         <EditProfileDangerZone
           disabled={saveProfile.isPending}
           onOpenConfirm={() => setConfirmLeave(true)}

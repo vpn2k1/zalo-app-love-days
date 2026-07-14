@@ -1,5 +1,5 @@
 export const inviteConfig = {
-  title: 'Tham gia "Yêu" cùng mình nhé',
+  title: 'Tham gia "Nhật Ký Yêu" cùng mình nhé',
   description: "Cùng lưu lại những ngày kỷ niệm của chúng mình.",
   thumbnail: "https://h5.zdn.vn/static/images/avatar.png",
   expiresInDays: 7,

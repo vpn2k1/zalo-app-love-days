@@ -1,9 +1,20 @@
 import { mockDb } from "@/services/mockDb";
 import { deleteMockAnniversary } from "@/services/mockAnniversaryDelete";
+import {
+  getDraftImageUrls,
+  uploadAnniversaryImages,
+} from "@/services/anniversaryImageService";
+import {
+  compareAnniversaryDateDesc,
+  getMockAnniversaryPage,
+  isAnniversaryOnDate,
+  normalizePositiveNumber,
+} from "@/services/anniversaryListHelpers";
 import { isMockMode, supabase } from "@/services/supabaseClient";
 import { mediaService } from "@/services/mediaService";
 import { waitForMockNetworkDelay } from "@/services/mockNetworkDelay";
 import type { Anniversary, AnniversaryDraft, AnniversaryPage, AnniversaryUpdateInput } from "@/types/anniversary";
+import { createUuid } from "@/utils/uuid";
 
 type AnniversaryListInput = { limit?: number; page?: number };
 
@@ -73,21 +84,24 @@ export const anniversaryService = {
       return mockDb.addAnniversary(coupleId, userId, draft);
     }
 
-    const imageUrl = await mediaService.uploadImagePath({
+    const anniversaryId = createUuid();
+    const imageUrls = await uploadAnniversaryImages({
+      anniversaryId,
       coupleId,
-      fileName: `anniversary-${Date.now()}-${draft.title}`,
-      path: draft.image_url,
-      scope: "anniversaries",
+      imageUrls: getDraftImageUrls(draft),
+      title: draft.title,
     });
     const { data, error } = await supabase
       .from("anniversaries")
       .insert({
+        id: anniversaryId,
         couple_id: coupleId,
         title: draft.title,
         date: draft.date,
         repeat_type: draft.repeat_type,
         note: draft.note,
-        image_url: imageUrl,
+        image_url: imageUrls[0] ?? null,
+        image_urls: imageUrls,
         created_by: userId,
       })
       .select("*")
@@ -102,17 +116,18 @@ export const anniversaryService = {
       return mockDb.updateAnniversary(anniversaryId, input);
     }
 
-    const imageUrl = await mediaService.uploadImagePath({
+    const imageUrls = await uploadAnniversaryImages({
+      anniversaryId,
       coupleId,
-      fileName: `anniversary-${anniversaryId}`,
-      path: input.image_url,
-      scope: "anniversaries",
+      imageUrls: getDraftImageUrls(input),
+      title: input.title,
     });
     const { data, error } = await supabase
       .from("anniversaries")
       .update({
         date: input.date,
-        image_url: imageUrl,
+        image_url: imageUrls[0] ?? null,
+        image_urls: imageUrls,
         note: input.note,
         repeat_type: input.repeat_type,
         title: input.title,
@@ -141,7 +156,10 @@ export const anniversaryService = {
       .select("id");
 
     if (error) throw error;
-    if (data.length > 0) return;
+    if (data.length > 0) {
+      await mediaService.removeAnniversaryMedia(coupleId, anniversaryId);
+      return;
+    }
 
     throw new Error("Chỉ người tạo kỷ niệm mới có thể xoá.");
   },
@@ -167,32 +185,3 @@ export const anniversaryService = {
     return data;
   },
 };
-
-function getMockAnniversaryPage(coupleId: string, page: number, limit: number): AnniversaryPage {
-  const from = (page - 1) * limit;
-  const items = mockDb
-    .getAnniversaries(coupleId)
-    .sort(compareAnniversaryDateDesc)
-    .slice(from, from + limit + 1);
-
-  return { hasMore: items.length > limit, items: items.slice(0, limit), limit, page };
-}
-
-function normalizePositiveNumber(value: number | undefined, fallback: number) {
-  if (!value) return fallback;
-  if (!Number.isFinite(value)) return fallback;
-  if (value < 1) return fallback;
-  return Math.floor(value);
-}
-
-function compareAnniversaryDateDesc(left: Anniversary, right: Anniversary) { return getDateTime(right.date) - getDateTime(left.date); }
-
-function isAnniversaryOnDate(anniversary: Anniversary, date: string) {
-  if (anniversary.date === date) return true;
-  if (anniversary.repeat_type !== "yearly") return false;
-  return getMonthDay(anniversary.date) === getMonthDay(date);
-}
-
-function getMonthDay(value: string) { return value.slice(5); }
-
-function getDateTime(value: string) { const time = new Date(value).getTime(); if (Number.isNaN(time)) return 0; return time; }

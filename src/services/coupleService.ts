@@ -9,6 +9,7 @@ import {
 import type { Anniversary } from "@/types/anniversary";
 import type { Couple, CoupleMember, CoupleWithMembers, SetupCoupleInput } from "@/types/couple";
 import type { AppUser } from "@/types/user";
+import { createUuid } from "@/utils/uuid";
 
 const getSupabaseCoupleByUser = async (
   userId: string,
@@ -66,7 +67,7 @@ export const coupleService = {
       .from("couples")
       .insert({
         start_date: input.startDate,
-        title: "Yêu",
+        title: "Nhật Ký Yêu",
         theme: "pastel",
         created_by: user.id,
       })
@@ -126,20 +127,28 @@ export const coupleService = {
     ];
     if (anniversaryDrafts.length > 0) {
       const anniversaries = await Promise.all(
-        anniversaryDrafts.map(async (item, index) => ({
-          couple_id: couple.id,
-          title: item.title,
-          date: item.date,
-          repeat_type: item.repeat_type,
-          note: item.note,
-          image_url: await mediaService.uploadImagePath({
+        anniversaryDrafts.map(async (item, index) => {
+          const anniversaryId = createUuid();
+          const imageUrls = await uploadSetupAnniversaryImages({
+            anniversaryId,
             coupleId: couple.id,
-            fileName: `anniversary-${index + 1}-${item.title}`,
-            path: item.image_url,
-            scope: "anniversaries",
-          }),
-          created_by: user.id,
-        })),
+            imageUrls: getDraftImageUrls(item),
+            index,
+            title: item.title,
+          });
+
+          return {
+            id: anniversaryId,
+            couple_id: couple.id,
+            title: item.title,
+            date: item.date,
+            repeat_type: item.repeat_type,
+            note: item.note,
+            image_url: imageUrls[0] ?? null,
+            image_urls: imageUrls,
+            created_by: user.id,
+          };
+        }),
       );
       const { error: anniversaryError } = await supabase
         .from("anniversaries")
@@ -270,3 +279,34 @@ export const coupleService = {
     return data ?? [];
   },
 };
+
+function getDraftImageUrls(draft: { image_url?: string; image_urls?: string[] }) {
+  if (draft.image_urls && draft.image_urls.length > 0) return draft.image_urls;
+  if (!draft.image_url) return [];
+
+  return [draft.image_url];
+}
+
+async function uploadSetupAnniversaryImages({
+  anniversaryId,
+  coupleId,
+  imageUrls,
+  index,
+  title,
+}: {
+  anniversaryId: string;
+  coupleId: string;
+  imageUrls: string[];
+  index: number;
+  title: string;
+}) {
+  return Promise.all(imageUrls.map((imageUrl, imageIndex) =>
+    mediaService.uploadImagePath({
+      coupleId,
+      fileName: `anniversary-${index + 1}-${imageIndex + 1}-${title}`,
+      folderName: anniversaryId,
+      path: imageUrl,
+      scope: "anniversaries",
+    }),
+  )).then((items) => items.filter((item): item is string => Boolean(item)));
+}

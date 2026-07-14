@@ -6,6 +6,7 @@ export type MemoryDetailFormValues = AnniversaryUpdateInput & {
   couple_id: string;
   created_by: string;
   id: string;
+  image_urls: string[];
   mode: MemoryDetailMode;
 };
 

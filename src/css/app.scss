@@ -1025,6 +1025,63 @@ textarea,
   touch-action: none;
 }
 
+.app-legal-tabs {
+  overflow: hidden;
+  border: 1px solid rgba(233, 79, 130, 0.16);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 12px 28px rgba(201, 47, 103, 0.08);
+}
+
+.app-legal-tabs .zaui-tabs-tabbar {
+  gap: 6px;
+  align-items: stretch;
+  padding: 8px;
+  background: #fff8fb;
+}
+
+.app-legal-tabs .zaui-tabs-tabbar::after {
+  display: none;
+}
+
+.app-legal-tabs .zaui-tabs-tabbar.zaui-tabs-tabbar-scrollable {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.app-legal-tabs .zaui-tabs-tabbar-item {
+  flex: 0 0 auto;
+  min-width: max-content;
+  max-width: none;
+  padding: 10px 14px;
+  border-radius: 999px;
+  color: #80566e;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 18px;
+  white-space: nowrap;
+  text-overflow: clip;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.app-legal-tabs .zaui-tabs-tabbar-item.zaui-tabs-tabbar-item-active {
+  color: #ffffff;
+  background: #d9467e;
+  box-shadow: 0 8px 18px rgba(201, 47, 103, 0.18);
+}
+
+.app-legal-tabs .zaui-tabs-tabbar-active-line {
+  display: none;
+}
+
+.app-legal-tabs .zaui-tabs-content {
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.app-legal-tab-body {
+  border-top: 1px solid rgba(233, 79, 130, 0.12);
+}
+
 @media (max-width: 360px) {
   .zaui-page {
     padding-right: 14px;

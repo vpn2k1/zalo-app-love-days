@@ -114,7 +114,7 @@ export const mockDb = {
     const couple: Couple = {
       id: uid("couple"),
       start_date: input.startDate,
-      title: "Yêu",
+      title: "Nhật Ký Yêu",
       theme: "pastel",
       background_url: input.backgroundUrl,
       created_by: user.id,
@@ -149,7 +149,7 @@ export const mockDb = {
   updateCoupleStartDate(coupleId: string, startDate: string): Couple {
     const state = readState();
     const couple = state.couples.find((item) => item.id === coupleId);
-    if (!couple) throw new Error("Không tìm thấy Yêu.");
+    if (!couple) throw new Error("Không tìm thấy Nhật Ký Yêu.");
     couple.start_date = startDate;
     couple.updated_at = now();
     syncStartDateAnniversary(state.anniversaries, couple);
@@ -160,7 +160,7 @@ export const mockDb = {
   updateCoupleBackground(coupleId: string, backgroundUrl: string | null): Couple {
     const state = readState();
     const couple = state.couples.find((item) => item.id === coupleId);
-    if (!couple) throw new Error("Không tìm thấy Yêu.");
+    if (!couple) throw new Error("Không tìm thấy Nhật Ký Yêu.");
     couple.background_url = backgroundUrl;
     couple.updated_at = now();
     writeState(state);
@@ -173,7 +173,7 @@ export const mockDb = {
   ): Couple {
     const state = readState();
     const couple = state.couples.find((item) => item.id === coupleId);
-    if (!couple) throw new Error("Không tìm thấy Yêu.");
+    if (!couple) throw new Error("Không tìm thấy Nhật Ký Yêu.");
 
     if (payload.startDate !== undefined) {
       couple.start_date = payload.startDate;
@@ -241,7 +241,8 @@ export const mockDb = {
       updated = {
         ...anniversary,
         date: input.date,
-        image_url: input.image_url,
+        image_url: getDraftImageUrls(input)[0],
+        image_urls: getDraftImageUrls(input),
         note: input.note,
         repeat_type: input.repeat_type,
         title: input.title,
@@ -274,10 +275,18 @@ const createAnniversary = (
   date: draft.date,
   repeat_type: draft.repeat_type,
   note: draft.note,
-  image_url: draft.image_url,
+  image_url: getDraftImageUrls(draft)[0],
+  image_urls: getDraftImageUrls(draft),
   created_by: userId,
   created_at: now(),
 });
+
+function getDraftImageUrls(draft: AnniversaryDraft) {
+  if (draft.image_urls && draft.image_urls.length > 0) return draft.image_urls;
+  if (!draft.image_url) return [];
+
+  return [draft.image_url];
+}
 
 function syncStartDateAnniversary(
   anniversaries: Anniversary[],
