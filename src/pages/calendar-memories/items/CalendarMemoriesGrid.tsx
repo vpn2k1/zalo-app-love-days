@@ -40,11 +40,11 @@ function renderCalendarCell({
       return <>{info.originNode}</>;
     }
 
-    const memory = lookup.findByDate(date);
+    const memories = lookup.findByDate(date);
     return (
       <CalendarDay
         date={date}
-        hasMemory={Boolean(memory)}
+        hasMemory={memories.length > 0}
         onSelected={onSelected}
         selected={isSameDate(selectedDate, date)}
       />

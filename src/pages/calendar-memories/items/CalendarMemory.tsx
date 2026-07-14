@@ -7,44 +7,61 @@ import type { Anniversary } from "@/types/anniversary";
 import { formatDate } from "@/utils/date";
 
 import type { TCalendarMemoriesPage } from "../CalendarMemoriesPage";
-import { createCalendarMemoryLookup } from "../modules/calendarMemoryLookup";
+import { useSelectedDateMemories } from "../modules/useSelectedDateMemories";
 
 type Props = {
-  loading: boolean;
   onCreate: () => void;
 };
 
-export function CalendarMemory({ loading, onCreate }: Props) {
+export function CalendarMemory({ onCreate }: Props) {
   const navigation = useAppNavigation();
   const date = useWatch<TCalendarMemoriesPage, "selectDate">({
     name: "selectDate",
     exact: true,
   });
-  const anniversaries = useWatch<TCalendarMemoriesPage, "anniversaries">({
-    name: "anniversaries",
+  const coupleId = useWatch<TCalendarMemoriesPage, "coupleId">({
+    name: "coupleId",
     exact: true,
   });
+  const { memories, memoriesQuery } = useSelectedDateMemories(coupleId, date);
   if (!date) return null;
 
-  if (loading) {
+  if (memoriesQuery.isPending) {
     return <CalendarMemoryLoading />;
   }
 
-  const memory = createCalendarMemoryLookup(anniversaries ?? []).findByDate(date);
-  if (!memory) {
+  if (memories.length === 0) {
     return <EmptyCalendarMemory onCreate={onCreate} />;
   }
-
-  const openDetail = () => {
-    navigation.goMemory(memory.id);
-  };
 
   return (
     <Box className="mt-4 rounded-[24px] border border-[var(--love-border)] bg-white/85 p-3.5 shadow-[0_14px_30px_rgba(201,47,103,0.08)]">
       <Text className="text-xs font-bold uppercase text-[#c45a86]">
-        Chi tiết kỷ niệm
+        Kỷ niệm trong ngày
       </Text>
-      <Box className="mt-3 flex gap-3">
+      <Box className="mt-3 grid gap-3">
+        {memories.map((memory) => (
+          <CalendarMemoryItem
+            key={memory.id}
+            memory={memory}
+            onOpen={() => navigation.goMemory(memory.id)}
+          />
+        ))}
+      </Box>
+    </Box>
+  );
+}
+
+function CalendarMemoryItem({
+  memory,
+  onOpen,
+}: {
+  memory: Anniversary;
+  onOpen: () => void;
+}) {
+  return (
+    <Box className="rounded-[20px] bg-[#fff7fa] p-3">
+      <Box className="flex gap-3">
         <MemoryThumb memory={memory} />
         <Box className="min-w-0 flex-1">
           <Text.Title size="small" className="font-serif text-[#2f1d2a]">
@@ -65,7 +82,7 @@ export function CalendarMemory({ loading, onCreate }: Props) {
         size="small"
         variant="secondary"
         className="mt-3 rounded-2xl font-bold"
-        onClick={openDetail}
+        onClick={onOpen}
       >
         Chỉnh sửa kỷ niệm
       </Button>

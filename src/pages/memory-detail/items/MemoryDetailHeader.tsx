@@ -1,6 +1,7 @@
 import { useWatch } from "react-hook-form";
 
 import { AppPageHeader } from "@/components/AppPageHeader";
+import { Button, Icon } from "@/components/zaui";
 
 import type {
   MemoryDetailFormProps,
@@ -8,8 +9,10 @@ import type {
 } from "../types/MemoryDetailPageType";
 
 export function MemoryDetailHeader({
+  canDelete,
   mode,
   onBack,
+  onDelete,
 }: MemoryDetailFormProps) {
   const title = useWatch<MemoryDetailFormValues, "title">({
     name: "title",
@@ -18,9 +21,36 @@ export function MemoryDetailHeader({
 
   return (
     <AppPageHeader
+      action={
+        <MemoryDeleteAction
+          canDelete={canDelete}
+          mode={mode}
+          onDelete={onDelete}
+        />
+      }
       title={getTitle(mode)}
       subtitle={getSubtitle(mode, title)}
       onBack={onBack}
+    />
+  );
+}
+
+function MemoryDeleteAction({
+  canDelete,
+  mode,
+  onDelete,
+}: Pick<MemoryDetailFormProps, "canDelete" | "mode" | "onDelete">) {
+  if (mode !== "update") return null;
+  if (!canDelete) return null;
+  if (!onDelete) return null;
+
+  return (
+    <Button
+      className="!size-10 !min-h-10 !min-w-10 rounded-full bg-[#fff0f0] p-0 text-[#dc2626]"
+      htmlType="button"
+      icon={<Icon icon="zi-delete" />}
+      variant="tertiary"
+      onClick={onDelete}
     />
   );
 }

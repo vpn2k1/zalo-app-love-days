@@ -33,9 +33,14 @@ export function useFormValuesMemory() {
       }),
     enabled: Boolean(memoryId && coupleId),
   });
+  const loading = mode !== "create" && Boolean(memoryId) && (
+    !coupleId || memoryQuery.isPending
+  );
+  const missing = mode !== "create" && !loading && !memoryQuery.data;
   const forms = useForm<MemoryDetailFormValues>({
     defaultValues: {
       ...getCreateMemoryDetailDefaultValues(initialImageUrl),
+      created_by: "",
       id: "",
       couple_id: coupleId ?? "",
       mode,
@@ -48,6 +53,7 @@ export function useFormValuesMemory() {
       forms.reset({
         ...getMemoryDetailDefaultValues(memoryQuery.data),
         couple_id: coupleId ?? "",
+        created_by: memoryQuery.data.created_by,
         id: memoryQuery.data.id,
         mode: "update",
       });
@@ -58,6 +64,7 @@ export function useFormValuesMemory() {
     forms.reset({
       ...getCreateMemoryDetailDefaultValues(initialImageUrl),
       couple_id: coupleId ?? "",
+      created_by: "",
       id: "",
       mode: "create",
     });
@@ -65,7 +72,9 @@ export function useFormValuesMemory() {
 
   return {
     forms,
+    loading,
     memoryQuery,
+    missing,
     mode,
   };
 }

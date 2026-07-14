@@ -1,18 +1,11 @@
 import { mockDb } from "@/services/mockDb";
+import { deleteMockAnniversary } from "@/services/mockAnniversaryDelete";
 import { isMockMode, supabase } from "@/services/supabaseClient";
 import { mediaService } from "@/services/mediaService";
 import { waitForMockNetworkDelay } from "@/services/mockNetworkDelay";
-import type {
-  Anniversary,
-  AnniversaryDraft,
-  AnniversaryPage,
-  AnniversaryUpdateInput,
-} from "@/types/anniversary";
+import type { Anniversary, AnniversaryDraft, AnniversaryPage, AnniversaryUpdateInput } from "@/types/anniversary";
 
-type AnniversaryListInput = {
-  limit?: number;
-  page?: number;
-};
+type AnniversaryListInput = { limit?: number; page?: number };
 
 const ALL_ANNIVERSARIES_PAGE_LIMIT = 100;
 
@@ -28,9 +21,23 @@ export const anniversaryService = {
       });
       anniversaries.push(...result.items);
       if (!result.hasMore) return anniversaries;
-
       page += 1;
     }
+  },
+
+  async listByDate(coupleId: string, date: string): Promise<Anniversary[]> {
+    if (isMockMode || !supabase) {
+      await waitForMockNetworkDelay();
+      return mockDb
+        .getAnniversaries(coupleId)
+        .filter((item) => isAnniversaryOnDate(item, date))
+        .sort(compareAnniversaryDateDesc);
+    }
+
+    const { data, error } = await supabase.rpc("list_anniversaries_by_date", { p_couple_id: coupleId, p_date: date });
+
+    if (error) throw error;
+    return data ?? [];
   },
 
   async listPage(coupleId: string, input: AnniversaryListInput = {}): Promise<AnniversaryPage> {
@@ -61,11 +68,7 @@ export const anniversaryService = {
     };
   },
 
-  async create(
-    coupleId: string,
-    userId: string,
-    draft: AnniversaryDraft,
-  ): Promise<Anniversary> {
+  async create(coupleId: string, userId: string, draft: AnniversaryDraft): Promise<Anniversary> {
     if (isMockMode || !supabase) {
       return mockDb.addAnniversary(coupleId, userId, draft);
     }
@@ -94,11 +97,7 @@ export const anniversaryService = {
     return data;
   },
 
-  async update(
-    coupleId: string,
-    anniversaryId: string,
-    input: AnniversaryUpdateInput,
-  ): Promise<Anniversary> {
+  async update(coupleId: string, anniversaryId: string, input: AnniversaryUpdateInput): Promise<Anniversary> {
     if (isMockMode || !supabase) {
       return mockDb.updateAnniversary(anniversaryId, input);
     }
@@ -126,13 +125,28 @@ export const anniversaryService = {
     if (error) throw error;
     return data;
   },
-  async getOne({
-    coupleId,
-    id,
-  }: {
-    id: string;
-    coupleId: string;
-  }): Promise<Anniversary> {
+
+  async remove(coupleId: string, anniversaryId: string, userId: string): Promise<void> {
+    if (isMockMode || !supabase) {
+      deleteMockAnniversary(coupleId, anniversaryId, userId);
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("anniversaries")
+      .delete()
+      .eq("couple_id", coupleId)
+      .eq("id", anniversaryId)
+      .eq("created_by", userId)
+      .select("id");
+
+    if (error) throw error;
+    if (data.length > 0) return;
+
+    throw new Error("Chỉ người tạo kỷ niệm mới có thể xoá.");
+  },
+
+  async getOne({ coupleId, id }: { id: string; coupleId: string }): Promise<Anniversary> {
     if (isMockMode || !supabase) {
       const anniversary = mockDb
         .getAnniversaries(coupleId)
@@ -154,40 +168,31 @@ export const anniversaryService = {
   },
 };
 
-function getMockAnniversaryPage(
-  coupleId: string,
-  page: number,
-  limit: number,
-): AnniversaryPage {
+function getMockAnniversaryPage(coupleId: string, page: number, limit: number): AnniversaryPage {
   const from = (page - 1) * limit;
   const items = mockDb
     .getAnniversaries(coupleId)
     .sort(compareAnniversaryDateDesc)
     .slice(from, from + limit + 1);
 
-  return {
-    hasMore: items.length > limit,
-    items: items.slice(0, limit),
-    limit,
-    page,
-  };
+  return { hasMore: items.length > limit, items: items.slice(0, limit), limit, page };
 }
 
 function normalizePositiveNumber(value: number | undefined, fallback: number) {
   if (!value) return fallback;
   if (!Number.isFinite(value)) return fallback;
   if (value < 1) return fallback;
-
   return Math.floor(value);
 }
 
-function compareAnniversaryDateDesc(left: Anniversary, right: Anniversary) {
-  return getDateTime(right.date) - getDateTime(left.date);
+function compareAnniversaryDateDesc(left: Anniversary, right: Anniversary) { return getDateTime(right.date) - getDateTime(left.date); }
+
+function isAnniversaryOnDate(anniversary: Anniversary, date: string) {
+  if (anniversary.date === date) return true;
+  if (anniversary.repeat_type !== "yearly") return false;
+  return getMonthDay(anniversary.date) === getMonthDay(date);
 }
 
-function getDateTime(value: string) {
-  const time = new Date(value).getTime();
-  if (Number.isNaN(time)) return 0;
+function getMonthDay(value: string) { return value.slice(5); }
 
-  return time;
-}
+function getDateTime(value: string) { const time = new Date(value).getTime(); if (Number.isNaN(time)) return 0; return time; }

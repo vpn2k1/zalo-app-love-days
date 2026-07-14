@@ -32,6 +32,7 @@ export const AppSheet = forwardRef<AppSheetRef, Props>(function AppSheet(
     unmountOnClose = true,
     visible,
     onClose,
+    children,
     ...sheetProps
   }: Props,
   ref,
@@ -82,7 +83,14 @@ export const AppSheet = forwardRef<AppSheetRef, Props>(function AppSheet(
       maskClosable={maskClosable}
       swipeToClose={swipeToClose}
       unmountOnClose={unmountOnClose}
-    />
+    >
+      <div
+        className="app-overlay-input-scroll"
+        style={{ paddingBottom: "var(--zma-keyboard-height, 0px)" }}
+      >
+        {children}
+      </div>
+    </Sheet>
   );
 });
 

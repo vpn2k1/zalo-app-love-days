@@ -13,6 +13,7 @@ import { MemoryGardenSection } from "./MemoryGardenSection";
 import { QuickActionGrid } from "./QuickActionGrid";
 import { StatusBar } from "./StatusBar";
 import { TimelineSection } from "./TimelineSection";
+import { TodayAnniversaryCard } from "./TodayAnniversaryCard";
 import { useHomePage } from "../modules/useHomePage";
 
 const homePageId = "home-page";
@@ -73,6 +74,7 @@ export function HomePageBody() {
         onClose={closeQuickCapture}
         onSelectImage={createQuickMemory}
       />
+      <TodayAnniversaryCard anniversaries={home.todayAnniversaries} />
       <MemoryGardenSection nextAnniversary={home.nextAnniversary} />
       <TimelineSection
         anniversaries={home.visibleAnniversaries}

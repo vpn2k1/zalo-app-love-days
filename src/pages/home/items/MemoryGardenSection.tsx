@@ -31,8 +31,8 @@ export function MemoryGardenSection({
           </Text>
         </Box>
       </Box>
-      <Box className="flex flex-wrap items-center justify-between gap-2 rounded-[18px] bg-white/60 px-3 py-2">
-        <Text className="min-w-0 text-[13px] font-bold text-[#716773]">
+      <Box className="flex flex-wrap items-center justify-between gap-2 rounded-[18px] bg-white/60 ">
+        <Text className="min-w-0 text-[13px] font-bold text-[#716773] px-3">
           {getNextAnniversaryDate(nextAnniversary)}
         </Text>
         <Button

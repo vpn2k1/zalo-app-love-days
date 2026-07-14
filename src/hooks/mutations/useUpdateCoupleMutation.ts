@@ -7,6 +7,7 @@ import { mediaService } from "@/services/mediaService";
 import type { CoupleWithMembers } from "@/types/couple";
 import {
   allAnniversariesQueryKey,
+  anniversariesByDateQueryKey,
   coupleQueryKey,
   infiniteAnniversariesQueryKey,
 } from "@/config/queryKeys";
@@ -66,6 +67,9 @@ export function useUpdateCoupleMutation() {
         }),
         queryClient.invalidateQueries({
           queryKey: infiniteAnniversariesQueryKey(coupleData.couple.id),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: anniversariesByDateQueryKey(coupleData.couple.id),
         }),
       ]);
       await queryClient.invalidateQueries({ queryKey: ["memory"] });

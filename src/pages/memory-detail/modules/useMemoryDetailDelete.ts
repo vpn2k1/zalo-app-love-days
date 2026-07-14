@@ -11,27 +11,21 @@ import { useAppNavigation } from "@/hooks/useAppNavigation";
 import { anniversaryService } from "@/services/anniversaryService";
 import { currentUserStore } from "@/services/currentUserStore";
 
-import type { MemoryDetailFormValues } from "../types/MemoryDetailPageType";
-import { normalizeMemoryDetailValues } from "./memoryDetailForm";
-
-export function useMemoryDetailCreate() {
+export function useMemoryDetailDelete() {
   const queryClient = useQueryClient();
   const snackbar = useAppSnackbar();
-  const navigate = useAppNavigation();
+  const navigation = useAppNavigation();
   const coupleId = useWatch({ name: "couple_id", exact: true });
+  const id = useWatch({ name: "id", exact: true });
 
   return useMutation({
-    mutationFn: (values: MemoryDetailFormValues) => {
+    mutationFn: async () => {
       const user = currentUserStore.get();
-      if (!user?.id || !coupleId) {
-        throw new Error("Không tìm thấy thông tin của hai bạn.");
+      if (!coupleId || !id || !user?.id) {
+        throw new Error("Không tìm thấy kỷ niệm.");
       }
 
-      return anniversaryService.create(
-        coupleId,
-        user.id,
-        normalizeMemoryDetailValues(values),
-      );
+      return anniversaryService.remove(coupleId, id, user.id);
     },
     onSuccess: async () => {
       await Promise.all([
@@ -39,18 +33,22 @@ export function useMemoryDetailCreate() {
           queryKey: allAnniversariesQueryKey(coupleId),
         }),
         queryClient.invalidateQueries({
-          queryKey: infiniteAnniversariesQueryKey(coupleId),
-        }),
-        queryClient.invalidateQueries({
           queryKey: anniversariesByDateQueryKey(coupleId),
         }),
+        queryClient.invalidateQueries({
+          queryKey: infiniteAnniversariesQueryKey(coupleId),
+        }),
+        queryClient.invalidateQueries({ queryKey: ["get-memory"] }),
+        queryClient.invalidateQueries({ queryKey: ["memory"] }),
       ]);
-      navigate.goAnniversaries({ replace: true });
-      snackbar.showSuccess("Đã tạo kỷ niệm.");
+      snackbar.showSuccess("Đã xoá kỷ niệm.");
+      navigation.goBack();
     },
     onError: (error) => {
       console.error(error);
-      snackbar.showError("Không thể tạo kỷ niệm. Vui lòng thử lại.");
+      let message = "Không thể xoá kỷ niệm. Vui lòng thử lại.";
+      if (error instanceof Error) message = error.message;
+      snackbar.showError(message);
     },
   });
 }

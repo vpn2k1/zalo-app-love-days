@@ -28,7 +28,7 @@ export function SetupPageButton({ loading, onCreate, user }: Props) {
   };
 
   return (
-    <Box className="app-setup-action">
+    <Box className="mt-4">
       <Button
         fullWidth
         disabled={!canStart}

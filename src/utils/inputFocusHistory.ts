@@ -18,15 +18,13 @@ export function pushInputFocusHistoryState() {
 
 export function blurActiveTextField() {
   const activeElement = document.activeElement;
-  if (activeElement instanceof HTMLInputElement) {
-    activeElement.blur();
-    void hideKeyboard().catch(() => undefined);
+  if (!(activeElement instanceof HTMLElement)) return;
+  if (!activeElement.matches("input, textarea, select, [contenteditable='true']")) {
     return;
   }
-  if (activeElement instanceof HTMLTextAreaElement) {
-    activeElement.blur();
-    void hideKeyboard().catch(() => undefined);
-  }
+
+  activeElement.blur();
+  void hideKeyboard().catch(() => undefined);
 }
 
 export function isTopInputHistoryId(id: number) {

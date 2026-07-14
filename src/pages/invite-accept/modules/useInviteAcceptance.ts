@@ -4,6 +4,7 @@ import { useAppSnackbar } from "@/components/zaui";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
 import {
   authorizeCurrentUser,
+  createDefaultCurrentUser,
   setCurrentUserCache,
 } from "@/hooks/useCurrentUser";
 import { coupleService } from "@/services/coupleService";
@@ -27,9 +28,12 @@ export function useInviteAcceptance() {
   const inviteCode = useMemo(getInviteCodeFromUrl, []);
 
   const acceptInviteMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (useZaloInfo: boolean) => {
       if (!inviteCode) throw new Error("Thiếu mã lời mời.");
-      const appUser = await getSavedInviteUser(currentUserStore.get());
+      const appUser = await getSavedInviteUser(
+        currentUserStore.get(),
+        useZaloInfo,
+      );
       setCurrentUserCache(queryClient, appUser);
       const existingCouple = await coupleService.getCoupleByUser(appUser.id);
       if (existingCouple) {
@@ -84,8 +88,9 @@ export function useInviteAcceptance() {
   return { acceptInviteMutation, closeInviteConflict, inviteConflict };
 }
 
-function getSavedInviteUser(user: AppUser | null) {
+function getSavedInviteUser(user: AppUser | null, useZaloInfo: boolean) {
   if (user?.id) return Promise.resolve(user);
+  if (!useZaloInfo) return createDefaultCurrentUser();
 
   return authorizeCurrentUser();
 }

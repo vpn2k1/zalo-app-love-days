@@ -21,7 +21,6 @@ export function AppPullToRefresh({ onRefresh, pageId, refreshing }: Props) {
     const page = document.getElementById(pageId);
     if (!page) return;
 
-    const scrollContainer = page.closest<HTMLElement>(".zaui-routes-item");
     let active = false;
     let startX = 0;
     let startY = 0;
@@ -38,6 +37,7 @@ export function AppPullToRefresh({ onRefresh, pageId, refreshing }: Props) {
     };
 
     const onTouchStart = (event: TouchEvent) => {
+      const scrollContainer = getScrollContainer(page);
       if (refreshing || !isAtTop(page, scrollContainer)) return;
 
       const touch = event.touches[0];
@@ -58,6 +58,7 @@ export function AppPullToRefresh({ onRefresh, pageId, refreshing }: Props) {
         return;
       }
 
+      const scrollContainer = getScrollContainer(page);
       if (!isAtTop(page, scrollContainer)) {
         reset();
         return;
@@ -106,13 +107,35 @@ export function AppPullToRefresh({ onRefresh, pageId, refreshing }: Props) {
 }
 
 function isAtTop(page: HTMLElement, scrollContainer: HTMLElement | null) {
-  return getScrollTop(page) <= 0 && getScrollTop(scrollContainer) <= 0;
+  return getScrollTop(scrollContainer ?? page) <= 0;
 }
 
 function getScrollTop(element: HTMLElement | null) {
-  const documentScrollTop = document.scrollingElement?.scrollTop ?? 0;
-  const windowScrollTop = window.scrollY || 0;
-  const elementScrollTop = element?.scrollTop ?? 0;
+  if (element) return element.scrollTop;
 
-  return Math.max(documentScrollTop, windowScrollTop, elementScrollTop);
+  return document.scrollingElement?.scrollTop ?? window.scrollY ?? 0;
+}
+
+function getScrollContainer(page: HTMLElement) {
+  const route = page.closest<HTMLElement>(".zaui-routes-item");
+  if (isScrollable(route)) return route;
+
+  let parent = page.parentElement;
+  while (parent) {
+    if (isScrollable(parent)) return parent;
+    parent = parent.parentElement;
+  }
+
+  return null;
+}
+
+function isScrollable(element: HTMLElement | null) {
+  if (!element) return false;
+
+  const style = window.getComputedStyle(element);
+  const canScroll = style.overflowY === "auto" || style.overflowY === "scroll";
+
+  if (!canScroll) return false;
+
+  return element.scrollHeight > element.clientHeight;
 }

@@ -6,6 +6,7 @@ import { currentUserStore } from "@/services/currentUserStore";
 import type { AnniversaryDraft } from "@/types/anniversary";
 import {
   allAnniversariesQueryKey,
+  anniversariesByDateQueryKey,
   infiniteAnniversariesQueryKey,
 } from "@/config/queryKeys";
 
@@ -27,6 +28,9 @@ export function useAnniversaryMutation() {
         }),
         queryClient.invalidateQueries({
           queryKey: infiniteAnniversariesQueryKey(coupleData?.couple.id),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: anniversariesByDateQueryKey(coupleData?.couple.id),
         }),
       ]);
       await queryClient.invalidateQueries({

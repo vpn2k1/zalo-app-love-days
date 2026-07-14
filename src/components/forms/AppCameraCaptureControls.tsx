@@ -1,10 +1,12 @@
 import { Box, Icon } from "@/components/zaui";
 
 import { AppCameraZoomControls } from "./AppCameraZoomControls";
+import type { CameraZoomRange } from "./cameraZoom";
 
 type Props = {
   ready: boolean;
   zoom: number;
+  zoomRange: CameraZoomRange;
   zoomSupported: boolean;
   onCapture: () => void;
   onFlip: () => void;
@@ -34,6 +36,7 @@ export function AppCameraCaptureHeader({ onClick }: ClickProps) {
 export function AppCameraCaptureControls({
   ready,
   zoom,
+  zoomRange,
   zoomSupported,
   onCapture,
   onFlip,
@@ -45,6 +48,7 @@ export function AppCameraCaptureControls({
       <AppCameraZoomControls
         ready={ready}
         zoom={zoom}
+        zoomRange={zoomRange}
         zoomSupported={zoomSupported}
         onZoomChange={onZoomChange}
       />

@@ -13,7 +13,10 @@ import { AppStatusBar } from "@/components/AppStatusBar";
 export function InviteAcceptPage() {
   const invite = useInviteAcceptance();
   const acceptInvite = async () => {
-    await invite.acceptInviteMutation.mutateAsync();
+    await invite.acceptInviteMutation.mutateAsync(true);
+  };
+  const acceptInviteWithoutZaloInfo = async () => {
+    await invite.acceptInviteMutation.mutateAsync(false);
   };
 
   return (
@@ -26,6 +29,7 @@ export function InviteAcceptPage() {
       <InviteAcceptAction
         loading={invite.acceptInviteMutation.isPending}
         onAccept={acceptInvite}
+        onAcceptWithoutZaloInfo={acceptInviteWithoutZaloInfo}
       />
       <InviteConflictModal
         conflictMessage={invite.inviteConflict}

@@ -71,9 +71,40 @@ create table if not exists public.partner_invites (
 create index if not exists couple_members_user_id_idx on public.couple_members(user_id);
 create index if not exists couple_members_couple_id_idx on public.couple_members(couple_id);
 create index if not exists anniversaries_couple_id_idx on public.anniversaries(couple_id);
+create index if not exists anniversaries_couple_date_idx
+on public.anniversaries(couple_id, date);
+create index if not exists anniversaries_couple_yearly_month_day_idx
+on public.anniversaries(
+  couple_id,
+  (extract(month from date)),
+  (extract(day from date))
+)
+where repeat_type = 'yearly';
 create index if not exists partner_invites_invite_code_idx on public.partner_invites(invite_code);
 create unique index if not exists couple_members_couple_side_unique_idx
 on public.couple_members(couple_id, side);
+
+create or replace function public.list_anniversaries_by_date(
+  p_couple_id uuid,
+  p_date date
+)
+returns setof public.anniversaries
+language sql
+stable
+as $$
+  select anniversaries.*
+  from public.anniversaries
+  where anniversaries.couple_id = p_couple_id
+    and (
+      anniversaries.date = p_date
+      or (
+        anniversaries.repeat_type = 'yearly'
+        and extract(month from anniversaries.date) = extract(month from p_date)
+        and extract(day from anniversaries.date) = extract(day from p_date)
+      )
+    )
+  order by anniversaries.date desc, anniversaries.created_at desc;
+$$;
 
 create or replace function public.set_updated_at()
 returns trigger as $$

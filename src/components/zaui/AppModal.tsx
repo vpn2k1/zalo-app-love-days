@@ -15,6 +15,7 @@ export function AppModal({
   maskClosable = true,
   onClose,
   unmountOnClose = true,
+  children,
   ...modalProps
 }: Props) {
   const close = useCallback(() => {
@@ -30,7 +31,14 @@ export function AppModal({
       mask={mask}
       maskClosable={maskClosable}
       unmountOnClose={unmountOnClose}
-    />,
+    >
+      <div
+        className="app-overlay-input-scroll app-modal-input-scroll"
+        style={{ paddingBottom: "var(--zma-keyboard-height, 0px)" }}
+      >
+        {children}
+      </div>
+    </Modal>,
     document.body,
   );
 }

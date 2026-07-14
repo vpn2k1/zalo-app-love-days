@@ -51,11 +51,12 @@ export function AppCameraCapture({
             mirrored={camera.mirrored}
             ready={camera.ready}
             videoRef={camera.videoRef}
-            zoom={camera.zoom}
+            zoom={camera.zoomScale}
           />
           <AppCameraCaptureControls
             ready={camera.ready}
             zoom={camera.zoom}
+            zoomRange={camera.zoomRange}
             zoomSupported={camera.zoomSupported}
             onCapture={camera.capture}
             onFlip={camera.flipCamera}

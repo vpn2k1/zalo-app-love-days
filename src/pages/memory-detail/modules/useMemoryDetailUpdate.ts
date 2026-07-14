@@ -4,6 +4,7 @@ import { useWatch } from "react-hook-form";
 import { useAppSnackbar } from "@/components/zaui";
 import {
   allAnniversariesQueryKey,
+  anniversariesByDateQueryKey,
   infiniteAnniversariesQueryKey,
 } from "@/config/queryKeys";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
@@ -35,6 +36,9 @@ export function useMemoryDetailUpdate() {
         }),
         queryClient.invalidateQueries({
           queryKey: infiniteAnniversariesQueryKey(coupleId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: anniversariesByDateQueryKey(coupleId),
         }),
       ]);
       navigation.goAnniversaries({ replace: true });

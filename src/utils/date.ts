@@ -87,7 +87,7 @@ export const getNextAnniversary = (
         note: item.note,
       };
     })
-    .filter((item) => item.daysLeft >= 0)
+    .filter((item) => item.daysLeft > 0)
     .sort((a, b) => a.daysLeft - b.daysLeft);
 
   return upcoming[0] ?? null;
@@ -99,7 +99,7 @@ const startOfDay = (date: Date) =>
 const nextYearlyDate = (value: string, today: Date) => {
   const original = parseLocalDate(value);
   let next = new Date(today.getFullYear(), original.getMonth(), original.getDate());
-  if (next.getTime() < today.getTime()) {
+  if (next.getTime() <= today.getTime()) {
     next = new Date(today.getFullYear() + 1, original.getMonth(), original.getDate());
   }
   return next;

@@ -2,26 +2,36 @@ import type { Anniversary } from "@/types/anniversary";
 import { parseLocalDate, toDateInputValue } from "@/utils/date";
 
 export function createCalendarMemoryLookup(anniversaries: Anniversary[]) {
-  const exactDateMap = new Map<string, Anniversary>();
-  const yearlyDateMap = new Map<string, Anniversary>();
+  const exactDateMap = new Map<string, Anniversary[]>();
+  const yearlyDateMap = new Map<string, Anniversary[]>();
 
   anniversaries.forEach((memory) => {
     if (memory.repeat_type === "yearly") {
-      yearlyDateMap.set(getMonthDayKey(memory.date), memory);
+      addMemory(yearlyDateMap, getMonthDayKey(memory.date), memory);
       return;
     }
 
-    exactDateMap.set(memory.date, memory);
+    addMemory(exactDateMap, memory.date, memory);
   });
 
   return {
     findByDate(date: Date) {
-      const exactMemory = exactDateMap.get(toDateInputValue(date));
-      if (exactMemory) return exactMemory;
+      const exactMemories = exactDateMap.get(toDateInputValue(date)) ?? [];
+      const yearlyMemories = yearlyDateMap.get(
+        getMonthDayKey(toDateInputValue(date)),
+      ) ?? [];
 
-      return yearlyDateMap.get(getMonthDayKey(toDateInputValue(date)));
+      return [...exactMemories, ...yearlyMemories];
     },
   };
+}
+
+function addMemory(
+  map: Map<string, Anniversary[]>,
+  key: string,
+  memory: Anniversary,
+) {
+  map.set(key, [...(map.get(key) ?? []), memory]);
 }
 
 function getMonthDayKey(value: string) {

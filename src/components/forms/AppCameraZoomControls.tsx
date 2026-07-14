@@ -1,11 +1,12 @@
 import { Slider } from "zmp-ui";
 
 import { Box } from "@/components/zaui";
-import { CAMERA_ZOOM_RANGE } from "./cameraZoom";
+import type { CameraZoomRange } from "./cameraZoom";
 
 type Props = {
   ready: boolean;
   zoom: number;
+  zoomRange: CameraZoomRange;
   zoomSupported: boolean;
   onZoomChange: (value: number) => void;
 };
@@ -13,6 +14,7 @@ type Props = {
 export function AppCameraZoomControls({
   ready,
   zoom,
+  zoomRange,
   zoomSupported,
   onZoomChange,
 }: Props) {
@@ -22,12 +24,12 @@ export function AppCameraZoomControls({
   return (
     <Box className="mx-auto w-full rounded-2xl py-4">
       <Slider
-        max={CAMERA_ZOOM_RANGE.max}
-        min={CAMERA_ZOOM_RANGE.min}
-        step={CAMERA_ZOOM_RANGE.step}
+        max={zoomRange.max}
+        min={zoomRange.min}
+        step={zoomRange.step}
         value={zoom}
-        prefix={CAMERA_ZOOM_RANGE.min}
-        suffix={CAMERA_ZOOM_RANGE.max}
+        prefix={zoomRange.min}
+        suffix={zoomRange.max}
         onChange={handleSliderChange(onZoomChange)}
       />
     </Box>

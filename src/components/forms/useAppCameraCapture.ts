@@ -4,20 +4,20 @@ import { createCameraContext, PhotoFormat, PhotoQuality } from "zmp-sdk";
 import { getPickAlbumAction } from "./cameraAlbumAction";
 import {
   getCameraCaptureConstraints,
+  getCameraPhotoConstraint,
   getNextFacing,
   isFrontCamera,
   stopCamera,
   type CameraFacing,
 } from "./cameraCaptureHelpers";
 import {
-  CAMERA_DEFAULT_ZOOM,
-  CAMERA_ZOOM_RANGE,
+  captureVideoFrameToImageData,
   clampCameraZoom,
   cropImageDataToZoom,
+  getCameraDefaultZoom,
+  getCameraZoomScale,
+  getCameraZoomRange,
 } from "./cameraZoom";
-
-const CAMERA_PHOTO_HEIGHT = 2560;
-const CAMERA_PHOTO_WIDTH = 1920;
 
 type Input = {
   visible: boolean; onCapture: (imageUrl: string) => void;
@@ -36,8 +36,10 @@ export function useAppCameraCapture({
   const [facing, setFacing] = useState<CameraFacing>("back");
   const [loading, setLoading] = useState(false);
   const [ready, setReady] = useState(false);
-  const [zoom, setZoom] = useState(CAMERA_DEFAULT_ZOOM);
+  const [zoom, setZoom] = useState(getCameraDefaultZoom("back"));
   const [zoomSupported, setZoomSupported] = useState(false);
+  const zoomRange = getCameraZoomRange(facing);
+  const zoomScale = getCameraZoomScale(facing, zoom);
 
   useEffect(() => {
     if (!visible) return;
@@ -82,20 +84,30 @@ export function useAppCameraCapture({
   };
 
   const flipCamera = () => {
-    setZoom(CAMERA_DEFAULT_ZOOM);
-    setFacing(getNextFacing);
+    const nextFacing = getNextFacing(facing);
+    setZoom(getCameraDefaultZoom(nextFacing));
+    setFacing(nextFacing);
   };
 
   const capture = async () => {
     const camera = cameraRef.current;
     if (!camera) return;
 
+    const imageData = captureVideoFrameToImageData(
+      videoRef.current,
+      zoomScale,
+      isFrontCamera(facing),
+    );
+    if (imageData) {
+      onCapture(imageData);
+      close();
+      return;
+    }
+
     const frame = camera.takePhoto({
+      ...getCameraPhotoConstraint(videoRef.current),
       format: PhotoFormat.JPEG,
-      minScreenshotHeight: CAMERA_PHOTO_HEIGHT,
-      minScreenshotWidth: CAMERA_PHOTO_WIDTH,
       quality: PhotoQuality.HIGH,
-      useVideoSourceSize: true,
     });
     if (!frame?.data) {
       setError("Không thể chụp ảnh. Vui lòng thử lại.");
@@ -112,7 +124,7 @@ export function useAppCameraCapture({
     setError,
   });
   const changeZoom = (value: number) => {
-    const nextZoom = clampCameraZoom(value, CAMERA_ZOOM_RANGE);
+    const nextZoom = clampCameraZoom(value, zoomRange);
     setZoom(nextZoom);
   };
 
@@ -120,13 +132,13 @@ export function useAppCameraCapture({
     setError("");
     setLoading(true);
     setReady(false);
-    setZoom(CAMERA_DEFAULT_ZOOM);
+    setZoom(getCameraDefaultZoom(facing));
     setZoomSupported(false);
   };
 
   const captureZoomedFrame = async (imageData: string) => {
     try {
-      onCapture(await cropImageDataToZoom(imageData, zoom));
+      onCapture(await cropImageDataToZoom(imageData, zoomScale));
       close();
     } catch (cropError) {
       console.error(cropError);
@@ -137,7 +149,8 @@ export function useAppCameraCapture({
 
   return {
     capture, changeZoom, close, error, flipCamera, loading, pickAlbum, ready,
-    mirrored: isFrontCamera(facing), videoRef, zoom, zoomSupported,
+    mirrored: isFrontCamera(facing), videoRef, zoom, zoomRange, zoomScale,
+    zoomSupported,
   };
 }
 

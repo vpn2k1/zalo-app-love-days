@@ -28,7 +28,7 @@ export function CalendarMemoriesPage() {
   const [composerVisible, setComposerVisible] = useState(false);
   const navigation = useAppNavigation();
   const { coupleData } = useCoupleData();
-  const { anniversaries, anniversariesQuery } = useAnniversariesData(
+  const { anniversaries } = useAnniversariesData(
     coupleData?.couple.id ?? "",
   );
   const addAnniversaryMutation = useAnniversaryMutation();
@@ -60,10 +60,7 @@ export function CalendarMemoriesPage() {
         <AppStatusBar />
         <CalendarMemoriesHeader onBack={navigation.goBack} />
         <CalendarMemoriesGrid />
-        <CalendarMemory
-          loading={anniversariesQuery.isPending}
-          onCreate={openComposer}
-        />
+        <CalendarMemory onCreate={openComposer} />
         <CalendarSheet />
         <AnniversaryComposer
           defaultDate={selectedDateValue}

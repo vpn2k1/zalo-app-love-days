@@ -5,6 +5,7 @@ import { coupleService } from "@/services/coupleService";
 import { currentUserStore } from "@/services/currentUserStore";
 import {
   allAnniversariesQueryKey,
+  anniversariesByDateQueryKey,
   coupleQueryKey,
   infiniteAnniversariesQueryKey,
 } from "@/config/queryKeys";
@@ -31,6 +32,9 @@ export function useUpdateStartDateMutation() {
         }),
         queryClient.invalidateQueries({
           queryKey: infiniteAnniversariesQueryKey(coupleData.couple.id),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: anniversariesByDateQueryKey(coupleData.couple.id),
         }),
       ]);
       await queryClient.invalidateQueries({ queryKey: ["memory"] });

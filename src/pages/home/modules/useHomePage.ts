@@ -5,6 +5,7 @@ import { useFormContext, useWatch } from "react-hook-form";
 import { useAppSnackbar } from "@/components/zaui";
 import {
   allAnniversariesQueryKey,
+  anniversariesByDateQueryKey,
   coupleQueryKey,
 } from "@/config/queryKeys";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
@@ -13,10 +14,11 @@ import {
   setCurrentUserCache,
 } from "@/hooks/useCurrentUser";
 import type { Anniversary } from "@/types/anniversary";
-import { getNextAnniversary } from "@/utils/date";
+import { getNextAnniversary, todayDateString } from "@/utils/date";
 
 import type { HomeFormValues, Person } from "../types/HomePageType";
 import { useInvitePartnerMutation } from "./useInvitePartnerMutation";
+import { useTodayAnniversaries } from "./useTodayAnniversaries";
 
 export function useHomePage() {
   const queryClient = useQueryClient();
@@ -54,6 +56,7 @@ export function useHomePage() {
     avatar: currentAvatar,
     name: currentName,
   };
+  const { todayAnniversaries } = useTodayAnniversaries(coupleId);
   const partnerPerson = getPartnerPerson(partnerName, partnerAvatar);
   const nextAnniversary = useMemo(
     () => {
@@ -93,6 +96,9 @@ export function useHomePage() {
         queryClient.refetchQueries({
           queryKey: allAnniversariesQueryKey(coupleId),
         }),
+        queryClient.refetchQueries({
+          queryKey: anniversariesByDateQueryKey(coupleId, todayDateString()),
+        }),
       ]);
     } catch (error) {
       console.error(error);
@@ -117,6 +123,7 @@ export function useHomePage() {
     partnerPerson,
     refreshing,
     startDate,
+    todayAnniversaries,
     visibleAnniversaries,
     blockingMessage: getBlockingMessage(invitePartner.isPending),
   };

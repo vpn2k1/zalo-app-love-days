@@ -4,17 +4,20 @@ import { useFormContext, useWatch } from "react-hook-form";
 import { BlockingLoadingOverlay } from "@/components/BlockingLoadingOverlay";
 import { AppImageViewer, Box } from "@/components/zaui";
 import { useAppNavigation } from "@/hooks/useAppNavigation";
+import { currentUserStore } from "@/services/currentUserStore";
 
 import {
   getCanCreate,
   getCanUpdate,
 } from "../modules/memoryDetailForm";
 import { useMemoryDetailCreate } from "../modules/useMemoryDetailCreate";
+import { useMemoryDetailDelete } from "../modules/useMemoryDetailDelete";
 import { useMemoryDetailUpdate } from "../modules/useMemoryDetailUpdate";
 import type {
   MemoryDetailFormValues,
   MemoryDetailMode,
 } from "../types/MemoryDetailPageType";
+import { MemoryDeleteConfirmModal } from "./MemoryDeleteConfirmModal";
 import { MemoryDetailFields } from "./MemoryDetailFields";
 import { MemoryDetailFooter } from "./MemoryDetailFooter";
 import { MemoryDetailFormShell } from "./MemoryDetailFormShell";
@@ -22,13 +25,16 @@ import { MemoryDetailHeader } from "./MemoryDetailHeader";
 import { MemoryImagePreview } from "./MemoryImagePreview";
 
 export function MemoryDetailForm() {
+  const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
   const [viewerVisible, setViewerVisible] = useState(false);
 
   const { control, formState, handleSubmit } =
     useFormContext<MemoryDetailFormValues>();
+  const createdBy = useWatch({ control, name: "created_by", exact: true });
   const imageUrl = useWatch({ control, name: "image_url", exact: true });
   const mode = useWatch({ control, name: "mode", exact: true });
   const createMutation = useMemoryDetailCreate();
+  const deleteMutation = useMemoryDetailDelete();
   const navigation = useAppNavigation();
   const canCreate = getCanCreate(formState.isValid, createMutation.isPending);
   const updateMutation = useMemoryDetailUpdate();
@@ -36,6 +42,11 @@ export function MemoryDetailForm() {
     formState.isDirty,
     formState.isValid,
     updateMutation.isPending,
+  );
+  const canDelete = getCanDelete(
+    mode,
+    createdBy,
+    deleteMutation.isPending,
   );
   const submit = handleSubmit((values) => {
     if (mode !== "update") {
@@ -53,6 +64,17 @@ export function MemoryDetailForm() {
   const closeViewer = () => {
     setViewerVisible(false);
   };
+  const openDeleteConfirm = () => {
+    setDeleteConfirmVisible(true);
+  };
+  const closeDeleteConfirm = () => {
+    if (deleteMutation.isPending) return;
+
+    setDeleteConfirmVisible(false);
+  };
+  const confirmDelete = () => {
+    deleteMutation.mutate();
+  };
   const view = getMemoryDetailFormView(
     mode,
     canCreate,
@@ -63,7 +85,12 @@ export function MemoryDetailForm() {
 
   return (
     <MemoryDetailFormShell>
-      <MemoryDetailHeader mode={mode} onBack={navigation.goBack} />
+      <MemoryDetailHeader
+        canDelete={canDelete}
+        mode={mode}
+        onBack={navigation.goBack}
+        onDelete={openDeleteConfirm}
+      />
       <Box className="grid gap-3">
         <MemoryImagePreview imageUrl={imageUrl} onOpen={openViewer} />
         <MemoryDetailFields dateDisabled={mode === "update"} />
@@ -76,8 +103,14 @@ export function MemoryDetailForm() {
         onSubmit={submit}
       />
       <BlockingLoadingOverlay
-        show={view.loading}
-        message={view.loadingMessage}
+        show={view.loading || deleteMutation.isPending}
+        message={getLoadingMessage(view.loading, view.loadingMessage)}
+      />
+      <MemoryDeleteConfirmModal
+        loading={deleteMutation.isPending}
+        visible={deleteConfirmVisible}
+        onClose={closeDeleteConfirm}
+        onConfirm={confirmDelete}
       />
       {imageUrl && (
         <AppImageViewer
@@ -88,6 +121,23 @@ export function MemoryDetailForm() {
       )}
     </MemoryDetailFormShell>
   );
+}
+
+function getCanDelete(
+  mode: MemoryDetailMode,
+  createdBy: string | undefined,
+  deleting: boolean,
+) {
+  if (mode !== "update") return false;
+  if (deleting) return false;
+
+  return currentUserStore.get()?.id === createdBy;
+}
+
+function getLoadingMessage(saving: boolean, savingMessage: string) {
+  if (saving) return savingMessage;
+
+  return "Đang xoá kỷ niệm...";
 }
 
 function getMemoryDetailFormView(

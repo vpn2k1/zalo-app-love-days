@@ -11,7 +11,6 @@ import { hideKeyboard } from "zmp-sdk";
 
 import { requiredRule } from "@/components/forms/formRules";
 import { Box } from "@/components/zaui";
-import { useKeyboardFieldSpacer } from "./useKeyboardFieldSpacer";
 
 type Props<TFormValues extends FieldValues> = Omit<
   TextAreaProps,
@@ -28,11 +27,8 @@ export function AppTextArea<TFormValues extends FieldValues>({
   required,
   ...textAreaProps
 }: Props<TFormValues>) {
-  const keyboard = useKeyboardFieldSpacer();
-
   const handleFocus = (event: FocusEvent<HTMLTextAreaElement>) => {
     if (textAreaProps.readOnly || textAreaProps.disabled) return;
-    keyboard.openSpacer();
     textAreaProps.onFocus?.(event);
   };
 
@@ -42,7 +38,6 @@ export function AppTextArea<TFormValues extends FieldValues>({
   ) => {
     onBlur();
     textAreaProps.onBlur?.(event);
-    keyboard.closeSpacer();
     void hideKeyboard().catch(() => undefined);
   };
 
@@ -57,24 +52,15 @@ export function AppTextArea<TFormValues extends FieldValues>({
 
         return (
           <Box>
-            <div ref={keyboard.fieldRef}>
-              <Input.TextArea
-                {...textAreaProps}
-                name={field.name}
-                value={(field.value ?? "") as string}
-                onChange={field.onChange}
-                onBlur={(event) => handleBlur(event, field.onBlur)}
-                onFocus={handleFocus}
-                status={status}
-                errorText={fieldState.error?.message ?? textAreaProps.errorText}
-              />
-            </div>
-            <Box
-              aria-hidden
-              style={{
-                height: keyboard.spacerHeight,
-                transition: "height 160ms ease-out",
-              }}
+            <Input.TextArea
+              {...textAreaProps}
+              name={field.name}
+              value={(field.value ?? "") as string}
+              onChange={field.onChange}
+              onBlur={(event) => handleBlur(event, field.onBlur)}
+              onFocus={handleFocus}
+              status={status}
+              errorText={fieldState.error?.message ?? textAreaProps.errorText}
             />
           </Box>
         );
