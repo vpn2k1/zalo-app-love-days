@@ -1,6 +1,6 @@
 import { mockDb } from "@/services/mockDb";
 import { isMockMode, supabase } from "@/services/supabaseClient";
-import { mediaService } from "@/services/mediaService";
+import { isUploadedMediaUrl, mediaService } from "@/services/mediaService";
 import {
   createStartDateAnniversaryDraft,
   isStartDateAnniversaryDraft,
@@ -300,13 +300,26 @@ async function uploadSetupAnniversaryImages({
   index: number;
   title: string;
 }) {
-  return Promise.all(imageUrls.map((imageUrl, imageIndex) =>
-    mediaService.uploadImagePath({
-      coupleId,
-      fileName: `anniversary-${index + 1}-${imageIndex + 1}-${title}`,
-      folderName: anniversaryId,
-      path: imageUrl,
-      scope: "anniversaries",
-    }),
-  )).then((items) => items.filter((item): item is string => Boolean(item)));
+  try {
+    const uploadedImages = await Promise.all(imageUrls.map((imageUrl, imageIndex) => {
+      if (isSavedImageUrl(imageUrl)) return imageUrl;
+
+      return mediaService.uploadImagePath({
+        coupleId,
+        fileName: `anniversary-${index + 1}-${imageIndex + 1}-${title}`,
+        folderName: anniversaryId,
+        path: imageUrl,
+        scope: "anniversaries",
+      });
+    }));
+
+    return uploadedImages.filter((item): item is string => Boolean(item));
+  } catch (error) {
+    console.error(error);
+    throw new Error("Không thể tải ảnh kỷ niệm lên. Nhật Ký Yêu chưa được lưu.");
+  }
+}
+
+function isSavedImageUrl(imageUrl: string) {
+  return isUploadedMediaUrl(imageUrl);
 }

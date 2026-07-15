@@ -1702,6 +1702,11 @@
   border-radius: 18px;
 }
 
+.app-profile-photo-avatar-filled {
+  background-position: center;
+  background-size: cover;
+}
+
 .app-profile-photo-action {
   position: absolute;
   right: 14px;

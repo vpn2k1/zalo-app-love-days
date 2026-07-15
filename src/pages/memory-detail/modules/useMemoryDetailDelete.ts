@@ -28,6 +28,7 @@ export function useMemoryDetailDelete() {
       return anniversaryService.remove(coupleId, id, user.id);
     },
     onSuccess: async () => {
+      queryClient.removeQueries({ queryKey: ["get-memory", coupleId, id] });
       await Promise.all([
         queryClient.invalidateQueries({
           queryKey: allAnniversariesQueryKey(coupleId),
@@ -38,11 +39,10 @@ export function useMemoryDetailDelete() {
         queryClient.invalidateQueries({
           queryKey: infiniteAnniversariesQueryKey(coupleId),
         }),
-        queryClient.invalidateQueries({ queryKey: ["get-memory"] }),
         queryClient.invalidateQueries({ queryKey: ["memory"] }),
       ]);
+      navigation.goAnniversaries({ replace: true });
       snackbar.showSuccess("Đã xoá kỷ niệm.");
-      navigation.goBack();
     },
     onError: (error) => {
       console.error(error);

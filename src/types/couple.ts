@@ -40,5 +40,6 @@ export type SetupCoupleInput = {
     repeat_type: "yearly" | "none";
     note?: string;
     image_url?: string;
+    image_urls?: string[];
   }>;
 };

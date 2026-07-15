@@ -1,4 +1,4 @@
-import { mediaService } from "@/services/mediaService";
+import { isUploadedMediaUrl, mediaService } from "@/services/mediaService";
 import type { AnniversaryDraft } from "@/types/anniversary";
 
 export function getDraftImageUrls(draft: AnniversaryDraft) {
@@ -19,15 +19,26 @@ export async function uploadAnniversaryImages({
   imageUrls: string[];
   title: string;
 }) {
-  const uploadedImages = await Promise.all(imageUrls.map((imageUrl, index) =>
-    mediaService.uploadImagePath({
-      coupleId,
-      fileName: `anniversary-${index + 1}-${title}`,
-      folderName: anniversaryId,
-      path: imageUrl,
-      scope: "anniversaries",
-    }),
-  ));
+  try {
+    const uploadedImages = await Promise.all(imageUrls.map((imageUrl, index) => {
+      if (isSavedImageUrl(imageUrl)) return imageUrl;
 
-  return uploadedImages.filter((item): item is string => Boolean(item));
+      return mediaService.uploadImagePath({
+        coupleId,
+        fileName: `anniversary-${index + 1}-${title}`,
+        folderName: anniversaryId,
+        path: imageUrl,
+        scope: "anniversaries",
+      });
+    }));
+
+    return uploadedImages.filter((item): item is string => Boolean(item));
+  } catch (error) {
+    console.error(error);
+    throw new Error("Không thể tải ảnh lên. Kỷ niệm chưa được lưu.");
+  }
+}
+
+function isSavedImageUrl(imageUrl: string) {
+  return isUploadedMediaUrl(imageUrl);
 }

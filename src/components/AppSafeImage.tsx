@@ -12,7 +12,12 @@ type Props = Omit<ImgHTMLAttributes<HTMLImageElement>, "src"> & {
 
 export function AppSafeImage({ fallback, src, ...imageProps }: Props) {
   const [failed, setFailed] = useState(false);
-  const { onError, ...safeImageProps } = imageProps;
+  const {
+    decoding = "async",
+    loading = "lazy",
+    onError,
+    ...safeImageProps
+  } = imageProps;
 
   useEffect(() => {
     setFailed(false);
@@ -24,6 +29,8 @@ export function AppSafeImage({ fallback, src, ...imageProps }: Props) {
   return (
     <img
       {...safeImageProps}
+      decoding={decoding}
+      loading={loading}
       src={src}
       onError={(event) => {
         setFailed(true);

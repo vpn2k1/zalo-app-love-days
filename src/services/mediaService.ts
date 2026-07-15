@@ -60,7 +60,7 @@ export const mediaService = {
     scope,
   }: UploadImageInput): Promise<string | null> {
     if (!path) return null;
-    if (!supabase || !isLocalImagePath(path)) return path;
+    if (!supabase || isUploadedMediaUrl(path)) return path;
 
     const blob = await imagePathToBlob(path);
     if (blob.size > 50 * 1024 * 1024) {
@@ -149,8 +149,14 @@ async function listFolderPaths(prefix: string) {
   return data.map((item) => `${prefix}/${item.name}`);
 }
 
-function isLocalImagePath(path: string) {
-  return path.startsWith("blob:") || path.startsWith("data:") || !/^https?:\/\//.test(path);
+export function isUploadedMediaUrl(path: string) {
+  if (isMiniProgramLocalPath(path)) return false;
+
+  return /^https?:\/\//.test(path);
+}
+
+function isMiniProgramLocalPath(path: string) {
+  return /^https?:\/\/miniprogram(?:\/|$)/.test(path);
 }
 
 async function imagePathToBlob(path: string) {

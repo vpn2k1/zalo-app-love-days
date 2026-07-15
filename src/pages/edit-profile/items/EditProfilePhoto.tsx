@@ -1,7 +1,6 @@
-import { useState, type KeyboardEvent } from "react";
+import { useState, type CSSProperties, type KeyboardEvent } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
-import { AppSafeImage } from "@/components/AppSafeImage";
 import { AppCameraCapture } from "@/components/forms/AppCameraCapture";
 import { AppImagePickerSheet } from "@/components/forms/AppImagePickerSheet";
 import { AppImageViewer, AppSheet, Box, Icon } from "@/components/zaui";
@@ -131,30 +130,21 @@ function ProfilePhotoAvatar({
   avatarSrc?: string;
   onOpenViewer: () => void;
 }) {
-  if (!avatarSrc) return <ProfilePhotoFallback />;
+  if (!avatarSrc) return <Box className="app-profile-photo-avatar" />;
 
+  const avatarStyle: CSSProperties = {
+    backgroundImage: `url("${avatarSrc}")`,
+  };
   return (
     <Box
       aria-label="Xem ảnh đại diện"
+      className="app-profile-photo-avatar app-profile-photo-avatar-filled"
       role="button"
+      style={avatarStyle}
       tabIndex={0}
       onClick={onOpenViewer}
       onKeyDown={(event) => runKeyboardAction(event, onOpenViewer)}
-    >
-      <AppSafeImage
-        className="app-profile-photo-avatar"
-        fallback={<ProfilePhotoFallback />}
-        src={avatarSrc}
-      />
-    </Box>
-  );
-}
-
-function ProfilePhotoFallback() {
-  return (
-    <Box className="app-profile-photo-avatar grid place-items-center bg-[#fff0f6] text-[#d9467e]">
-      <Icon icon="zi-user" />
-    </Box>
+    />
   );
 }
 

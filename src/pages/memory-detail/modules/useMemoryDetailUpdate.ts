@@ -49,7 +49,9 @@ export function useMemoryDetailUpdate() {
     },
     onError: (error) => {
       console.error(error);
-      snackbar.showError("Không thể cập nhật. Vui lòng thử lại.");
+      let message = "Không thể cập nhật. Vui lòng thử lại.";
+      if (error instanceof Error) message = error.message;
+      snackbar.showError(message);
     },
   });
 }
