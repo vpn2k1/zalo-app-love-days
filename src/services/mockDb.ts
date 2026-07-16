@@ -114,7 +114,7 @@ export const mockDb = {
     const couple: Couple = {
       id: uid("couple"),
       start_date: input.startDate,
-      title: "Nhật Ký Yêu",
+      title: "Nhật ký tình yêu",
       theme: "pastel",
       background_url: input.backgroundUrl,
       created_by: user.id,
@@ -149,7 +149,7 @@ export const mockDb = {
   updateCoupleStartDate(coupleId: string, startDate: string): Couple {
     const state = readState();
     const couple = state.couples.find((item) => item.id === coupleId);
-    if (!couple) throw new Error("Không tìm thấy Nhật Ký Yêu.");
+    if (!couple) throw new Error("Không tìm thấy Nhật ký tình yêu.");
     couple.start_date = startDate;
     couple.updated_at = now();
     syncStartDateAnniversary(state.anniversaries, couple);
@@ -160,7 +160,7 @@ export const mockDb = {
   updateCoupleBackground(coupleId: string, backgroundUrl: string | null): Couple {
     const state = readState();
     const couple = state.couples.find((item) => item.id === coupleId);
-    if (!couple) throw new Error("Không tìm thấy Nhật Ký Yêu.");
+    if (!couple) throw new Error("Không tìm thấy Nhật ký tình yêu.");
     couple.background_url = backgroundUrl;
     couple.updated_at = now();
     writeState(state);
@@ -173,7 +173,7 @@ export const mockDb = {
   ): Couple {
     const state = readState();
     const couple = state.couples.find((item) => item.id === coupleId);
-    if (!couple) throw new Error("Không tìm thấy Nhật Ký Yêu.");
+    if (!couple) throw new Error("Không tìm thấy Nhật ký tình yêu.");
 
     if (payload.startDate !== undefined) {
       couple.start_date = payload.startDate;

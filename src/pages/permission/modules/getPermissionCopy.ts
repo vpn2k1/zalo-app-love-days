@@ -16,7 +16,7 @@ export function getPermissionCopy(blocked?: boolean): PermissionCopy {
       cardTitle: "Lưu lại hành trình",
       dayTitle: "0",
       heroTitle: "Bắt đầu câu chuyện của hai bạn",
-      note: "Nhật Ký Yêu chỉ dùng thông tin Zalo cơ bản để tạo hồ sơ cho bạn.",
+      note: "Nhật ký tình yêu chỉ dùng thông tin Zalo cơ bản để tạo hồ sơ cho bạn.",
     };
   }
 

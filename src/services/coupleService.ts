@@ -67,7 +67,7 @@ export const coupleService = {
       .from("couples")
       .insert({
         start_date: input.startDate,
-        title: "Nhật Ký Yêu",
+        title: "Nhật ký tình yêu",
         theme: "pastel",
         created_by: user.id,
       })
@@ -316,7 +316,7 @@ async function uploadSetupAnniversaryImages({
     return uploadedImages.filter((item): item is string => Boolean(item));
   } catch (error) {
     console.error(error);
-    throw new Error("Không thể tải ảnh kỷ niệm lên. Nhật Ký Yêu chưa được lưu.");
+    throw new Error("Không thể tải ảnh kỷ niệm lên. Nhật ký tình yêu chưa được lưu.");
   }
 }
 

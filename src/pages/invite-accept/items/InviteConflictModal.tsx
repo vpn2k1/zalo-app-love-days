@@ -33,5 +33,5 @@ export function InviteConflictModal({
 function getConflictDescription(conflictMessage?: string) {
   if (!conflictMessage) return undefined;
 
-  return `${conflictMessage} Khi đóng thông báo, Nhật Ký Yêu sẽ mở không gian hiện tại của bạn. Nếu tài khoản này chưa tạo không gian nào, ứng dụng sẽ đưa bạn tới bước thiết lập ban đầu.`;
+  return `${conflictMessage} Khi đóng thông báo, Nhật ký tình yêu sẽ mở không gian hiện tại của bạn. Nếu tài khoản này chưa tạo không gian nào, ứng dụng sẽ đưa bạn tới bước thiết lập ban đầu.`;
 }

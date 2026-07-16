@@ -54,7 +54,7 @@ export function useCreateCoupleMutation({ user }: Input) {
     },
     onError: (error) => {
       console.error(error);
-      let message = "Không thể tạo Nhật Ký Yêu. Vui lòng thử lại.";
+      let message = "Không thể tạo Nhật ký tình yêu. Vui lòng thử lại.";
       if (error instanceof Error) message = error.message;
       snackbar.showError(message);
     },

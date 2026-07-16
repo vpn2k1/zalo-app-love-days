@@ -18,7 +18,7 @@ export function AppSpinner({
   return (
     <Box className={getSpinnerClassName(className)}>
       <Spinner
-        logo={<img src={logoSrc} alt="Biểu trưng Nhật Ký Yêu" />}
+        logo={<img src={logoSrc} alt="Biểu trưng Nhật ký tình yêu" />}
         {...spinnerProps}
         visible={visible}
       />
