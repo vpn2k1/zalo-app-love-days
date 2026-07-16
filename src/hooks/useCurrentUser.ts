@@ -87,7 +87,7 @@ async function authorizeZaloUserProfile(): Promise<ZaloUserProfile> {
 }
 
 export async function restoreCurrentUser(): Promise<AppUser | null> {
-  const zaloUserId = '606164582813130800';
+  const zaloUserId = await zaloService.getZaloUserId();
   if (!zaloUserId) {
     currentUserStore.set(null);
     return null;
