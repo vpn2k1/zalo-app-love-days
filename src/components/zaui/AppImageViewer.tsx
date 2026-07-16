@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { Box, Button, Icon, Text } from "zmp-ui";
 
 import { AppSafeImage } from "@/components/AppSafeImage";
+import { AppImageViewerSaveButton } from "@/components/zaui/AppImageViewerSaveButton";
 import { useImageViewerZoom } from "@/components/zaui/useImageViewerZoom";
 import { useOverlayBackClose } from "@/components/zaui/useOverlayBackClose";
 import type { ImageType, ImageViewerProps } from "zmp-ui/image-viewer";
@@ -74,7 +75,7 @@ export function AppImageViewer({
       onClick={(event) => event.stopPropagation()}
       onPointerDown={(event) => event.stopPropagation()}
     >
-      <Box className="pointer-events-none absolute left-0 right-0 top-0 z-30 flex items-center px-4 pb-3 pt-[max(14px,env(safe-area-inset-top))]">
+      <Box className="pointer-events-none absolute left-0 right-0 top-2 z-30 flex items-center gap-2 px-4 pb-3 pt-[max(14px,env(safe-area-inset-top))]">
         <Button
           htmlType="button"
           variant="tertiary"
@@ -86,11 +87,12 @@ export function AppImageViewer({
           }}
         >
         </Button>
+        <AppImageViewerSaveButton imageUrl={image.src} />
       </Box>
 
       <Box className="flex h-full w-full items-center justify-center px-3 pb-[calc(54px+env(safe-area-inset-bottom))] pt-[calc(58px+env(safe-area-inset-top))]">
         <Box
-          className="flex size-full touch-none items-center justify-center overflow-hidden"
+          className="flex touch-none items-center justify-center overflow-hidden rounded-2xl"
           onClick={zoom.toggleZoom}
           onPointerDown={zoom.handlePointerDown}
           onPointerMove={zoom.handlePointerMove}
@@ -99,7 +101,7 @@ export function AppImageViewer({
         >
           <AppSafeImage
             alt={image.alt ?? "Ảnh"}
-            className="max-h-full max-w-full select-none object-contain transition-transform duration-150"
+            className="select-none size-full object-contain transition-transform duration-150 rounded-lg"
             draggable={false}
             fallback={<ImageViewerFallback />}
             src={image.src}
