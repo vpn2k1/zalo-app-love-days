@@ -92,7 +92,7 @@ export function AppImageViewer({
 
       <Box className="flex h-full w-full items-center justify-center px-3 pb-[calc(54px+env(safe-area-inset-bottom))] pt-[calc(58px+env(safe-area-inset-top))]">
         <Box
-          className="flex touch-none items-center justify-center overflow-hidden rounded-2xl"
+          className="flex size-full touch-none items-center justify-center overflow-hidden rounded-2xl"
           onClick={zoom.toggleZoom}
           onPointerDown={zoom.handlePointerDown}
           onPointerMove={zoom.handlePointerMove}
@@ -101,13 +101,14 @@ export function AppImageViewer({
         >
           <AppSafeImage
             alt={image.alt ?? "Ảnh"}
-            className="select-none size-full object-contain transition-transform duration-150 rounded-lg"
+            className="select-none size-full rounded-lg object-contain"
             draggable={false}
             fallback={<ImageViewerFallback />}
             src={image.src}
             style={{
-              transform: `scale(${zoom.scale})`,
+              transform: `translate3d(${zoom.position.x}px, ${zoom.position.y}px, 0) scale(${zoom.scale})`,
               transformOrigin: "center",
+              willChange: "transform",
             }}
           />
         </Box>

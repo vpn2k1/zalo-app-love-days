@@ -93,28 +93,32 @@ export function useAppCameraCapture({
     const camera = cameraRef.current;
     if (!camera) return;
 
+    try {
+      const frame = camera.takePhoto({
+        ...getCameraPhotoConstraint(videoRef.current),
+        format: PhotoFormat.JPEG,
+        quality: PhotoQuality.HIGH,
+      });
+      if (frame?.data) {
+        await captureZoomedFrame(frame.data);
+        return;
+      }
+    } catch (photoError) {
+      console.error(photoError);
+    }
+
     const imageData = captureVideoFrameToImageData(
       videoRef.current,
       zoomScale,
       isFrontCamera(facing),
     );
-    if (imageData) {
-      onCapture(imageData);
-      close();
-      return;
-    }
-
-    const frame = camera.takePhoto({
-      ...getCameraPhotoConstraint(videoRef.current),
-      format: PhotoFormat.JPEG,
-      quality: PhotoQuality.HIGH,
-    });
-    if (!frame?.data) {
+    if (!imageData) {
       setError("Không thể chụp ảnh. Vui lòng thử lại.");
       return;
     }
 
-    await captureZoomedFrame(frame.data);
+    onCapture(imageData);
+    close();
   };
 
   const pickAlbum = getPickAlbumAction({

@@ -63,9 +63,54 @@ export const coupleService = {
     if (existingCouple) {
       return existingCouple;
     }
+    const coupleId = createUuid();
+    const backgroundUrl = await mediaService.uploadImagePath({
+      coupleId,
+      fileName: "background",
+      path: input.backgroundUrl,
+      scope: "backgrounds",
+    });
+    const customAvatarUrl = await mediaService.uploadImagePath({
+      coupleId,
+      fileName: `avatar-${user.id}`,
+      path: input.customAvatarUrl,
+      scope: "avatars",
+    });
+    const anniversaryDrafts = [
+      createStartDateAnniversaryDraft(input.startDate),
+      ...input.anniversaries.filter((item) => {
+        return !isStartDateAnniversaryDraft(item);
+      }),
+    ];
+    const anniversaries = await Promise.all(
+      anniversaryDrafts.map(async (item, index) => {
+        const anniversaryId = createUuid();
+        const imageUrls = await uploadSetupAnniversaryImages({
+          anniversaryId,
+          coupleId,
+          imageUrls: getDraftImageUrls(item),
+          index,
+          title: item.title,
+        });
+
+        return {
+          id: anniversaryId,
+          couple_id: coupleId,
+          title: item.title,
+          date: item.date,
+          repeat_type: item.repeat_type,
+          note: item.note,
+          image_url: imageUrls[0] ?? null,
+          image_urls: imageUrls,
+          created_by: user.id,
+        };
+      }),
+    );
     const { data: couple, error: coupleError } = await supabase
       .from("couples")
       .insert({
+        id: coupleId,
+        background_url: backgroundUrl,
         start_date: input.startDate,
         title: "Nhật ký tình yêu",
         theme: "pastel",
@@ -76,25 +121,6 @@ export const coupleService = {
     if (coupleError) throw coupleError;
 
     let savedCouple = couple as Couple;
-    const backgroundUrl = await mediaService.uploadImagePath({
-      coupleId: savedCouple.id, fileName: "background", path: input.backgroundUrl, scope: "backgrounds",
-    });
-    if (backgroundUrl) {
-      const { data: updatedCouple, error: backgroundError } = await supabase
-        .from("couples")
-        .update({ background_url: backgroundUrl, updated_at: new Date().toISOString() })
-        .eq("id", savedCouple.id)
-        .select("*")
-        .single();
-      if (backgroundError) throw backgroundError;
-      savedCouple = updatedCouple as Couple;
-    }
-    const customAvatarUrl = await mediaService.uploadImagePath({
-      coupleId: couple.id,
-      fileName: `avatar-${user.id}`,
-      path: input.customAvatarUrl,
-      scope: "avatars",
-    });
     const { data: updatedUser, error: userError } = await supabase
       .from("users")
       .update({
@@ -110,7 +136,7 @@ export const coupleService = {
     const { data: member, error: memberError } = await supabase
       .from("couple_members")
       .insert({
-        couple_id: couple.id,
+        couple_id: coupleId,
         user_id: user.id,
         role: "owner",
         side: "left",
@@ -119,37 +145,7 @@ export const coupleService = {
       .single();
     if (memberError) throw memberError;
 
-    const anniversaryDrafts = [
-      createStartDateAnniversaryDraft(input.startDate),
-      ...input.anniversaries.filter((item) => {
-        return !isStartDateAnniversaryDraft(item);
-      }),
-    ];
-    if (anniversaryDrafts.length > 0) {
-      const anniversaries = await Promise.all(
-        anniversaryDrafts.map(async (item, index) => {
-          const anniversaryId = createUuid();
-          const imageUrls = await uploadSetupAnniversaryImages({
-            anniversaryId,
-            coupleId: couple.id,
-            imageUrls: getDraftImageUrls(item),
-            index,
-            title: item.title,
-          });
-
-          return {
-            id: anniversaryId,
-            couple_id: couple.id,
-            title: item.title,
-            date: item.date,
-            repeat_type: item.repeat_type,
-            note: item.note,
-            image_url: imageUrls[0] ?? null,
-            image_urls: imageUrls,
-            created_by: user.id,
-          };
-        }),
-      );
+    if (anniversaries.length > 0) {
       const { error: anniversaryError } = await supabase
         .from("anniversaries")
         .insert(anniversaries);

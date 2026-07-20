@@ -64,7 +64,7 @@ async function pickWithOpenMediaPicker({
   const result = await openMediaPicker({
     type: getMediaPickerType(sourceType, cameraType),
     maxSelectItem: count,
-    compressLevel: 2,
+    compressLevel: 1,
     editView: {
       enable: false,
     },

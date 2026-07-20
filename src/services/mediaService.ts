@@ -62,7 +62,13 @@ export const mediaService = {
     if (!path) return null;
     if (!supabase || isUploadedMediaUrl(path)) return path;
 
-    const blob = await imagePathToBlob(path);
+    let blob: Blob;
+    try {
+      blob = await imagePathToBlob(path);
+    } catch (error) {
+      console.error(error);
+      throw new Error("Không thể đọc ảnh đã chọn. Vui lòng chọn ảnh khác.");
+    }
     if (blob.size > 50 * 1024 * 1024) {
       throw new Error("Kích thước ảnh vượt quá giới hạn cho phép (tối đa 50MB).");
     }
@@ -80,7 +86,10 @@ export const mediaService = {
         contentType: blob.type || "image/jpeg",
         upsert: true,
       });
-    if (error) throw error;
+    if (error) {
+      console.error(error);
+      throw new Error("Không thể tải ảnh lên. Vui lòng thử lại.");
+    }
 
     const { data } = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(storagePath);
     return `${data.publicUrl}?t=${Date.now()}`;
