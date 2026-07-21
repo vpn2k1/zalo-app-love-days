@@ -9,6 +9,7 @@ import {
 import { AppSheet, Box, Button, Text } from "@/components/zaui";
 import type { AppSheetRef } from "@/components/zaui";
 import type { DaysTogetherFormValues } from "../types/HomePageType";
+import { DaysTogetherMusicField } from "./DaysTogetherMusicField";
 
 type ElapsedTime = {
   days: number;
@@ -22,8 +23,13 @@ type Props = {
   elapsed: ElapsedTime;
   loading?: boolean;
   disabled?: boolean;
+  musicRemoved: boolean;
+  musicUrl: string;
+  selectedMusicFile: File | null;
   sheetRef: RefObject<AppSheetRef>;
   onClose: () => void;
+  onMusicRemove: () => void;
+  onMusicSelect: (file: File) => void;
   onSave: () => Promise<void>;
 };
 
@@ -32,8 +38,13 @@ export function DaysTogetherSheet({
   elapsed,
   loading,
   disabled,
+  musicRemoved,
+  musicUrl,
+  selectedMusicFile,
   sheetRef,
   onClose,
+  onMusicRemove,
+  onMusicSelect,
   onSave,
 }: Props) {
   const stopSheetEvent = (event: SyntheticEvent) => {
@@ -77,6 +88,14 @@ export function DaysTogetherSheet({
               optional
             />
           </Box>
+
+          <DaysTogetherMusicField
+            musicUrl={musicUrl}
+            removed={musicRemoved}
+            selectedFile={selectedMusicFile}
+            onRemove={onMusicRemove}
+            onSelect={onMusicSelect}
+          />
 
           <Box className="my-5 grid grid-cols-2 gap-2 text-center min-[360px]:grid-cols-4">
             <TimePill value={elapsed.days.toLocaleString()} label="Ngày" />

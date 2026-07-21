@@ -2,8 +2,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 
 import type { AppSheetRef } from "@/components/zaui";
-import { useCoupleData } from "@/hooks/useCoupleData";
+import { useUpdateMusicMutation } from "@/hooks/mutations/useUpdateMusicMutation";
 import { useUpdateCoupleMutation } from "@/hooks/mutations/useUpdateCoupleMutation";
+import { useCoupleData } from "@/hooks/useCoupleData";
+import { useMusicQuery } from "@/hooks/useMusicQuery";
 import type { CalendarDateValue } from "@/types/date";
 import { todayDateString } from "@/utils/date";
 
@@ -27,7 +29,13 @@ export function useDaysTogether() {
   const persistedBackground = coupleData?.couple.background_url || "";
   const sheetRef = useRef<AppSheetRef>(null);
   const [elapsed, setElapsed] = useState(EMPTY_ELAPSED_TIME);
+  const [musicRemoved, setMusicRemoved] = useState(false);
+  const [selectedMusicFile, setSelectedMusicFile] = useState<File | null>(null);
   const updateCouple = useUpdateCoupleMutation();
+  const updateMusic = useUpdateMusicMutation();
+  const musicQuery = useMusicQuery(coupleData?.couple.id);
+  const musicUrl = musicQuery.data ?? "";
+  const musicDirty = Boolean(selectedMusicFile || musicRemoved);
   const { control, formState, handleSubmit, reset } =
     useForm<DaysTogetherFormValues>({
       defaultValues: getFormValues(persistedBackground, persistedStartDate),
@@ -55,18 +63,42 @@ export function useDaysTogether() {
   }, [startTime]);
 
   const closeSheet = () => sheetRef.current?.close();
+  const resetMusic = () => {
+    setMusicRemoved(false);
+    setSelectedMusicFile(null);
+  };
   const openSheet = () => {
     reset(getFormValues(persistedBackground, persistedStartDate));
+    resetMusic();
     sheetRef.current?.open();
   };
+  const selectMusic = (file: File) => {
+    setMusicRemoved(false);
+    setSelectedMusicFile(file);
+  };
+  const removeMusic = () => {
+    setSelectedMusicFile(null);
+    if (!musicUrl) {
+      setMusicRemoved(false);
+      return;
+    }
+
+    setMusicRemoved(true);
+  };
   const save = handleSubmit(async (values) => {
-    if (!formState.isDirty || !coupleData) {
+    if ((!formState.isDirty && !musicDirty) || !coupleData) {
       closeSheet();
       return;
     }
 
-    const payload = getUpdatePayload(values, coupleData.couple);
-    const updatedCouple = await updateCouple.mutateAsync(payload);
+    let updatedCouple = coupleData.couple;
+    if (formState.isDirty) {
+      const payload = getUpdatePayload(values, coupleData.couple);
+      updatedCouple = await updateCouple.mutateAsync(payload);
+    }
+    if (musicDirty) {
+      updatedCouple = await updateMusic.mutateAsync(selectedMusicFile);
+    }
     if (!updatedCouple) return;
 
     reset(
@@ -75,17 +107,23 @@ export function useDaysTogether() {
         getCalendarDateValue(updatedCouple.start_date),
       ),
     );
+    resetMusic();
     closeSheet();
   });
 
   return {
     closeSheet,
     control,
-    disabled: !formState.isDirty,
+    disabled: !formState.isDirty && !musicDirty,
     elapsed,
-    loading: updateCouple.isPending,
+    loading: updateCouple.isPending || updateMusic.isPending,
+    musicRemoved,
+    musicUrl,
     openSheet,
+    removeMusic,
     save,
+    selectedMusicFile,
+    selectMusic,
     sheetRef,
     startDate,
   };

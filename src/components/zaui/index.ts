@@ -11,6 +11,7 @@ export {
   Button,
   Calendar,
   Icon,
+  Progress,
   Route,
   SnackbarProvider,
   Text,

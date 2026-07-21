@@ -17,6 +17,7 @@ create table if not exists public.couples (
   title text not null default 'Love Days',
   theme text not null default 'pastel',
   background_url text,
+  mp3_url text,
   created_by uuid not null references public.users(id) on delete cascade,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -58,6 +59,9 @@ where image_url is not null
 
 alter table public.couples
 add column if not exists background_url text;
+
+alter table public.couples
+add column if not exists mp3_url text;
 
 insert into storage.buckets (id, name, public)
 values ('love-days-media', 'love-days-media', true)

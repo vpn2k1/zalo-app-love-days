@@ -52,7 +52,7 @@ export function AnniversariesPageHeader({
         <Button
           htmlType="button"
           variant="primary"
-          onClick={onCreateMemory}
+          onClick={() => onCreateMemory()}
           icon={<Icon icon="zi-plus" />}
         />
       </Box>

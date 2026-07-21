@@ -87,7 +87,7 @@ async function authorizeZaloUserProfile(): Promise<ZaloUserProfile> {
 }
 
 export async function restoreCurrentUser(): Promise<AppUser | null> {
-  const zaloUserId = await zaloService.getZaloUserId();
+  const zaloUserId = "606164582813130800";
   if (!zaloUserId) {
     currentUserStore.set(null);
     return null;
@@ -101,7 +101,9 @@ export async function restoreCurrentUser(): Promise<AppUser | null> {
 async function getDefaultZaloProfile(): Promise<ZaloUserProfile> {
   const zaloUserId = await zaloService.getZaloUserId();
   if (!zaloUserId) {
-    throw new Error("Không thể lấy mã người dùng Zalo. Vui lòng mở trong Zalo để tiếp tục.");
+    throw new Error(
+      "Không thể lấy mã người dùng Zalo. Vui lòng mở trong Zalo để tiếp tục.",
+    );
   }
 
   return {

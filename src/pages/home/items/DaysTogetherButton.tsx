@@ -45,8 +45,13 @@ export function DaysTogetherButton() {
         elapsed={daysTogether.elapsed}
         loading={daysTogether.loading}
         disabled={daysTogether.disabled}
+        musicRemoved={daysTogether.musicRemoved}
+        musicUrl={daysTogether.musicUrl}
+        selectedMusicFile={daysTogether.selectedMusicFile}
         sheetRef={daysTogether.sheetRef}
         onClose={daysTogether.closeSheet}
+        onMusicRemove={daysTogether.removeMusic}
+        onMusicSelect={daysTogether.selectMusic}
         onSave={daysTogether.save}
       />
       <BlockingLoadingOverlay

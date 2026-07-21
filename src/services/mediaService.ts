@@ -113,7 +113,7 @@ function getStoragePath({
 }
 
 async function listCoupleMediaPaths(coupleId: string) {
-  const scopes = ["avatars", "anniversaries", "backgrounds"];
+  const scopes = ["avatars", "anniversaries", "backgrounds", "music"];
   const paths = await Promise.all(scopes.map((scope) => listScopePaths(coupleId, scope)));
 
   return paths.reduce<string[]>((allPaths, scopePaths) => {

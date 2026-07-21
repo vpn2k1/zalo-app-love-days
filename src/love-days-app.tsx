@@ -1,3 +1,4 @@
+import { MusicPlayerHost } from "@/components/music/MusicPlayerHost";
 import { AnimationRoutes, AppSpinner, Box, Route } from "@/components/zaui";
 import { useAppBoot } from "@/hooks/useAppBoot";
 import { appPaths } from "@/hooks/useAppNavigation";
@@ -19,24 +20,27 @@ export function LoveDaysApp() {
   useRouteScrollReset();
 
   return (
-    <AnimationRoutes>
-      <Route path={appPaths.booting} element={<BootRoute />} />
-      <Route path={appPaths.invite} element={<InviteAcceptPage />} />
-      <Route path={appPaths.permission} element={<PermissionGate />} />
-      <Route path={appPaths.blocked} element={<PermissionGate blocked />} />
-      <Route path={appPaths.setup} element={<SetupPage />} />
-      <Route path={appPaths.home} element={<HomePage />} />
-      <Route path={appPaths.edit} element={<EditProfilePage />} />
-      <Route path={appPaths.album} element={<AlbumPage />} />
-      <Route path={appPaths.calendar} element={<CalendarMemoriesPage />} />
-      <Route path={appPaths.anniversaries} element={<AnniversariesPage />} />
-      <Route path={appPaths.memory} element={<MemoryDetail />} />
-      <Route
-        path={appPaths.legal}
-        element={<LegalPage kind="terms" />}
-      />
-      <Route path="*" element={<PermissionGate />} />
-    </AnimationRoutes>
+    <>
+      <AnimationRoutes>
+        <Route path={appPaths.booting} element={<BootRoute />} />
+        <Route path={appPaths.invite} element={<InviteAcceptPage />} />
+        <Route path={appPaths.permission} element={<PermissionGate />} />
+        <Route path={appPaths.blocked} element={<PermissionGate blocked />} />
+        <Route path={appPaths.setup} element={<SetupPage />} />
+        <Route path={appPaths.home} element={<HomePage />} />
+        <Route path={appPaths.edit} element={<EditProfilePage />} />
+        <Route path={appPaths.album} element={<AlbumPage />} />
+        <Route path={appPaths.calendar} element={<CalendarMemoriesPage />} />
+        <Route path={appPaths.anniversaries} element={<AnniversariesPage />} />
+        <Route path={appPaths.memory} element={<MemoryDetail />} />
+        <Route
+          path={appPaths.legal}
+          element={<LegalPage kind="terms" />}
+        />
+        <Route path="*" element={<PermissionGate />} />
+      </AnimationRoutes>
+      <MusicPlayerHost />
+    </>
   );
 }
 

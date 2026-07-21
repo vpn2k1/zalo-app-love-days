@@ -1,5 +1,5 @@
-const FALLBACK_KEYBOARD_HEIGHT = 200;
-const TARGET_VIEWPORT_RATIO = 0.42;
+const FALLBACK_KEYBOARD_HEIGHT = 120;
+const TARGET_VIEWPORT_RATIO = 0.55;
 
 export function getMeasuredKeyboardHeight() {
   const viewport = window.visualViewport;
