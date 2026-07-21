@@ -20,11 +20,14 @@ import {
 } from "@/utils/inputKeyboard";
 
 const SCROLL_DELAYS = [80, 250, 500];
+const CLICK_SUPPRESSION_MS = 500;
 
 export function useAppInputKeyboardFix() {
   const focusedRef = useRef(false);
   const historyIdRef = useRef<number | null>(null);
   const keyboardVisibleRef = useRef(false);
+  const suppressClickRef = useRef(false);
+  const suppressClickTimerRef = useRef<number | null>(null);
   const timersRef = useRef<Set<number>>(new Set());
 
   const clearTimers = useCallback(() => {
@@ -37,6 +40,15 @@ export function useAppInputKeyboardFix() {
     keyboardVisibleRef.current = false;
     document.documentElement.style.setProperty("--zma-keyboard-height", "0px");
   }, [clearTimers]);
+
+  const clearClickSuppression = useCallback(() => {
+    suppressClickRef.current = false;
+    const timer = suppressClickTimerRef.current;
+    if (timer === null) return;
+
+    window.clearTimeout(timer);
+    suppressClickTimerRef.current = null;
+  }, []);
 
   const updateKeyboardHeight = useCallback(() => {
     const measuredKeyboardHeight = getMeasuredKeyboardHeight();
@@ -88,6 +100,28 @@ export function useAppInputKeyboardFix() {
       scheduleScroll();
     };
 
+    const handleOutsidePress = (event: Event) => {
+      if (!focusedRef.current) return;
+      if (isEditableTextField(event.target)) return;
+      if (!isEditableTextField(document.activeElement)) return;
+      if (event.type === "mousedown") {
+        clearClickSuppression();
+        suppressClickRef.current = true;
+        suppressClickTimerRef.current = window.setTimeout(clearClickSuppression, CLICK_SUPPRESSION_MS);
+      }
+      if (event.cancelable) event.preventDefault();
+      event.stopPropagation();
+      blurActiveTextField();
+    };
+
+    const handleSuppressedClick = (event: MouseEvent) => {
+      if (!suppressClickRef.current) return;
+      clearClickSuppression();
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+    };
+
     const handleBlur = (event: FocusEvent) => {
       if (!isTextField(event.target)) return;
 
@@ -132,23 +166,31 @@ export function useAppInputKeyboardFix() {
     };
 
     window.addEventListener("popstate", handlePopState);
+    document.addEventListener("click", handleSuppressedClick, true);
     document.addEventListener("focusin", handleFocus);
     document.addEventListener("focusout", handleBlur);
+    document.addEventListener("mousedown", handleOutsidePress, true);
+    document.addEventListener("touchstart", handleOutsidePress, { capture: true, passive: false });
     viewport?.addEventListener("resize", handleViewportChange);
     viewport?.addEventListener("scroll", handleViewportChange);
     window.addEventListener("resize", handleViewportChange);
 
     return () => {
       window.removeEventListener("popstate", handlePopState);
+      document.removeEventListener("click", handleSuppressedClick, true);
       document.removeEventListener("focusin", handleFocus);
       document.removeEventListener("focusout", handleBlur);
+      document.removeEventListener("mousedown", handleOutsidePress, true);
+      document.removeEventListener("touchstart", handleOutsidePress, true);
       clearHistoryState();
+      clearClickSuppression();
       viewport?.removeEventListener("resize", handleViewportChange);
       viewport?.removeEventListener("scroll", handleViewportChange);
       window.removeEventListener("resize", handleViewportChange);
       resetKeyboardHeight();
     };
   }, [
+    clearClickSuppression,
     resetKeyboardHeight,
     scheduleScroll,
     scrollFocusedField,
