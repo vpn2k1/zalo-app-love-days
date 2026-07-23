@@ -1,5 +1,4 @@
 import { Page, Text } from "@/components/zaui";
-import { StatusBar } from "@/pages/home/items/StatusBar";
 import { PermissionAllowAction } from "./items/PermissionAllowAction";
 import { PermissionCard } from "./items/PermissionCard";
 import { PermissionHeader } from "./items/PermissionHeader";

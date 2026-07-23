@@ -6,7 +6,9 @@ import { legalDataDeletionPage } from "./legalDataDeletionPage";
 import { legalPrivacyPage } from "./legalPrivacyPage";
 import { legalTermsPage } from "./legalTermsPage";
 
-export const legalPages: Record<LegalPageKind, LegalPageContent> = {
+type LegalDocumentPageKind = Exclude<LegalPageKind, "donate">;
+
+export const legalPages: Record<LegalDocumentPageKind, LegalPageContent> = {
   "data-deletion": legalDataDeletionPage,
   privacy: legalPrivacyPage,
   terms: legalTermsPage,

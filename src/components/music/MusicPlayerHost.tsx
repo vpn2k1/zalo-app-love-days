@@ -1,6 +1,9 @@
 import { Box, useAppSnackbar } from "@/components/zaui";
 import { useCoupleData } from "@/hooks/useCoupleData";
-import { useMusicPlayer } from "@/hooks/useMusicPlayer";
+import {
+  pauseMusicPlayback,
+  useMusicPlayer,
+} from "@/hooks/useMusicPlayer";
 import { useMusicQuery } from "@/hooks/useMusicQuery";
 
 import { MusicToggle } from "./MusicToggle";
@@ -14,6 +17,11 @@ export function MusicPlayerHost() {
   if (!musicUrl) return null;
 
   const toggle = async () => {
+    if (player.playing) {
+      pauseMusicPlayback();
+      return;
+    }
+
     const success = await player.toggle();
     if (success) return;
 
